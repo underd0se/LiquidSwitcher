@@ -43,7 +43,7 @@ class IosSwitchView @JvmOverloads constructor(
     }
     private val focusRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 2.5f * density
+        strokeWidth = 2f * density
         color = Color.parseColor("#00E5FF")
     }
 

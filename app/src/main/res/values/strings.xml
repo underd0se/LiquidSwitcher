@@ -44,7 +44,6 @@
 
     <!-- Section 2: Dock Customization -->
     <string name="section_dock_customization">Dock Customization</string>
-    <string name="btn_preview_dock">Preview Dock</string>
     <string name="label_dock_size">Dock &amp; Icon Size:</string>
     <string name="label_dock_transparency">Dock Transparency:</string>
     <string name="label_dock_margin">Dock Bottom Margin (Overscan):</string>

@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var switchSingleKey: IosSwitchView
     private lateinit var switchSound: IosSwitchView
     private lateinit var switchCountdown: IosSwitchView
-    private lateinit var btnPreviewDock: AppCompatButton
     private lateinit var btnAddDirectShortcut: AppCompatButton
     private lateinit var btnTestKey: AppCompatButton
     private lateinit var tvNoShortcutsHint: TextView
@@ -162,7 +161,6 @@ class MainActivity : AppCompatActivity() {
         switchSingleKey = findViewById(R.id.switchSingleKey)
         switchSound = findViewById(R.id.switchSound)
         switchCountdown = findViewById(R.id.switchCountdown)
-        btnPreviewDock = findViewById(R.id.btnPreviewDock)
         btnAddDirectShortcut = findViewById(R.id.btnAddDirectShortcut)
         btnTestKey = findViewById(R.id.btnTestKey)
         tvNoShortcutsHint = findViewById(R.id.tvNoShortcutsHint)
@@ -214,20 +212,6 @@ class MainActivity : AppCompatActivity() {
                 dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.parseColor("#E2E4F0"))
             } else {
                 openAccessibilitySettings()
-            }
-        }
-
-        btnPreviewDock.setOnClickListener {
-            val apps = AppRepository.getFilteredAndSortedApps(this)
-            if (apps.isNotEmpty()) {
-                if (isServiceCurrentlyEnabled()) {
-                    sendBroadcast(Intent("com.baris.tvappswitcher.TRIGGER_OVERLAY").setPackage(packageName))
-                } else {
-                    val previewOverlay = AppSwitcherOverlay(this)
-                    previewOverlay.show(apps, 0) {}
-                }
-            } else {
-                Toast.makeText(this, getString(R.string.no_apps_found), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -368,7 +352,6 @@ class MainActivity : AppCompatActivity() {
             btnChangeSortOrder,
             btnCustomizeOrder,
             btnManageVisibility,
-            btnPreviewDock,
             btnAddDirectShortcut,
             btnTestKey
         )

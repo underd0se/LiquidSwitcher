@@ -363,7 +363,7 @@
                     android:layout_height="32dp"
                     android:layout_marginEnd="6dp"
                     android:nextFocusUp="@+id/switchSingleKey"
-                    android:nextFocusDown="@+id/btnPreviewDock"
+                    android:nextFocusDown="@+id/sbDockSize"
                     android:focusable="true" />
 
             </LinearLayout>
@@ -381,41 +381,14 @@
             android:clipToPadding="false"
             android:layout_marginBottom="16dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/section_dock_customization"
-                    android:textColor="#00E5FF"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnPreviewDock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="38dp"
-                    android:text="@string/btn_preview_dock"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:layout_marginEnd="6dp"
-                    android:textSize="13sp"
-                    android:focusable="true"
-                    android:clickable="true"
-                    android:nextFocusUp="@+id/switchSound"
-                    android:nextFocusDown="@+id/sbDockSize" />
-
-            </LinearLayout>
+                android:text="@string/section_dock_customization"
+                android:textColor="#00E5FF"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp" />
 
             <!-- Dock & Icon Size Row -->
             <LinearLayout
@@ -480,7 +453,7 @@
                         android:paddingBottom="10dp"
                         android:max="80"
                         android:progress="40"
-                        android:nextFocusUp="@+id/btnPreviewDock"
+                        android:nextFocusUp="@+id/switchSound"
                         android:nextFocusDown="@+id/sbDockTransparency"
                         android:focusable="true" />
 

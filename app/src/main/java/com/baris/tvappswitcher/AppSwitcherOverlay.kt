@@ -180,13 +180,8 @@ class AppSwitcherOverlay(private val context: Context) {
         )
 
         val dimFlag = if (dimPercent > 0) WindowManager.LayoutParams.FLAG_DIM_BEHIND else 0
-        val isActivity = context is android.app.Activity
         @Suppress("InlinedApi")
-        val overlayType = if (isActivity) {
-            WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
-        } else {
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-        }
+        val overlayType = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -201,9 +196,6 @@ class AppSwitcherOverlay(private val context: Context) {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             dimAmount = (dimPercent / 100f).coerceIn(0f, 0.8f)
             y = 0
-            if (isActivity) {
-                token = (context as android.app.Activity).window.decorView.windowToken
-            }
         }
 
         view.translationY = 48f * density
