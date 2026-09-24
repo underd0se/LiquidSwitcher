@@ -1,0 +1,49 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.TVAppSwitcher" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">#00E5FF</item>
+        <item name="colorPrimaryVariant">#00B0FF</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorSecondary">#00E5FF</item>
+        <item name="colorSecondaryVariant">#00B0FF</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="android:statusBarColor">#101018</item>
+        <item name="android:colorBackground">#101018</item>
+        <item name="colorSurface">#151722</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#A0A5BD</item>
+        <item name="alertDialogTheme">@style/Theme.TVAppSwitcher.Dialog</item>
+        <item name="materialAlertDialogTheme">@style/Theme.TVAppSwitcher.Dialog</item>
+    </style>
+
+    <style name="Theme.TVAppSwitcher.Dialog" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="android:background">#1C1C28</item>
+        <item name="android:windowBackground">#1C1C28</item>
+        <item name="colorSurface">#1C1C28</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#BBBBCC</item>
+        <item name="android:textColorAlertDialogListItem">#FFFFFF</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:editTextColor">#FFFFFF</item>
+        <item name="colorPrimary">#00E5FF</item>
+        <item name="colorSecondary">#00E5FF</item>
+        <item name="android:textAppearanceListItem">@style/Theme.TVAppSwitcher.Dialog.TextAppearanceListItem</item>
+        <item name="android:textAppearanceListItemSmall">@style/Theme.TVAppSwitcher.Dialog.TextAppearanceListItem</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Theme.TVAppSwitcher.Dialog.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Theme.TVAppSwitcher.Dialog.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Theme.TVAppSwitcher.Dialog.Button</item>
+    </style>
+
+    <style name="Theme.TVAppSwitcher.Dialog.TextAppearanceListItem" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Theme.TVAppSwitcher.Dialog.Button" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">#00E5FF</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+</resources>

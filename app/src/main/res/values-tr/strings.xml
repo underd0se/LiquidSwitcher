@@ -1,0 +1,116 @@
+<resources>
+    <string name="app_name">Liquid Switcher</string>
+    <string name="service_label">Liquid Switcher Servisi</string>
+
+    <!-- General Actions -->
+    <string name="open_settings">Ayarları Aç</string>
+    <string name="close">Kapat</string>
+    <string name="cancel">İptal</string>
+    <string name="delete">Sil</string>
+    <string name="done">Tamam</string>
+    <string name="save">Kaydet</string>
+    <string name="select_all">Tümünü Seç</string>
+
+    <!-- Service Status -->
+    <string name="service_status_active">● Servis Aktif</string>
+    <string name="service_status_inactive">⚠️ Pasif - Etkinleştirmek için tıklayın</string>
+    <string name="service_active_title">Servis Aktif</string>
+    <string name="service_active_message">Liquid Switcher servisi şu anda aktif ve kumanda tuşlarını izliyor.\n\nTV Ayarlarını açmak istiyor musunuz?</string>
+    <string name="dialog_enable_service_title">Erişilebilirlik Servisini Etkinleştir</string>
+    <string name="dialog_enable_service_msg">TV\'nizde arka planda kumanda ile uygulama geçişi yapabilmek için:\n\n1. Aşağıdaki \'AYARLARI AÇ\' butonuna tıklayın.\n2. Sağ panelden \'Cihaz Tercihleri\'ni seçin.\n3. Aşağı kaydırıp \'Erişilebilirlik\' seçeneğine tıklayın.\n4. \'Liquid Switcher Service\'i seçin ve AÇIK duruma getirin.</string>
+    <string name="accessibility_service_enabled_toast">Erişilebilirlik Servisi Başarıyla Etkinleştirildi!</string>
+    <string name="open_accessibility_manual_toast">Lütfen TV Ayarları -> Cihaz Tercihleri -> Erişilebilirlik menüsünü manuel olarak açın.</string>
+
+    <!-- Section 1: Switching & Timing -->
+    <string name="section_switching_timing">Kumanda Geçiş ve Zamanlama Ayarları</string>
+    <string name="label_switch_next">Sonraki Uygulamaya Geç:</string>
+    <string name="label_switch_prev">Önceki Uygulamaya Geç:</string>
+    <string name="btn_change_key">Tuşu Değiştir</string>
+    <string name="label_countdown_delay">Otomatik Geçiş Geri Sayımı:</string>
+    <string name="btn_change_delay">Gecikmeyi Değiştir</string>
+    <string name="label_app_sort_order">Uygulama Sıralaması:</string>
+    <string name="btn_change">Değiştir</string>
+    <string name="btn_reorder">Sırala</string>
+    <string name="btn_hide_apps">Gizle</string>
+    <string name="label_single_key_mode">Tek Tuşla Kumanda Modu:</string>
+    <string name="single_key_enabled">Etkin (Tek Tuşla Döngü)</string>
+    <string name="single_key_disabled">Devre Dışı (2 Tuş: CH+/CH-)</string>
+    <string name="label_audio_cues">Kumanda Ses Efektleri:</string>
+    <string name="audio_cues_on">Ses Efektleri: AÇIK</string>
+    <string name="audio_cues_off">Ses Efektleri: KAPALI</string>
+
+    <!-- Accessibility Service Description -->
+    <string name="accessibility_service_desc">Liquid Switcher\'ın kumandadaki belirlenen tuşları (CH+/CH- veya renkli tuşlar) algılayarak dock geçiş çubuğunu açmasını ve uygulamalar arasında geçiş yapmasını sağlar.</string>
+
+    <!-- Section 2: Dock Customization -->
+    <string name="section_dock_customization">Dock Özelleştirme</string>
+    <string name="label_dock_size">Dock ve Simge Boyutu:</string>
+    <string name="label_dock_transparency">Dock Saydamlığı:</string>
+    <string name="label_dock_margin">Dock Alt Boşluğu (Overscan):</string>
+    <string name="label_dock_dim">Arka Plan Karartma:</string>
+
+    <!-- Section 3: Direct Shortcuts & Remote Key Tester -->
+    <string name="section_direct_shortcuts">Hızlı Uygulama Kısayolları (Doğrudan Başlatma)</string>
+    <string name="btn_add_shortcut">+ Tuş Kısayolu Ekle</string>
+    <string name="btn_test_key">Kumanda Tuş Testi</string>
+    <string name="no_shortcuts_hint">Henüz kısayol atanmadı. (örn. Kırmızı tuşa YouTube atayın)</string>
+
+    <!-- Key Tester Dialog -->
+    <string name="dialog_test_key_title">TV Kumandası Tuş Test Aracı</string>
+    <string name="dialog_test_key_msg">Test etmek için kumandanızdaki HERHANGİ bir tuşa basın.\n\nAlgılanan Tuş: Henüz yok\nTuş Kodu: —</string>
+    <string name="dialog_test_key_detected">Algılanan Tuş: %1$s\nTuş Kodu: %2$d\n\nDurum: Kısayol ve geçiş için destekleniyor!</string>
+
+    <!-- Section 4: Instructions -->
+    <string name="instructions_title">💡 Nasıl kullanılır:</string>
+    <string name="instructions_body">• HERHANGİ bir uygulamadan veya TV ana ekranından kumandanızdaki Program Yukarı veya Aşağı tuşuna basın.\n• Uygulama Geçiş Çubuğu anında altta belirir.\n• Uygulamalar arasında gezinmek için Yukarı/Aşağı basmaya devam edin.\n• Belirlediğiniz geri sayım bitince veya OK tuşuna bastığınız anda otomatik olarak geçiş yapılır!</string>
+
+    <!-- Section 5: About Card -->
+    <string name="section_about">Liquid Switcher Hakkında</string>
+    <string name="about_version">Sürüm 2.0 (Liquid Sürümü)</string>
+    <string name="about_desc">Android TV ve Google TV için akıcı dinamik dock uygulama geçiş aracı.\nYarı saydam cam tasarımı, sıfır gecikme ve tam kumanda odak optimizasyonu ile geliştirildi.</string>
+
+    <!-- Dialogs & Prompts -->
+    <string name="dialog_title_next_key">\'Sonraki Geçiş\' için Kumanda Tuşuna Basın</string>
+    <string name="dialog_title_prev_key">\'Önceki Geçiş\' için Kumanda Tuşuna Basın</string>
+    <string name="dialog_title_custom_key">Uygulama Kısayolu için Kumanda Tuşuna Basın</string>
+    <string name="dialog_press_remote_key">Şimdi kumandanızdan atamak istediğiniz tuşa basın.\n\n(Yön tuşları, OK ve Geri/Ana Ekran tuşları TV gezintisi için ayrılmıştır)</string>
+    <string name="dialog_manage_visibility_title">Uygulama Görünürlüğünü Yönet</string>
+    <string name="visibility_status_visible">Değiştiricide Görünür</string>
+    <string name="visibility_status_hidden">Değiştiricide Gizli</string>
+    <string name="deselect_all">Tümünü Kaldır</string>
+    <string name="dialog_select_sort_order">Uygulama Sıralamasını Seç</string>
+    <string name="dialog_customize_order_title">Uygulama Sırasını Özelleştir</string>
+    <string name="dialog_select_app_title">Başlatılacak Uygulamayı Seçin</string>
+    <string name="dialog_select_countdown_title">Geçiş Öncesi Geri Sayımı Seçin</string>
+    <string name="dialog_remove_shortcut_title">Kısayolu Kaldır</string>
+    <string name="dialog_remove_shortcut_msg">%1$s için kısayol silinsin mi?</string>
+
+    <!-- Reorder & Position Menu -->
+    <string name="sort_alphabetical">Alfabetik (A - Z)</string>
+    <string name="sort_recency">Son Kullanılanlar (En Yeni İlk)</string>
+    <string name="sort_custom">Özel Sıralama</string>
+    <string name="move_to_top">⏫ En Başa Taşı</string>
+    <string name="move_up">▲ Yukarı Taşı</string>
+    <string name="move_down">▼ Aşağı Taşı</string>
+    <string name="move_to_bottom">⏬ En Alta Taşı</string>
+    <string name="reset_to_az">A-Z Sıfırla</string>
+
+    <!-- Toasts & Feedback -->
+    <string name="order_reset_toast">Sıralama Alfabetik (A-Z) olarak sıfırlandı</string>
+    <string name="apps_saved_visible_toast">Kaydedildi: %1$d uygulama görünür</string>
+    <string name="all_apps_visible_toast">Tüm uygulamalar görünür yapıldı</string>
+    <string name="no_apps_found">Uygulama bulunamadı</string>
+    <string name="no_apps_to_reorder">Yeniden sıralanacak uygulama bulunamadı</string>
+    <string name="key_next_set_toast">Sonraki Tuş: %1$s</string>
+    <string name="key_prev_set_toast">Önceki Tuş: %1$s</string>
+    <string name="key_mapped_toast">%1$s tuşu %2$s uygulamasına atandı</string>
+    <string name="sort_order_set_toast">Sıralama modu ayarlandı: %1$s</string>
+    <string name="countdown_set_toast">Geçiş geri sayımı ayarlandı: %1$s</string>
+
+    <!-- Legacy / compatibility -->
+    <string name="service_not_enabled">Erişilebilirlik Servisi KAPALI. Açmak için tıklayın.</string>
+    <string name="service_enabled">Erişilebilirlik Servisi AÇIK.</string>
+    <string name="add_mapping">Tuş Kısayolu Ekle</string>
+    <string name="press_key_msg">Şimdi kumandanızdan bir tuşa basın...</string>
+    <string name="invalid_key">Geçersiz Tuş. Yön veya sistem tuşlarını atayamazsınız.</string>
+</resources>

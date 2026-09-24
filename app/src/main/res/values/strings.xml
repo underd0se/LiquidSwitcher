@@ -1,0 +1,116 @@
+<resources>
+    <string name="app_name">Liquid Switcher</string>
+    <string name="service_label">Liquid Switcher Service</string>
+
+    <!-- General Actions -->
+    <string name="open_settings">Open Settings</string>
+    <string name="close">Close</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="done">Done</string>
+    <string name="save">Save</string>
+    <string name="select_all">Select All</string>
+
+    <!-- Service Status -->
+    <string name="service_status_active">● Service Active</string>
+    <string name="service_status_inactive">⚠️ Inactive - Click to enable</string>
+    <string name="service_active_title">Service Active</string>
+    <string name="service_active_message">Liquid Switcher Service is currently active and monitoring remote keys.\n\nDo you want to open TV Settings?</string>
+    <string name="dialog_enable_service_title">Enable Accessibility Service</string>
+    <string name="dialog_enable_service_msg">To enable background remote switching on your TV:\n\n1. Click \'OPEN SETTINGS\' below.\n2. In the right panel, select \'Device Preferences\'.\n3. Scroll down and click \'Accessibility\'.\n4. Select \'Liquid Switcher Service\' and turn it ON.</string>
+    <string name="accessibility_service_enabled_toast">Accessibility Service Enabled Successfully!</string>
+    <string name="open_accessibility_manual_toast">Please open TV Settings -> Device Preferences -> Accessibility manually.</string>
+
+    <!-- Section 1: Switching & Timing -->
+    <string name="section_switching_timing">Remote Switching &amp; Timing Settings</string>
+    <string name="label_switch_next">Switch to Next App:</string>
+    <string name="label_switch_prev">Switch to Previous App:</string>
+    <string name="btn_change_key">Change Key</string>
+    <string name="label_countdown_delay">Auto-Switch Countdown Delay:</string>
+    <string name="btn_change_delay">Change Delay</string>
+    <string name="label_app_sort_order">App Sort Order:</string>
+    <string name="btn_change">Change</string>
+    <string name="btn_reorder">Reorder</string>
+    <string name="btn_hide_apps">Hide Apps</string>
+    <string name="label_single_key_mode">One-Button Remote Mode:</string>
+    <string name="single_key_enabled">Enabled (Single-Button Cycle)</string>
+    <string name="single_key_disabled">Disabled (2 Keys: CH+/CH-)</string>
+    <string name="label_audio_cues">Remote Audio Cues:</string>
+    <string name="audio_cues_on">Audio Cues: ON</string>
+    <string name="audio_cues_off">Audio Cues: OFF</string>
+
+    <!-- Accessibility Service Description -->
+    <string name="accessibility_service_desc">Enables Liquid Switcher to detect designated TV remote buttons (such as CH+/CH- or color buttons) to open the dock switcher overlay and switch between applications.</string>
+
+    <!-- Section 2: Dock Customization -->
+    <string name="section_dock_customization">Dock Customization</string>
+    <string name="label_dock_size">Dock &amp; Icon Size:</string>
+    <string name="label_dock_transparency">Dock Transparency:</string>
+    <string name="label_dock_margin">Dock Bottom Margin (Overscan):</string>
+    <string name="label_dock_dim">Background Dimming:</string>
+
+    <!-- Section 3: Direct Shortcuts & Remote Key Tester -->
+    <string name="section_direct_shortcuts">Quick App Shortcuts (Direct Launch)</string>
+    <string name="btn_add_shortcut">+ Add Key Shortcut</string>
+    <string name="btn_test_key">Remote Key Tester</string>
+    <string name="no_shortcuts_hint">No direct shortcuts assigned yet. (e.g. Map Red button to YouTube)</string>
+
+    <!-- Key Tester Dialog -->
+    <string name="dialog_test_key_title">TV Remote Key Tester</string>
+    <string name="dialog_test_key_msg">Press ANY button on your TV remote to test.\n\nDetected Key: None yet\nKeyCode: —</string>
+    <string name="dialog_test_key_detected">Detected Key: %1$s\nKeyCode: %2$d\n\nStatus: Supported for shortcuts &amp; switcher!</string>
+
+    <!-- Section 4: Instructions -->
+    <string name="instructions_title">💡 How to use:</string>
+    <string name="instructions_body">• From ANY app or the TV home screen, press Program Up or Down on your remote.\n• The App Switcher bar pops up instantly at the bottom.\n• Keep pressing Up/Down to cycle through apps.\n• It will automatically switch after your chosen countdown, or immediately when you press OK!</string>
+
+    <!-- Section 5: About Card -->
+    <string name="section_about">About Liquid Switcher</string>
+    <string name="about_version">Version 2.0 (Liquid Edition)</string>
+    <string name="about_desc">Fluid dynamic dock switcher for Android TV &amp; Google TV.\nCrafted with translucent glass materials, zero latency, and pure focus-driven navigation.</string>
+
+    <!-- Dialogs & Prompts -->
+    <string name="dialog_title_next_key">Press Remote Button for \'Switch Next\'</string>
+    <string name="dialog_title_prev_key">Press Remote Button for \'Switch Prev\'</string>
+    <string name="dialog_title_custom_key">Press Remote Button for App Shortcut</string>
+    <string name="dialog_press_remote_key">Press the desired button on your remote control now.\n\n(D-Pad arrows, OK and Back/Home are reserved for TV navigation)</string>
+    <string name="dialog_manage_visibility_title">Manage App Visibility</string>
+    <string name="visibility_status_visible">Visible in Switcher</string>
+    <string name="visibility_status_hidden">Hidden from Switcher</string>
+    <string name="deselect_all">Deselect All</string>
+    <string name="dialog_select_sort_order">Select App Sort Order</string>
+    <string name="dialog_customize_order_title">Customize App Order</string>
+    <string name="dialog_select_app_title">Select App to Launch</string>
+    <string name="dialog_select_countdown_title">Select Countdown Before Switching</string>
+    <string name="dialog_remove_shortcut_title">Remove Shortcut</string>
+    <string name="dialog_remove_shortcut_msg">Delete shortcut for %1$s?</string>
+
+    <!-- Reorder & Position Menu -->
+    <string name="sort_alphabetical">Alphabetical (A - Z)</string>
+    <string name="sort_recency">Recency (Most Recent First)</string>
+    <string name="sort_custom">Custom Order</string>
+    <string name="move_to_top">⏫ Move to Top</string>
+    <string name="move_up">▲ Move Up</string>
+    <string name="move_down">▼ Move Down</string>
+    <string name="move_to_bottom">⏬ Move to Bottom</string>
+    <string name="reset_to_az">Reset to A-Z</string>
+
+    <!-- Toasts & Feedback -->
+    <string name="order_reset_toast">Order reset to Alphabetical (A-Z)</string>
+    <string name="apps_saved_visible_toast">Saved: %1$d apps visible</string>
+    <string name="all_apps_visible_toast">All apps made visible</string>
+    <string name="no_apps_found">No apps found</string>
+    <string name="no_apps_to_reorder">No apps found to reorder</string>
+    <string name="key_next_set_toast">Next Key set to: %1$s</string>
+    <string name="key_prev_set_toast">Previous Key set to: %1$s</string>
+    <string name="key_mapped_toast">Mapped %1$s to %2$s</string>
+    <string name="sort_order_set_toast">Sort order set to: %1$s</string>
+    <string name="countdown_set_toast">Switch countdown set to: %1$s</string>
+
+    <!-- Legacy / compatibility -->
+    <string name="service_not_enabled">Accessibility Service is OFF. Click to enable.</string>
+    <string name="service_enabled">Accessibility Service is ON.</string>
+    <string name="add_mapping">Add Key Mapping</string>
+    <string name="press_key_msg">Press a key on your remote now...</string>
+    <string name="invalid_key">Invalid Key. You cannot map directional or system keys.</string>
+</resources>

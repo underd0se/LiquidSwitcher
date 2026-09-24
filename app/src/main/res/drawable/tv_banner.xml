@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+
+    <!-- Background Base: Deep Space Navy/Slate -->
+    <path
+        android:pathData="M0,0h320v180h-320z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="320"
+                android:endY="180"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#0D0F18" />
+                <item android:offset="0.5" android:color="#141724" />
+                <item android:offset="1.0" android:color="#0A0B12" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Ambient Cyan Radial Glow Behind the Dock -->
+    <path
+        android:pathData="M160,110m-120,0a120,60 0 1,0 240,0a120,60 0 1,0 -240,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="160"
+                android:centerY="115"
+                android:gradientRadius="120"
+                android:type="radial">
+                <item android:offset="0.0" android:color="#3500E5FF" />
+                <item android:offset="0.6" android:color="#1200B0FF" />
+                <item android:offset="1.0" android:color="#00000000" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Top Glow Arc Line -->
+    <path
+        android:pathData="M40,10c80,-12 160,-12 240,0"
+        android:strokeWidth="1"
+        android:strokeAlpha="0.25">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:startX="40"
+                android:startY="10"
+                android:endX="280"
+                android:endY="10"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#0000E5FF" />
+                <item android:offset="0.5" android:color="#8000E5FF" />
+                <item android:offset="1.0" android:color="#0000E5FF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Translucent Dock Shelf Body -->
+    <path
+        android:pathData="M60,118 h200 a18,18 0 0,1 18,18 v6 a18,18 0 0,1 -18,18 h-200 a18,18 0 0,1 -18,-18 v-6 a18,18 0 0,1 18,-18 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="160"
+                android:startY="118"
+                android:endX="160"
+                android:endY="160"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#B3252B42" />
+                <item android:offset="0.4" android:color="#99161A2B" />
+                <item android:offset="1.0" android:color="#D90E101D" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Dock Specular Top Gloss Sheen -->
+    <path
+        android:pathData="M60,118 h200 a18,18 0 0,1 18,18 v-10 a18,18 0 0,0 -18,-8 h-200 a18,18 0 0,0 -18,8 v10 a18,18 0 0,1 18,-18 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="160"
+                android:startY="118"
+                android:endX="160"
+                android:endY="136"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#80FFFFFF" />
+                <item android:offset="1.0" android:color="#00FFFFFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Hair-Thin Specular Rim Highlight -->
+    <path
+        android:pathData="M60,118 h200 a18,18 0 0,1 18,18 v6 a18,18 0 0,1 -18,18 h-200 a18,18 0 0,1 -18,-18 v-6 a18,18 0 0,1 18,-18 z"
+        android:strokeWidth="1.2">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:startX="42"
+                android:startY="118"
+                android:endX="278"
+                android:endY="160"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#AA00E5FF" />
+                <item android:offset="0.3" android:color="#44FFFFFF" />
+                <item android:offset="0.7" android:color="#1AFFFFFF" />
+                <item android:offset="1.0" android:color="#6600B0FF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- App Icon Tile 1 (Leftmost: Amber / Orange) -->
+    <path
+        android:pathData="M70,126 h22 a5,5 0 0,1 5,5 v12 a5,5 0 0,1 -5,5 h-22 a5,5 0 0,1 -5,-5 v-12 a5,5 0 0,1 5,-5 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="81"
+                android:startY="126"
+                android:endX="81"
+                android:endY="148"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FF9100" />
+                <item android:offset="1.0" android:color="#FF3D00" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Icon 1 Glyphs -->
+    <path
+        android:pathData="M76,137 l7,-6 l7,6"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- App Icon Tile 2 (Purple / Play Tile) -->
+    <path
+        android:pathData="M110,125 h24 a6,6 0 0,1 6,6 v14 a6,6 0 0,1 -6,6 h-24 a6,6 0 0,1 -6,-6 v-14 a6,6 0 0,1 6,-6 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="122"
+                android:startY="125"
+                android:endX="122"
+                android:endY="151"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#7C4DFF" />
+                <item android:offset="1.0" android:color="#512DA8" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Play symbol -->
+    <path
+        android:pathData="M119,132 l9,5.5 l-9,5.5 z"
+        android:fillColor="#FFFFFF" />
+
+    <!-- App Icon Tile 3 (Center: Active Magnified Tile - Red Netflix style) -->
+    <!-- Magnified Lift & Elevation Shadow -->
+    <path
+        android:pathData="M140,104 h38 a8,8 0 0,1 8,8 v24 a8,8 0 0,1 -8,8 h-38 a8,8 0 0,1 -8,-8 v-24 a8,8 0 0,1 8,-8 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="159"
+                android:startY="104"
+                android:endX="159"
+                android:endY="144"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#E50914" />
+                <item android:offset="1.0" android:color="#8A050B" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Magnified Tile Glow Rim -->
+    <path
+        android:pathData="M140,104 h38 a8,8 0 0,1 8,8 v24 a8,8 0 0,1 -8,8 h-38 a8,8 0 0,1 -8,-8 v-24 a8,8 0 0,1 8,-8 z"
+        android:strokeColor="#80FFFFFF"
+        android:strokeWidth="1.2" />
+    <!-- Floating Tooltip above active center tile -->
+    <path
+        android:pathData="M142,88 h34 a7,7 0 0,1 7,7 v0 a7,7 0 0,1 -7,7 h-34 a7,7 0 0,1 -7,-7 v0 a7,7 0 0,1 7,-7 z"
+        android:fillColor="#E61C1D2A"
+        android:strokeColor="#3300E5FF"
+        android:strokeWidth="0.8" />
+    <!-- Tooltip arrow -->
+    <path
+        android:pathData="M157,102 l2,3 l2,-3 z"
+        android:fillColor="#E61C1D2A" />
+    <!-- Center tile TV icon graphic -->
+    <path
+        android:pathData="M152,118 h14 a3,3 0 0,1 3,3 v8 a3,3 0 0,1 -3,3 h-14 a3,3 0 0,1 -3,-3 v-8 a3,3 0 0,1 3,-3 z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6" />
+    <path
+        android:pathData="M156,135 h6"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round" />
+
+    <!-- App Icon Tile 4 (Emerald Green Spotify style) -->
+    <path
+        android:pathData="M188,125 h24 a6,6 0 0,1 6,6 v14 a6,6 0 0,1 -6,6 h-24 a6,6 0 0,1 -6,-6 v-14 a6,6 0 0,1 6,-6 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="200"
+                android:startY="125"
+                android:endX="200"
+                android:endY="151"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#1ED760" />
+                <item android:offset="1.0" android:color="#128238" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Music arcs -->
+    <path
+        android:pathData="M195,134 a8,8 0 0,1 10,0"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M196.5,138 a6,6 0 0,1 7,0"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round" />
+
+    <!-- App Icon Tile 5 (Rightmost: Cyan / Blue) -->
+    <path
+        android:pathData="M228,126 h22 a5,5 0 0,1 5,5 v12 a5,5 0 0,1 -5,5 h-22 a5,5 0 0,1 -5,-5 v-12 a5,5 0 0,1 5,-5 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="239"
+                android:startY="126"
+                android:endX="239"
+                android:endY="148"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#00E5FF" />
+                <item android:offset="1.0" android:color="#00838F" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Star/Settings mark -->
+    <path
+        android:pathData="M239,132 v8 M235,136 h8"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+
+    <!-- Title Branding Elements (Top Center) -->
+    <!-- Stylized Modern Glass Pill Badge -->
+    <path
+        android:pathData="M90,32 h140 a14,14 0 0,1 14,14 v0 a14,14 0 0,1 -14,14 h-140 a14,14 0 0,1 -14,-14 v0 a14,14 0 0,1 14,-14 z"
+        android:fillColor="#331A2138"
+        android:strokeWidth="1.2">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:startX="76"
+                android:startY="32"
+                android:endX="244"
+                android:endY="60"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#8000E5FF" />
+                <item android:offset="1.0" android:color="#2000E5FF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Liquid Switcher Vector Icon in Badge -->
+    <!-- TV frame -->
+    <path
+        android:pathData="M100,40 h14 a2,2 0 0,1 2,2 v8 a2,2 0 0,1 -2,2 h-14 a2,2 0 0,1 -2,-2 v-8 a2,2 0 0,1 2,-2 z"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.4" />
+    <path
+        android:pathData="M104,54 h6"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round" />
+    <!-- Double arrow switcher symbols -->
+    <path
+        android:pathData="M124,44 l4,-4 l4,4 M132,48 l-4,4 l-4,-4"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Brand Typography Vector Dots (Representing "LIQUID SWITCHER") -->
+    <path
+        android:pathData="M144,46 h40"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M144,52 h24"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+
+</vector>
