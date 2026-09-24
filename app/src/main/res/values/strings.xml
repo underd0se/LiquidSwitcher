@@ -44,10 +44,16 @@
 
     <!-- Section 2: Dock Customization -->
     <string name="section_dock_customization">Dock Customization</string>
+    <string name="btn_preview_dock">👁 Preview Dock</string>
     <string name="label_dock_size">Dock &amp; Icon Size:</string>
     <string name="label_dock_transparency">Dock Transparency:</string>
     <string name="label_dock_margin">Dock Bottom Margin (Overscan):</string>
     <string name="label_dock_dim">Background Dimming:</string>
+    <string name="btn_change_delay_fmt">Change (%1$s)</string>
+    <string name="btn_visible_count_fmt">Visible (%1$d/%2$d)</string>
+    <string name="btn_show_adb_command">Show ADB Command</string>
+    <string name="adb_setup_title">ADB 1-Click Fast Setup</string>
+    <string name="adb_setup_msg">If TV menus are confusing, connect via ADB and run these two commands from your computer:\n\n1. Enable Service:\n%1$s\n\n2. Turn Accessibility ON:\n%2$s</string>
 
     <!-- Section 3: Direct Shortcuts & Remote Key Tester -->
     <string name="section_direct_shortcuts">Quick App Shortcuts (Direct Launch)</string>

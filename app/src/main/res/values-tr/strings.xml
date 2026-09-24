@@ -44,10 +44,16 @@
 
     <!-- Section 2: Dock Customization -->
     <string name="section_dock_customization">Dock Özelleştirme</string>
+    <string name="btn_preview_dock">👁 Dock Önizleme</string>
     <string name="label_dock_size">Dock ve Simge Boyutu:</string>
     <string name="label_dock_transparency">Dock Saydamlığı:</string>
     <string name="label_dock_margin">Dock Alt Boşluğu (Overscan):</string>
     <string name="label_dock_dim">Arka Plan Karartma:</string>
+    <string name="btn_change_delay_fmt">Değiştir (%1$s)</string>
+    <string name="btn_visible_count_fmt">Görünür (%1$d/%2$d)</string>
+    <string name="btn_show_adb_command">ADB Komutunu Göster</string>
+    <string name="adb_setup_title">ADB ile 1-Tık Hızlı Kurulum</string>
+    <string name="adb_setup_msg">TV menülerinde kaybolmak istemiyorsanız bilgisayarınızdan ADB ile şu iki komutu çalıştırabilirsiniz:\n\n1. Servisi Etkinleştir:\n%1$s\n\n2. Erişilebilirliği Aç:\n%2$s</string>
 
     <!-- Section 3: Direct Shortcuts & Remote Key Tester -->
     <string name="section_direct_shortcuts">Hızlı Uygulama Kısayolları (Doğrudan Başlatma)</string>

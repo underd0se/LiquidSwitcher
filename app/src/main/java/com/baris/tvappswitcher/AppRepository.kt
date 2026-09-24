@@ -105,6 +105,7 @@ object AppRepository {
             try {
                 val loaded = loadAppsFromPackageManager(context.applicationContext)
                 cachedAllApps = loaded
+                pruneUninstalledPackages(context.applicationContext, loaded.map { it.packageName }.toSet())
                 Log.d(TAG, "Cached ${loaded.size} TV apps successfully in background")
 
                 mainHandler.post {
@@ -118,6 +119,35 @@ object AppRepository {
             } finally {
                 isFetching.set(false)
             }
+        }
+    }
+
+    private fun pruneUninstalledPackages(context: Context, installedPackages: Set<String>) {
+        if (installedPackages.isEmpty()) return
+        try {
+            val currentOrder = ConfigManager.getCustomAppOrder(context)
+            if (currentOrder.isNotEmpty()) {
+                val prunedOrder = currentOrder.filter { installedPackages.contains(it) }
+                if (prunedOrder.size != currentOrder.size) {
+                    ConfigManager.setCustomAppOrder(context, prunedOrder)
+                }
+            }
+
+            val enabledPackages = ConfigManager.getEnabledPackages(context)
+            if (enabledPackages != null) {
+                val prunedEnabled = enabledPackages.filter { installedPackages.contains(it) }.toSet()
+                if (prunedEnabled.size != enabledPackages.size) {
+                    ConfigManager.setEnabledPackages(context, prunedEnabled)
+                }
+            }
+
+            val customMappings = ConfigManager.getCustomMappings(context)
+            if (customMappings.isNotEmpty()) {
+                val invalidKeys = customMappings.filter { !installedPackages.contains(it.value) }.keys
+                invalidKeys.forEach { ConfigManager.removeCustomMapping(context, it) }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error pruning uninstalled packages", e)
         }
     }
 

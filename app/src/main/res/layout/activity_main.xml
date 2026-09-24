@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#101018"
@@ -82,7 +83,7 @@
                     android:id="@+id/tvNextKey"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Program Up (166)"
+                    tools:text="Program Up (166)"
                     android:textColor="#00E5FF"
                     android:textStyle="bold"
                     android:textSize="15sp"
@@ -123,7 +124,7 @@
                     android:id="@+id/tvPrevKey"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Program Down (167)"
+                    tools:text="Program Down (167)"
                     android:textColor="#00E5FF"
                     android:textStyle="bold"
                     android:textSize="15sp"
@@ -164,7 +165,7 @@
                     android:id="@+id/tvSwitchDelay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2 seconds"
+                    tools:text="2 seconds"
                     android:textColor="#FFD600"
                     android:textStyle="bold"
                     android:textSize="15sp"
@@ -205,7 +206,7 @@
                     android:id="@+id/tvSortOrder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Alphabetical (A - Z)"
+                    tools:text="Alphabetical (A - Z)"
                     android:textColor="#00E5FF"
                     android:textStyle="bold"
                     android:textSize="15sp"
@@ -331,14 +332,38 @@
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/section_dock_customization"
-                android:textColor="#00E5FF"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/section_dock_customization"
+                    android:textColor="#00E5FF"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnPreviewDock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:text="@string/btn_preview_dock"
+                    android:textColor="@color/selector_tv_btn_text"
+                    android:background="@drawable/selector_tv_btn_bg"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textSize="13sp"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:nextFocusUp="@+id/btnToggleSound"
+                    android:nextFocusDown="@+id/sbDockSize" />
+
+            </LinearLayout>
 
             <!-- Dock & Icon Size Row -->
             <LinearLayout
@@ -366,7 +391,7 @@
                         android:id="@+id/tvDockSizeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="100% (Medium)"
+                        tools:text="100% (Medium)"
                         android:textColor="#FFD600"
                         android:textStyle="bold"
                         android:textSize="15sp" />
@@ -447,7 +472,7 @@
                         android:id="@+id/tvDockTransparencyLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="35% (Subtle Glass)"
+                        tools:text="35% (Subtle Glass)"
                         android:textColor="#00E5FF"
                         android:textStyle="bold"
                         android:textSize="15sp" />
@@ -529,7 +554,7 @@
                         android:id="@+id/tvDockMarginLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="24dp (Standard)"
+                        tools:text="24dp (Standard)"
                         android:textColor="#00E5FF"
                         android:textStyle="bold"
                         android:textSize="15sp" />
@@ -611,7 +636,7 @@
                         android:id="@+id/tvDockDimLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0% (No Dim)"
+                        tools:text="0% (No Dim)"
                         android:textColor="#00E5FF"
                         android:textStyle="bold"
                         android:textSize="15sp" />

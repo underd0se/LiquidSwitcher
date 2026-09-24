@@ -13,11 +13,12 @@
     android:clipToPadding="false"
     android:focusable="false">
 
-    <!-- Icon container that scales and lifts on focus -->
+    <!-- Icon container with translucent glass squircle backplate -->
     <FrameLayout
         android:id="@+id/flIconContainer"
         android:layout_width="66dp"
         android:layout_height="66dp"
+        android:background="@drawable/bg_dock_icon_plate"
         android:clipChildren="false"
         android:clipToPadding="false">
 
@@ -25,10 +26,11 @@
             android:id="@+id/ivOverlayAppIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="4dp"
+            android:padding="6dp"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            android:alpha="1.0" />
+            android:alpha="1.0"
+            android:importantForAccessibility="no" />
     </FrameLayout>
 
 </LinearLayout>

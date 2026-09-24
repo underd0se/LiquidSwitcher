@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnManageVisibility: AppCompatButton
     private lateinit var btnToggleSingleKey: AppCompatButton
     private lateinit var btnToggleSound: AppCompatButton
+    private lateinit var btnPreviewDock: AppCompatButton
     private lateinit var btnAddDirectShortcut: AppCompatButton
     private lateinit var btnTestKey: AppCompatButton
     private lateinit var tvNoShortcutsHint: TextView
@@ -159,6 +160,7 @@ class MainActivity : AppCompatActivity() {
         btnManageVisibility = findViewById(R.id.btnManageVisibility)
         btnToggleSingleKey = findViewById(R.id.btnToggleSingleKey)
         btnToggleSound = findViewById(R.id.btnToggleSound)
+        btnPreviewDock = findViewById(R.id.btnPreviewDock)
         btnAddDirectShortcut = findViewById(R.id.btnAddDirectShortcut)
         btnTestKey = findViewById(R.id.btnTestKey)
         tvNoShortcutsHint = findViewById(R.id.tvNoShortcutsHint)
@@ -201,10 +203,23 @@ class MainActivity : AppCompatActivity() {
                     .setPositiveButton(R.string.open_settings) { _, _ ->
                         launchTvSettings()
                     }
+                    .setNeutralButton(R.string.btn_show_adb_command) { _, _ ->
+                        showAdbSetupDialog()
+                    }
                     .setNegativeButton(R.string.close, null)
                     .show()
             } else {
                 openAccessibilitySettings()
+            }
+        }
+
+        btnPreviewDock.setOnClickListener {
+            val apps = AppRepository.getFilteredAndSortedApps(this)
+            if (apps.isNotEmpty()) {
+                val previewOverlay = AppSwitcherOverlay(this)
+                previewOverlay.show(apps, 0) {}
+            } else {
+                Toast.makeText(this, getString(R.string.no_apps_found), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -346,6 +361,7 @@ class MainActivity : AppCompatActivity() {
             btnManageVisibility,
             btnToggleSingleKey,
             btnToggleSound,
+            btnPreviewDock,
             btnAddDirectShortcut,
             btnTestKey
         )
@@ -486,7 +502,7 @@ class MainActivity : AppCompatActivity() {
         tvPrevKey.text = ConfigManager.getKeyLabel(prevKey)
 
         tvSwitchDelay.text = ConfigManager.getSwitchDelayLabel(delaySec)
-        btnChangeDelay.text = "Change (${ConfigManager.getSwitchDelayShortLabel(delaySec)})"
+        btnChangeDelay.text = getString(R.string.btn_change_delay_fmt, ConfigManager.getSwitchDelayShortLabel(delaySec))
 
         tvSortOrder.text = getSortModeLabel(sortMode)
 
@@ -497,7 +513,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             allApps.size
         }
-        btnManageVisibility.text = if (visibleCount < allApps.size) "Visible ($visibleCount/${allApps.size})" else getString(R.string.btn_hide_apps)
+        btnManageVisibility.text = if (visibleCount < allApps.size) {
+            getString(R.string.btn_visible_count_fmt, visibleCount, allApps.size)
+        } else {
+            getString(R.string.btn_hide_apps)
+        }
 
         val singleKey = ConfigManager.isSingleKeyMode(this)
         if (singleKey) {
@@ -1012,6 +1032,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showAdbSetupDialog() {
+        val cmd1 = "adb shell settings put secure enabled_accessibility_services com.baris.tvappswitcher/com.baris.tvappswitcher.KeyInterceptorService"
+        val cmd2 = "adb shell settings put secure accessibility_enabled 1"
+        val message = getString(R.string.adb_setup_msg, cmd1, cmd2)
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.adb_setup_title)
+            .setMessage(message)
+            .setPositiveButton(R.string.close, null)
+            .show()
+    }
+
     private fun openAccessibilitySettings() {
         if (tryEnableServiceProgrammatically()) {
             Toast.makeText(this, getString(R.string.accessibility_service_enabled_toast), Toast.LENGTH_SHORT).show()
@@ -1024,6 +1056,9 @@ class MainActivity : AppCompatActivity() {
             .setMessage(R.string.dialog_enable_service_msg)
             .setPositiveButton(R.string.open_settings) { _, _ ->
                 launchTvSettings()
+            }
+            .setNeutralButton(R.string.btn_show_adb_command) { _, _ ->
+                showAdbSetupDialog()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

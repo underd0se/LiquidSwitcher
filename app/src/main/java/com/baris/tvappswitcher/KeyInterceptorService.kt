@@ -43,6 +43,7 @@ class KeyInterceptorService : AccessibilityService() {
                     }
                 }
                 "com.baris.tvappswitcher.TRIGGER_DISMISS",
+                @Suppress("DEPRECATION")
                 Intent.ACTION_CLOSE_SYSTEM_DIALOGS,
                 Intent.ACTION_SCREEN_OFF -> {
                     if (overlay.isShowing()) {
@@ -65,6 +66,7 @@ class KeyInterceptorService : AccessibilityService() {
             addAction("com.baris.tvappswitcher.TRIGGER_PREV")
             addAction("com.baris.tvappswitcher.TRIGGER_CONFIRM")
             addAction("com.baris.tvappswitcher.TRIGGER_DISMISS")
+            @Suppress("DEPRECATION")
             addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
             addAction(Intent.ACTION_SCREEN_OFF)
         }
@@ -131,7 +133,33 @@ class KeyInterceptorService : AccessibilityService() {
         // Required callback
     }
 
+    private var lastKeyPressTime = 0L
+    private val keyRepeatThrottleMs = 140L
+
+    @Suppress("DEPRECATION")
+    private val actionCloseDialogs = Intent.ACTION_CLOSE_SYSTEM_DIALOGS
+
+    private fun isKeyThrottled(event: KeyEvent): Boolean {
+        val now = android.os.SystemClock.uptimeMillis()
+        if (event.repeatCount > 0) {
+            if (now - lastKeyPressTime < keyRepeatThrottleMs) {
+                return true
+            }
+        }
+        lastKeyPressTime = now
+        return false
+    }
+
     override fun onKeyEvent(event: KeyEvent): Boolean {
+        return try {
+            handleKeyEventInternal(event)
+        } catch (t: Throwable) {
+            Log.e("KeyInterceptorService", "Safely caught unexpected exception in onKeyEvent", t)
+            false
+        }
+    }
+
+    private fun handleKeyEventInternal(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val action = event.action
 
@@ -140,7 +168,8 @@ class KeyInterceptorService : AccessibilityService() {
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER ||
                 keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
                 keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
-                keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME
+                keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE ||
+                keyCode == KeyEvent.KEYCODE_HOME
             ) {
                 return false
             }
@@ -152,7 +181,7 @@ class KeyInterceptorService : AccessibilityService() {
                 KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
                 KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
                 KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_HOME
+                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE, KeyEvent.KEYCODE_HOME
             )
             if (navKeys.contains(keyCode)) {
                 return super.onKeyEvent(event)
@@ -179,6 +208,9 @@ class KeyInterceptorService : AccessibilityService() {
         // 2. If Overlay is Currently Showing on Screen
         if (overlay.isShowing()) {
             if (action == KeyEvent.ACTION_DOWN) {
+                if (isKeyThrottled(event)) {
+                    return true
+                }
                 when (keyCode) {
                     nextKey, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_DOWN -> {
                         overlay.next()
@@ -198,7 +230,7 @@ class KeyInterceptorService : AccessibilityService() {
                         overlay.confirmAndLaunch()
                         return true
                     }
-                    KeyEvent.KEYCODE_BACK -> {
+                    KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE -> {
                         overlay.dismiss()
                         return true
                     }
@@ -212,7 +244,7 @@ class KeyInterceptorService : AccessibilityService() {
                     KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT,
                     KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
                     KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                    KeyEvent.KEYCODE_BACK
+                    KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE
                 )
                 if (handledKeys.contains(keyCode)) {
                     return true
@@ -223,7 +255,9 @@ class KeyInterceptorService : AccessibilityService() {
         // 3. Switcher Trigger Keys (Program Up / Program Down or Single Key)
         if (keyCode == nextKey || (!singleKeyMode && keyCode == prevKey)) {
             if (action == KeyEvent.ACTION_DOWN) {
-                triggerSwitcher(isNext = (keyCode == nextKey || singleKeyMode))
+                if (!isKeyThrottled(event)) {
+                    triggerSwitcher(isNext = (keyCode == nextKey || singleKeyMode))
+                }
             }
             return true
         }

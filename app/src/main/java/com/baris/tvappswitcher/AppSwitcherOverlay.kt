@@ -31,7 +31,9 @@ class AppSwitcherOverlay(private val context: Context) {
         confirmAndLaunch()
     }
 
+    private var llDockTooltipContainer: LinearLayout? = null
     private var tvDockTooltip: TextView? = null
+    private var vDockCountdown: View? = null
     private var hsvOverlay: HorizontalScrollView? = null
     private var llApps: LinearLayout? = null
     private val itemViews = mutableListOf<View>()
@@ -95,6 +97,7 @@ class AppSwitcherOverlay(private val context: Context) {
 
     private fun dismissInternal(onComplete: (() -> Unit)? = null) {
         mainHandler.removeCallbacks(autoDismissRunnable)
+        vDockCountdown?.animate()?.cancel()
         val view = overlayView
         if (!isVisible || view == null || isDismissing) {
             onComplete?.invoke()
@@ -126,6 +129,7 @@ class AppSwitcherOverlay(private val context: Context) {
             .start()
     }
 
+    @Suppress("DEPRECATION")
     private fun createAndAddView() {
         val density = context.resources.displayMetrics.density
         val scale = ConfigManager.getDockScalePercent(context) / 100f
@@ -134,17 +138,29 @@ class AppSwitcherOverlay(private val context: Context) {
 
         val view = overlayView ?: LayoutInflater.from(context).inflate(R.layout.layout_switcher_overlay, null).also {
             overlayView = it
+            llDockTooltipContainer = it.findViewById(R.id.llDockTooltipContainer)
             tvDockTooltip = it.findViewById(R.id.tvDockTooltip)
+            vDockCountdown = it.findViewById(R.id.vDockCountdown)
             hsvOverlay = it.findViewById(R.id.hsvOverlay)
             llApps = it.findViewById(R.id.llOverlayApps)
 
-            hsvOverlay?.setOnScrollChangeListener { _, _, _, _, _ ->
-                syncTooltipPosition(animate = false)
+            // API 21+ compatible scroll listener
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                hsvOverlay?.setOnScrollChangeListener { _, _, _, _, _ ->
+                    syncTooltipPosition(animate = false)
+                }
+            } else {
+                hsvOverlay?.viewTreeObserver?.addOnScrollChangedListener {
+                    syncTooltipPosition(animate = false)
+                }
             }
         }
 
         val flDockPill = view.findViewById<LiquidDockView>(R.id.flDockPill)
         flDockPill?.refreshCustomization()
+
+        val cornerPad = (24f * density * scale).toInt()
+        hsvOverlay?.setPadding(cornerPad, 0, cornerPad, 0)
 
         flDockPill?.setPadding(
             (26f * density * scale).toInt(),
@@ -152,9 +168,9 @@ class AppSwitcherOverlay(private val context: Context) {
             (26f * density * scale).toInt(),
             (10f * density * scale).toInt()
         )
-        val tooltipParams = tvDockTooltip?.layoutParams as? android.view.ViewGroup.MarginLayoutParams
+        val tooltipParams = llDockTooltipContainer?.layoutParams as? android.view.ViewGroup.MarginLayoutParams
         tooltipParams?.bottomMargin = (20f * density * scale).toInt()
-        tvDockTooltip?.layoutParams = tooltipParams
+        llDockTooltipContainer?.layoutParams = tooltipParams
 
         view.setPadding(
             view.paddingLeft,
@@ -164,10 +180,13 @@ class AppSwitcherOverlay(private val context: Context) {
         )
 
         val dimFlag = if (dimPercent > 0) WindowManager.LayoutParams.FLAG_DIM_BEHIND else 0
+        @Suppress("InlinedApi")
+        val overlayType = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+            overlayType,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
@@ -269,15 +288,16 @@ class AppSwitcherOverlay(private val context: Context) {
     private fun updateSelection() {
         val currentApp = currentApps.getOrNull(selectedIndex)
         val tooltip = tvDockTooltip
+        val tooltipContainer = llDockTooltipContainer
         val selectedView = itemViews.getOrNull(selectedIndex)
         val density = context.resources.displayMetrics.density
         val scale = ConfigManager.getDockScalePercent(context) / 100f
 
         // Update floating dock tooltip text & position
-        if (currentApp != null && tooltip != null) {
+        if (currentApp != null && tooltip != null && tooltipContainer != null) {
             tooltip.text = currentApp.name
-            tooltip.visibility = View.VISIBLE
-            tooltip.alpha = 1.0f
+            tooltipContainer.visibility = View.VISIBLE
+            tooltipContainer.alpha = 1.0f
 
             selectedView?.post {
                 syncTooltipPosition(animate = !isFirstTooltipPlacement)
@@ -291,11 +311,6 @@ class AppSwitcherOverlay(private val context: Context) {
             val dist = kotlin.math.abs(i - selectedIndex)
             val flIcon = view.findViewById<View>(R.id.flIconContainer)
 
-            // Fluid magnification curve:
-            // dist 0 (selected): 1.38x scale, -16dp lift, elevation 20f
-            // dist 1 (immediate neighbors): 1.18x scale, -7dp lift, elevation 14f
-            // dist 2 (second neighbors): 1.06x scale, -2.5dp lift, elevation 8f
-            // dist >= 3: 1.00x scale, 0dp lift, elevation 2f
             val targetScale: Float
             val targetLiftY: Float
             val targetElevation: Float
@@ -329,8 +344,6 @@ class AppSwitcherOverlay(private val context: Context) {
             flIcon?.let { iconView ->
                 iconView.alpha = 1.0f
 
-                // Ensure anchor pivot is at horizontal center and bottom baseline (95% height)
-                // so the icon magnifies upward from the dock shelf
                 if (iconView.width > 0 && iconView.height > 0) {
                     iconView.pivotX = iconView.width / 2f
                     iconView.pivotY = iconView.height * 0.95f
@@ -341,7 +354,8 @@ class AppSwitcherOverlay(private val context: Context) {
                     }
                 }
 
-                val interpolator = if (dist == 0) {
+                // Explicit Interpolator interface type ensures 100% API 21+ backwards-compatibility
+                val interpolator: android.view.animation.Interpolator = if (dist == 0) {
                     OvershootInterpolator(1.15f)
                 } else {
                     DecelerateInterpolator(1.5f)
@@ -357,7 +371,6 @@ class AppSwitcherOverlay(private val context: Context) {
             }
 
             if (dist == 0) {
-                // Smooth scroll to keep selected item centered
                 hsvOverlay?.post {
                     val hsv = hsvOverlay ?: return@post
                     val scrollX = view.left - (hsv.width / 2) + (view.width / 2)
@@ -368,11 +381,11 @@ class AppSwitcherOverlay(private val context: Context) {
     }
 
     private fun syncTooltipPosition(animate: Boolean) {
-        val tooltip = tvDockTooltip ?: return
+        val container = llDockTooltipContainer ?: return
         val root = overlayView ?: return
         val selectedView = itemViews.getOrNull(selectedIndex) ?: return
 
-        tooltip.post {
+        container.post {
             val itemLoc = IntArray(2)
             selectedView.getLocationInWindow(itemLoc)
             val rootLoc = IntArray(2)
@@ -383,17 +396,15 @@ class AppSwitcherOverlay(private val context: Context) {
             val itemCenterX = (itemLoc[0] - rootLoc[0]) + (selectedView.width / 2f)
             val targetTranslationX = itemCenterX - rootCenterX
 
-            Log.d("AppSwitcherOverlay", "syncTooltipPosition: itemCenterX=$itemCenterX rootCenterX=$rootCenterX targetX=$targetTranslationX animate=$animate")
-
             if (animate) {
-                tooltip.animate()
+                container.animate()
                     .translationX(targetTranslationX)
                     .alpha(1f)
                     .setDuration(160)
                     .setInterpolator(DecelerateInterpolator())
                     .start()
             } else {
-                tooltip.translationX = targetTranslationX
+                container.translationX = targetTranslationX
             }
         }
     }
@@ -401,8 +412,23 @@ class AppSwitcherOverlay(private val context: Context) {
     private fun resetAutoDismissTimer() {
         mainHandler.removeCallbacks(autoDismissRunnable)
         val delaySec = ConfigManager.getSwitchDelaySeconds(context)
+        val countdownView = vDockCountdown
+
         if (delaySec > 0) {
             mainHandler.postDelayed(autoDismissRunnable, delaySec * 1000L)
+            countdownView?.let { cv ->
+                cv.visibility = View.VISIBLE
+                cv.animate()?.cancel()
+                cv.scaleX = 1f
+                cv.pivotX = 0f
+                cv.animate()
+                    .scaleX(0f)
+                    .setDuration(delaySec * 1000L)
+                    .setInterpolator(android.view.animation.LinearInterpolator())
+                    .start()
+            }
+        } else {
+            countdownView?.visibility = View.GONE
         }
     }
 }

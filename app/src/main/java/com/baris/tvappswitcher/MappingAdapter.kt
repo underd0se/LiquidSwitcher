@@ -36,12 +36,19 @@ class MappingAdapter(
 
         holder.tvKeyCode.text = ConfigManager.getKeyLabel(keyCode)
 
-        try {
-            val appInfo = pm.getApplicationInfo(packageName, 0)
-            holder.tvName.text = pm.getApplicationLabel(appInfo)
-            holder.ivIcon.setImageDrawable(pm.getApplicationIcon(appInfo))
-        } catch (e: PackageManager.NameNotFoundException) {
-            holder.tvName.text = packageName
+        val cachedApp = AppRepository.getAllApps(context).find { it.packageName == packageName }
+        if (cachedApp != null) {
+            holder.tvName.text = cachedApp.name
+            holder.ivIcon.setImageDrawable(cachedApp.icon)
+        } else {
+            try {
+                val appInfo = pm.getApplicationInfo(packageName, 0)
+                holder.tvName.text = pm.getApplicationLabel(appInfo)
+                holder.ivIcon.setImageDrawable(pm.getApplicationIcon(appInfo))
+            } catch (e: PackageManager.NameNotFoundException) {
+                holder.tvName.text = "$packageName (Uninstalled)"
+                holder.ivIcon.setImageResource(android.R.drawable.sym_def_app_icon)
+            }
         }
 
         holder.itemView.setOnClickListener {
