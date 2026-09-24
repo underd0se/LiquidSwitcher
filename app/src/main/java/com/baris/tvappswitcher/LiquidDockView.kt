@@ -238,6 +238,22 @@ class LiquidDockView @JvmOverloads constructor(
         canvas.drawRect(bottomCatchRect, bottomCatchPaint)
         canvas.restore()
 
+        // 4. Draw hair-thin, barely visible specular rim highlight (behind children)
+        val halfRim = outerRimPaint.strokeWidth / 2f
+        val rimRadius = (cornerRadius - halfRim).coerceAtLeast(0f)
+        canvas.drawRoundRect(rimRect, rimRadius, rimRadius, outerRimPaint)
+
+        // 5. Draw hair-thin overhead micro-highlight glint line at the very top edge (behind children)
+        val hlStart = cornerRadius * 0.7f
+        val hlEnd = fw - hlStart
+        canvas.drawLine(
+            hlStart,
+            halfRim,
+            hlEnd,
+            halfRim,
+            topMicroHighlightPaint
+        )
+
         super.onDraw(canvas)
     }
 
@@ -254,21 +270,5 @@ class LiquidDockView @JvmOverloads constructor(
         canvas.clipPath(childClipPath)
         super.dispatchDraw(canvas)
         canvas.restore()
-
-        // 4. Draw hair-thin, barely visible specular rim highlight on top of child edges
-        val halfRim = outerRimPaint.strokeWidth / 2f
-        val rimRadius = (cornerRadius - halfRim).coerceAtLeast(0f)
-        canvas.drawRoundRect(rimRect, rimRadius, rimRadius, outerRimPaint)
-
-        // 5. Draw hair-thin overhead micro-highlight glint line at the very top edge
-        val hlStart = cornerRadius * 0.7f
-        val hlEnd = fw - hlStart
-        canvas.drawLine(
-            hlStart,
-            halfRim,
-            hlEnd,
-            halfRim,
-            topMicroHighlightPaint
-        )
     }
 }

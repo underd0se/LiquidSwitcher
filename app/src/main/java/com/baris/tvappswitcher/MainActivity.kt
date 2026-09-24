@@ -37,8 +37,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnChangeSortOrder: AppCompatButton
     private lateinit var btnCustomizeOrder: AppCompatButton
     private lateinit var btnManageVisibility: AppCompatButton
-    private lateinit var btnToggleSingleKey: AppCompatButton
-    private lateinit var btnToggleSound: AppCompatButton
+    private lateinit var switchSingleKey: IosSwitchView
+    private lateinit var switchSound: IosSwitchView
+    private lateinit var switchCountdown: IosSwitchView
     private lateinit var btnPreviewDock: AppCompatButton
     private lateinit var btnAddDirectShortcut: AppCompatButton
     private lateinit var btnTestKey: AppCompatButton
@@ -158,8 +159,9 @@ class MainActivity : AppCompatActivity() {
         btnChangeSortOrder = findViewById(R.id.btnChangeSortOrder)
         btnCustomizeOrder = findViewById(R.id.btnCustomizeOrder)
         btnManageVisibility = findViewById(R.id.btnManageVisibility)
-        btnToggleSingleKey = findViewById(R.id.btnToggleSingleKey)
-        btnToggleSound = findViewById(R.id.btnToggleSound)
+        switchSingleKey = findViewById(R.id.switchSingleKey)
+        switchSound = findViewById(R.id.switchSound)
+        switchCountdown = findViewById(R.id.switchCountdown)
         btnPreviewDock = findViewById(R.id.btnPreviewDock)
         btnAddDirectShortcut = findViewById(R.id.btnAddDirectShortcut)
         btnTestKey = findViewById(R.id.btnTestKey)
@@ -197,7 +199,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupListeners() {
         tvServiceStatus.setOnClickListener {
             if (isServiceCurrentlyEnabled()) {
-                AlertDialog.Builder(this, androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert)
+                val dialog = AlertDialog.Builder(this)
                     .setTitle(R.string.service_active_title)
                     .setMessage(R.string.service_active_message)
                     .setPositiveButton(R.string.open_settings) { _, _ ->
@@ -208,6 +210,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     .setNegativeButton(R.string.close, null)
                     .show()
+
+                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.parseColor("#E2E4F0"))
             } else {
                 openAccessibilitySettings()
             }
@@ -216,8 +220,12 @@ class MainActivity : AppCompatActivity() {
         btnPreviewDock.setOnClickListener {
             val apps = AppRepository.getFilteredAndSortedApps(this)
             if (apps.isNotEmpty()) {
-                val previewOverlay = AppSwitcherOverlay(this)
-                previewOverlay.show(apps, 0) {}
+                if (isServiceCurrentlyEnabled()) {
+                    sendBroadcast(Intent("com.baris.tvappswitcher.TRIGGER_OVERLAY").setPackage(packageName))
+                } else {
+                    val previewOverlay = AppSwitcherOverlay(this)
+                    previewOverlay.show(apps, 0) {}
+                }
             } else {
                 Toast.makeText(this, getString(R.string.no_apps_found), Toast.LENGTH_SHORT).show()
             }
@@ -247,20 +255,21 @@ class MainActivity : AppCompatActivity() {
             showAppVisibilityDialog()
         }
 
-        btnToggleSingleKey.setOnClickListener {
-            val current = ConfigManager.isSingleKeyMode(this)
-            ConfigManager.setSingleKeyMode(this, !current)
-            updateUi()
+        switchSingleKey.setOnCheckedChangeListener { _, isChecked ->
+            ConfigManager.setSingleKeyMode(this, isChecked)
+            btnChangePrev.isEnabled = !isChecked
+            btnChangePrev.alpha = if (isChecked) 0.4f else 1.0f
         }
 
-        btnToggleSound.setOnClickListener {
-            val current = ConfigManager.isSoundEffectsEnabled(this)
-            val newState = !current
-            ConfigManager.setSoundEffectsEnabled(this, newState)
-            updateUi()
-            if (newState) {
+        switchSound.setOnCheckedChangeListener { _, isChecked ->
+            ConfigManager.setSoundEffectsEnabled(this, isChecked)
+            if (isChecked) {
                 SoundCueHelper.playTick(this)
             }
+        }
+
+        switchCountdown.setOnCheckedChangeListener { _, isChecked ->
+            ConfigManager.setCountdownBarEnabled(this, isChecked)
         }
 
         sbDockSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -359,8 +368,6 @@ class MainActivity : AppCompatActivity() {
             btnChangeSortOrder,
             btnCustomizeOrder,
             btnManageVisibility,
-            btnToggleSingleKey,
-            btnToggleSound,
             btnPreviewDock,
             btnAddDirectShortcut,
             btnTestKey
@@ -370,17 +377,17 @@ class MainActivity : AppCompatActivity() {
             btn.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
                     v.animate()
-                        .scaleX(1.09f)
-                        .scaleY(1.09f)
-                        .translationZ(12f)
-                        .setDuration(150)
+                        .scaleX(1.05f)
+                        .scaleY(1.05f)
+                        .translationZ(8f)
+                        .setDuration(140)
                         .start()
                 } else {
                     v.animate()
                         .scaleX(1.0f)
                         .scaleY(1.0f)
                         .translationZ(0f)
-                        .setDuration(150)
+                        .setDuration(140)
                         .start()
                 }
             }
@@ -520,18 +527,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         val singleKey = ConfigManager.isSingleKeyMode(this)
-        if (singleKey) {
-            btnToggleSingleKey.text = getString(R.string.single_key_enabled)
-            btnChangePrev.isEnabled = false
-            btnChangePrev.alpha = 0.4f
-        } else {
-            btnToggleSingleKey.text = getString(R.string.single_key_disabled)
-            btnChangePrev.isEnabled = true
-            btnChangePrev.alpha = 1.0f
-        }
+        switchSingleKey.setChecked(singleKey, false)
+        btnChangePrev.isEnabled = !singleKey
+        btnChangePrev.alpha = if (singleKey) 0.4f else 1.0f
 
         val soundEnabled = ConfigManager.isSoundEffectsEnabled(this)
-        btnToggleSound.text = if (soundEnabled) getString(R.string.audio_cues_on) else getString(R.string.audio_cues_off)
+        switchSound.setChecked(soundEnabled, false)
+
+        val countdownEnabled = ConfigManager.isCountdownBarEnabled(this)
+        switchCountdown.setChecked(countdownEnabled, false)
 
         val dockScale = ConfigManager.getDockScalePercent(this)
         sbDockSize.progress = dockScale - 60
@@ -1037,11 +1041,13 @@ class MainActivity : AppCompatActivity() {
         val cmd2 = "adb shell settings put secure accessibility_enabled 1"
         val message = getString(R.string.adb_setup_msg, cmd1, cmd2)
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.adb_setup_title)
             .setMessage(message)
             .setPositiveButton(R.string.close, null)
             .show()
+
+        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.parseColor("#E2E4F0"))
     }
 
     private fun openAccessibilitySettings() {
@@ -1051,7 +1057,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        AlertDialog.Builder(this, androidx.appcompat.R.style.Theme_AppCompat_Dialog_Alert)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.dialog_enable_service_title)
             .setMessage(R.string.dialog_enable_service_msg)
             .setPositiveButton(R.string.open_settings) { _, _ ->
@@ -1062,6 +1068,8 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+
+        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.parseColor("#E2E4F0"))
     }
 
     private fun tryEnableServiceProgrammatically(): Boolean {

@@ -44,11 +44,15 @@
 
     <!-- Section 2: Dock Customization -->
     <string name="section_dock_customization">Dock Özelleştirme</string>
-    <string name="btn_preview_dock">👁 Dock Önizleme</string>
+    <string name="btn_preview_dock">Dock Önizleme</string>
     <string name="label_dock_size">Dock ve Simge Boyutu:</string>
     <string name="label_dock_transparency">Dock Saydamlığı:</string>
     <string name="label_dock_margin">Dock Alt Boşluğu (Overscan):</string>
     <string name="label_dock_dim">Arka Plan Karartma:</string>
+    <string name="label_show_countdown">Geri Sayım Çubuğunu Göster:</string>
+    <string name="desc_show_countdown">İpucu altında animasyonlu ilerleme çubuğu gösterir</string>
+    <string name="single_key_subtitle">Uygulamaları tek bir kumanda tuşuyla sırayla geçin</string>
+    <string name="audio_cues_subtitle">Her geçiş adımında hafif ses efekti çal</string>
     <string name="btn_change_delay_fmt">Değiştir (%1$s)</string>
     <string name="btn_visible_count_fmt">Görünür (%1$d/%2$d)</string>
     <string name="btn_show_adb_command">ADB Komutunu Göster</string>

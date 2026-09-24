@@ -4,11 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#101018"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:padding="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:orientation="vertical">
 
         <!-- Title Header -->
@@ -17,6 +21,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:layout_marginBottom="16dp">
 
             <TextView
@@ -37,6 +43,7 @@
                 android:background="@drawable/selector_tv_btn_bg"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
+                android:layout_marginEnd="6dp"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:focusable="true"
@@ -52,6 +59,8 @@
             android:orientation="vertical"
             android:background="#1C1C28"
             android:padding="20dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:layout_marginBottom="16dp">
 
             <TextView
@@ -69,6 +78,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:layout_marginBottom="14dp">
 
                 <TextView
@@ -98,6 +109,7 @@
                     android:background="@drawable/selector_tv_btn_bg"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
+                    android:layout_marginEnd="6dp"
                     android:focusable="true"
                     android:nextFocusUp="@+id/tvServiceStatus"
                     android:nextFocusDown="@+id/btnChangePrev" />
@@ -110,6 +122,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:layout_marginBottom="14dp">
 
                 <TextView
@@ -139,6 +153,7 @@
                     android:background="@drawable/selector_tv_btn_bg"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
+                    android:layout_marginEnd="6dp"
                     android:focusable="true"
                     android:nextFocusUp="@+id/btnChangeNext"
                     android:nextFocusDown="@+id/btnChangeDelay" />
@@ -151,6 +166,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:layout_marginBottom="14dp">
 
                 <TextView
@@ -180,6 +197,7 @@
                     android:background="@drawable/selector_tv_btn_bg"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
+                    android:layout_marginEnd="6dp"
                     android:focusable="true"
                     android:nextFocusUp="@+id/btnChangePrev"
                     android:nextFocusDown="@+id/btnChangeSortOrder" />
@@ -192,6 +210,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:layout_marginBottom="14dp">
 
                 <TextView
@@ -224,7 +244,7 @@
                     android:layout_marginEnd="8dp"
                     android:nextFocusUp="@+id/btnChangeDelay"
                     android:nextFocusRight="@+id/btnCustomizeOrder"
-                    android:nextFocusDown="@+id/btnToggleSingleKey"
+                    android:nextFocusDown="@+id/switchSingleKey"
                     android:focusable="true" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -239,7 +259,7 @@
                     android:nextFocusUp="@+id/btnChangeDelay"
                     android:nextFocusLeft="@+id/btnChangeSortOrder"
                     android:nextFocusRight="@+id/btnManageVisibility"
-                    android:nextFocusDown="@+id/btnToggleSingleKey"
+                    android:nextFocusDown="@+id/switchSingleKey"
                     android:focusable="true" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -252,9 +272,10 @@
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="6dp"
                     android:nextFocusUp="@+id/btnChangeDelay"
                     android:nextFocusLeft="@+id/btnCustomizeOrder"
-                    android:nextFocusDown="@+id/btnToggleSingleKey"
+                    android:nextFocusDown="@+id/switchSingleKey"
                     android:focusable="true" />
 
             </LinearLayout>
@@ -265,27 +286,40 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="14dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/label_single_key_mode"
-                    android:textColor="#DDDDDD"
-                    android:textSize="16sp" />
+                    android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnToggleSingleKey"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/single_key_disabled"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_single_key_mode"
+                        android:textColor="#DDDDDD"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvSingleKeySubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/single_key_subtitle"
+                        android:textColor="#888899"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <com.baris.tvappswitcher.IosSwitchView
+                    android:id="@+id/switchSingleKey"
+                    android:layout_width="54dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="6dp"
                     android:nextFocusUp="@+id/btnChangeSortOrder"
-                    android:nextFocusDown="@+id/btnToggleSound"
+                    android:nextFocusDown="@+id/switchSound"
                     android:focusable="true" />
 
             </LinearLayout>
@@ -296,27 +330,40 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="14dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/label_audio_cues"
-                    android:textColor="#DDDDDD"
-                    android:textSize="16sp" />
+                    android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnToggleSound"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/audio_cues_on"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:nextFocusUp="@+id/btnToggleSingleKey"
-                    android:nextFocusDown="@+id/sbDockSize"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_audio_cues"
+                        android:textColor="#DDDDDD"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvAudioCuesSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/audio_cues_subtitle"
+                        android:textColor="#888899"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <com.baris.tvappswitcher.IosSwitchView
+                    android:id="@+id/switchSound"
+                    android:layout_width="54dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="6dp"
+                    android:nextFocusUp="@+id/switchSingleKey"
+                    android:nextFocusDown="@+id/btnPreviewDock"
                     android:focusable="true" />
 
             </LinearLayout>
@@ -330,6 +377,8 @@
             android:orientation="vertical"
             android:background="#1C1C28"
             android:padding="20dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -337,6 +386,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:layout_marginBottom="16dp">
 
                 <TextView
@@ -357,10 +408,11 @@
                     android:background="@drawable/selector_tv_btn_bg"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
+                    android:layout_marginEnd="6dp"
                     android:textSize="13sp"
                     android:focusable="true"
                     android:clickable="true"
-                    android:nextFocusUp="@+id/btnToggleSound"
+                    android:nextFocusUp="@+id/switchSound"
                     android:nextFocusDown="@+id/sbDockSize" />
 
             </LinearLayout>
@@ -428,7 +480,7 @@
                         android:paddingBottom="10dp"
                         android:max="80"
                         android:progress="40"
-                        android:nextFocusUp="@+id/btnToggleSound"
+                        android:nextFocusUp="@+id/btnPreviewDock"
                         android:nextFocusDown="@+id/sbDockTransparency"
                         android:focusable="true" />
 
@@ -674,7 +726,7 @@
                         android:max="50"
                         android:progress="0"
                         android:nextFocusUp="@+id/sbDockMargin"
-                        android:nextFocusDown="@+id/btnAddDirectShortcut"
+                        android:nextFocusDown="@+id/switchCountdown"
                         android:focusable="true" />
 
                     <androidx.appcompat.widget.AppCompatButton
@@ -692,6 +744,49 @@
 
             </LinearLayout>
 
+            <!-- Countdown Progress Bar Toggle Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="18dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_show_countdown"
+                        android:textColor="#DDDDDD"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/desc_show_countdown"
+                        android:textColor="#888899"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <com.baris.tvappswitcher.IosSwitchView
+                    android:id="@+id/switchCountdown"
+                    android:layout_width="54dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="6dp"
+                    android:nextFocusUp="@+id/sbDockDim"
+                    android:nextFocusDown="@+id/btnAddDirectShortcut"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <!-- Direct Shortcuts Card -->
@@ -701,6 +796,8 @@
             android:orientation="vertical"
             android:background="#1C1C28"
             android:padding="20dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -708,6 +805,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:layout_marginBottom="12dp">
 
                 <TextView
@@ -728,7 +827,7 @@
                     android:background="@drawable/selector_tv_btn_bg"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:nextFocusUp="@+id/sbDockDim"
+                    android:nextFocusUp="@+id/switchCountdown"
                     android:nextFocusRight="@+id/btnTestKey"
                     android:focusable="true" />
 
@@ -742,7 +841,8 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:layout_marginStart="10dp"
-                    android:nextFocusUp="@+id/sbDockDim"
+                    android:layout_marginEnd="6dp"
+                    android:nextFocusUp="@+id/switchCountdown"
                     android:nextFocusLeft="@+id/btnAddDirectShortcut"
                     android:focusable="true" />
 

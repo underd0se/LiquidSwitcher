@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/llItemRoot"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -13,7 +14,7 @@
     android:clipToPadding="false"
     android:focusable="false">
 
-    <!-- Icon container with translucent glass squircle backplate -->
+    <!-- Icon container with squircle outline and zero border -->
     <FrameLayout
         android:id="@+id/flIconContainer"
         android:layout_width="66dp"
@@ -22,14 +23,14 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivOverlayAppIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="6dp"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
             android:alpha="1.0"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MacDockIcon"
             android:importantForAccessibility="no" />
     </FrameLayout>
 

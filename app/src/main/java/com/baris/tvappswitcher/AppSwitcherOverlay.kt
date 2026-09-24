@@ -180,8 +180,13 @@ class AppSwitcherOverlay(private val context: Context) {
         )
 
         val dimFlag = if (dimPercent > 0) WindowManager.LayoutParams.FLAG_DIM_BEHIND else 0
+        val isActivity = context is android.app.Activity
         @Suppress("InlinedApi")
-        val overlayType = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+        val overlayType = if (isActivity) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
+        } else {
+            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+        }
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -196,6 +201,9 @@ class AppSwitcherOverlay(private val context: Context) {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             dimAmount = (dimPercent / 100f).coerceIn(0f, 0.8f)
             y = 0
+            if (isActivity) {
+                token = (context as android.app.Activity).window.decorView.windowToken
+            }
         }
 
         view.translationY = 48f * density
@@ -275,6 +283,13 @@ class AppSwitcherOverlay(private val context: Context) {
             flParams.height = iconSize
             flIcon.layoutParams = flParams
             flIcon.alpha = 1.0f
+            flIcon.outlineProvider = object : android.view.ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: android.graphics.Outline) {
+                    val r = 0.22f * view.width
+                    outline.setRoundRect(0, 0, view.width, view.height, r)
+                }
+            }
+            flIcon.clipToOutline = true
 
             val ivIcon = itemView.findViewById<ImageView>(R.id.ivOverlayAppIcon)
             ivIcon.setImageDrawable(app.icon)
@@ -413,19 +428,22 @@ class AppSwitcherOverlay(private val context: Context) {
         mainHandler.removeCallbacks(autoDismissRunnable)
         val delaySec = ConfigManager.getSwitchDelaySeconds(context)
         val countdownView = vDockCountdown
+        val showCountdown = ConfigManager.isCountdownBarEnabled(context)
 
         if (delaySec > 0) {
             mainHandler.postDelayed(autoDismissRunnable, delaySec * 1000L)
-            countdownView?.let { cv ->
-                cv.visibility = View.VISIBLE
-                cv.animate()?.cancel()
-                cv.scaleX = 1f
-                cv.pivotX = 0f
-                cv.animate()
+            if (showCountdown && countdownView != null) {
+                countdownView.visibility = View.VISIBLE
+                countdownView.animate()?.cancel()
+                countdownView.scaleX = 1f
+                countdownView.pivotX = 0f
+                countdownView.animate()
                     .scaleX(0f)
                     .setDuration(delaySec * 1000L)
                     .setInterpolator(android.view.animation.LinearInterpolator())
                     .start()
+            } else {
+                countdownView?.visibility = View.GONE
             }
         } else {
             countdownView?.visibility = View.GONE
