@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#101018"
+    android:background="@color/bg_root"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:padding="24dp">
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/app_name"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#1C1C28"
+            android:background="@drawable/bg_settings_card"
             android:padding="20dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/section_switching_timing"
-                android:textColor="#00E5FF"
+                android:textColor="@color/accent_primary"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
@@ -87,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_switch_next"
-                    android:textColor="#DDDDDD"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -95,9 +95,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="Program Up (166)"
-                    android:textColor="#00E5FF"
+                    android:textColor="@color/accent_primary"
                     android:textStyle="bold"
                     android:textSize="15sp"
+                    android:fontFeatureSettings="tnum"
                     android:layout_marginEnd="16dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -131,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_switch_prev"
-                    android:textColor="#DDDDDD"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -139,9 +140,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="Program Down (167)"
-                    android:textColor="#00E5FF"
+                    android:textColor="@color/accent_primary"
                     android:textStyle="bold"
                     android:textSize="15sp"
+                    android:fontFeatureSettings="tnum"
                     android:layout_marginEnd="16dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -175,7 +177,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_countdown_delay"
-                    android:textColor="#DDDDDD"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -183,9 +185,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="2 seconds"
-                    android:textColor="#FFD600"
+                    android:textColor="@color/accent_primary"
                     android:textStyle="bold"
                     android:textSize="15sp"
+                    android:fontFeatureSettings="tnum"
                     android:layout_marginEnd="16dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -219,7 +222,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/label_app_sort_order"
-                    android:textColor="#DDDDDD"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp" />
 
                 <TextView
@@ -227,7 +230,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="Alphabetical (A - Z)"
-                    android:textColor="#00E5FF"
+                    android:textColor="@color/accent_primary"
                     android:textStyle="bold"
                     android:textSize="15sp"
                     android:layout_marginEnd="16dp" />
@@ -300,7 +303,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_single_key_mode"
-                        android:textColor="#DDDDDD"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -308,7 +311,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/single_key_subtitle"
-                        android:textColor="#888899"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
@@ -344,7 +347,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_audio_cues"
-                        android:textColor="#DDDDDD"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -352,7 +355,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/audio_cues_subtitle"
-                        android:textColor="#888899"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
@@ -375,7 +378,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#1C1C28"
+            android:background="@drawable/bg_settings_card"
             android:padding="20dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -385,7 +388,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/section_dock_customization"
-                android:textColor="#00E5FF"
+                android:textColor="@color/accent_primary"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
@@ -409,7 +412,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/label_dock_size"
-                        android:textColor="#DDDDDD"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -417,9 +420,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="100% (Medium)"
-                        android:textColor="#FFD600"
+                        android:textColor="@color/accent_primary"
                         android:textStyle="bold"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:fontFeatureSettings="tnum" />
 
                 </LinearLayout>
 
@@ -490,7 +494,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/label_dock_transparency"
-                        android:textColor="#DDDDDD"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -498,9 +502,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="35% (Subtle Glass)"
-                        android:textColor="#00E5FF"
+                        android:textColor="@color/accent_primary"
                         android:textStyle="bold"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:fontFeatureSettings="tnum" />
 
                 </LinearLayout>
 
@@ -572,7 +577,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/label_dock_margin"
-                        android:textColor="#DDDDDD"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -580,9 +585,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="24dp (Standard)"
-                        android:textColor="#00E5FF"
+                        android:textColor="@color/accent_primary"
                         android:textStyle="bold"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:fontFeatureSettings="tnum" />
 
                 </LinearLayout>
 
@@ -654,7 +660,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/label_dock_dim"
-                        android:textColor="#DDDDDD"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
@@ -662,9 +668,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="0% (No Dim)"
-                        android:textColor="#00E5FF"
+                        android:textColor="@color/accent_primary"
                         android:textStyle="bold"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:fontFeatureSettings="tnum" />
 
                 </LinearLayout>
 
@@ -737,14 +744,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_show_countdown"
-                        android:textColor="#DDDDDD"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/desc_show_countdown"
-                        android:textColor="#888899"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
@@ -767,7 +774,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#1C1C28"
+            android:background="@drawable/bg_settings_card"
             android:padding="20dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -787,7 +794,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/section_direct_shortcuts"
-                    android:textColor="#00E5FF"
+                    android:textColor="@color/accent_primary"
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
@@ -826,7 +833,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/no_shortcuts_hint"
-                android:textColor="#888899"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -843,15 +850,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#181822"
-            android:padding="16dp"
+            android:background="@drawable/bg_settings_card"
+            android:padding="20dp"
             android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/instructions_title"
-                android:textColor="#FFD54F"
+                android:textColor="@color/accent_primary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
@@ -860,7 +867,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/instructions_body"
-                android:textColor="#B0BEC5"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:lineSpacingExtra="4dp" />
 
@@ -871,7 +878,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#151722"
+            android:background="@drawable/bg_settings_card"
             android:padding="20dp"
             android:layout_marginBottom="24dp">
 
@@ -879,7 +886,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/section_about"
-                android:textColor="#00E5FF"
+                android:textColor="@color/accent_primary"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp" />
@@ -888,7 +895,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/about_version"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
@@ -897,7 +904,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/about_desc"
-                android:textColor="#9E9E9E"
+                android:textColor="@color/text_secondary"
                 android:textSize="13sp"
                 android:lineSpacingExtra="3dp" />
 

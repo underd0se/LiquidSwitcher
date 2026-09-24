@@ -70,7 +70,7 @@
     <string name="dialog_test_key_detected">Algılanan Tuş: %1$s\nTuş Kodu: %2$d\n\nDurum: Kısayol ve geçiş için destekleniyor!</string>
 
     <!-- Section 4: Instructions -->
-    <string name="instructions_title">💡 Nasıl kullanılır:</string>
+    <string name="instructions_title">Nasıl kullanılır:</string>
     <string name="instructions_body">• HERHANGİ bir uygulamadan veya TV ana ekranından kumandanızdaki Program Yukarı veya Aşağı tuşuna basın.\n• Uygulama Geçiş Çubuğu anında altta belirir.\n• Uygulamalar arasında gezinmek için Yukarı/Aşağı basmaya devam edin.\n• Belirlediğiniz geri sayım bitince veya OK tuşuna bastığınız anda otomatik olarak geçiş yapılır!</string>
 
     <!-- Section 5: About Card -->

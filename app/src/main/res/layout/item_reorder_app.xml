@@ -16,7 +16,8 @@
         android:layout_width="38dp"
         android:layout_height="wrap_content"
         android:text="#1"
-        android:textColor="#00E5FF"
+        android:textColor="@color/accent_primary"
+        android:fontFeatureSettings="tnum"
         android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -35,7 +36,7 @@
         android:layout_weight="1"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF" />
+        android:textColor="@color/text_primary" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnMoveUp"

@@ -17,7 +17,8 @@
         android:layout_height="wrap_content"
         android:text="Key 166"
         android:textSize="14sp"
-        android:textColor="#00E5FF"
+        android:textColor="@color/accent_primary"
+        android:fontFeatureSettings="tnum"
         android:textStyle="bold" />
 
     <ImageView
@@ -33,7 +34,7 @@
         android:layout_weight="1"
         android:text="App Name"
         android:textSize="15sp"
-        android:textColor="#FFFFFF" />
+        android:textColor="@color/text_primary" />
 
     <TextView
         android:id="@+id/tvDeleteHint"
@@ -41,6 +42,6 @@
         android:layout_height="wrap_content"
         android:text="Press OK to remove"
         android:textSize="12sp"
-        android:textColor="#FF5252" />
+        android:textColor="@color/status_inactive" />
 
 </LinearLayout>

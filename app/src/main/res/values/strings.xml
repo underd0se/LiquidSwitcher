@@ -70,7 +70,7 @@
     <string name="dialog_test_key_detected">Detected Key: %1$s\nKeyCode: %2$d\n\nStatus: Supported for shortcuts &amp; switcher!</string>
 
     <!-- Section 4: Instructions -->
-    <string name="instructions_title">💡 How to use:</string>
+    <string name="instructions_title">How to use:</string>
     <string name="instructions_body">• From ANY app or the TV home screen, press Program Up or Down on your remote.\n• The App Switcher bar pops up instantly at the bottom.\n• Keep pressing Up/Down to cycle through apps.\n• It will automatically switch after your chosen countdown, or immediately when you press OK!</string>
 
     <!-- Section 5: About Card -->

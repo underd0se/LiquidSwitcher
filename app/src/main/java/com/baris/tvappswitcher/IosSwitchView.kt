@@ -10,6 +10,8 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.SoundEffectConstants
 import android.view.View
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.animation.DecelerateInterpolator
 import android.widget.Checkable
 
@@ -179,5 +181,17 @@ class IosSwitchView @JvmOverloads constructor(
         val thumbY = trackRect.centerY()
 
         canvas.drawCircle(thumbX, thumbY, thumbRadius, thumbPaint)
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+        super.onInitializeAccessibilityNodeInfo(info)
+        info.className = "android.widget.Switch"
+        info.isCheckable = true
+        info.isChecked = isCheckedState
+    }
+
+    override fun onInitializeAccessibilityEvent(event: AccessibilityEvent) {
+        super.onInitializeAccessibilityEvent(event)
+        event.isChecked = isCheckedState
     }
 }

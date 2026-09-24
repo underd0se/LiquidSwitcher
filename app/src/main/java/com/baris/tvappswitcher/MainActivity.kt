@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
                     .setNegativeButton(R.string.close, null)
                     .show()
 
-                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.parseColor("#E2E4F0"))
+                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
             } else {
                 openAccessibilitySettings()
             }
@@ -540,6 +540,9 @@ class MainActivity : AppCompatActivity() {
         updateServiceStatus()
     }
 
+    private val Int.dp: Int
+        get() = (this * resources.displayMetrics.density).toInt()
+
     private fun showAppVisibilityDialog() {
         val allApps = AppRepository.getAllApps(this).sortedBy { it.name.lowercase() }
         if (allApps.isEmpty()) {
@@ -552,20 +555,20 @@ class MainActivity : AppCompatActivity() {
 
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#151722"))
-            setPadding(16, 12, 16, 8)
+            setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
+            setPadding(16.dp, 12.dp, 16.dp, 8.dp)
         }
 
         val headerLayout = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(8, 4, 8, 12)
+            setPadding(8.dp, 4.dp, 8.dp, 12.dp)
         }
 
         val tvSummary = TextView(this).apply {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f)
             textSize = 14f
-            setTextColor(Color.parseColor("#00E5FF"))
+            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
             text = getString(R.string.apps_saved_visible_toast, currentEnabled.size)
         }
 
@@ -574,7 +577,7 @@ class MainActivity : AppCompatActivity() {
             textSize = 13f
             setTextColor(Color.WHITE)
             setBackgroundResource(R.drawable.selector_tv_btn_bg)
-            setPadding(20, 8, 20, 8)
+            setPadding(20.dp, 8.dp, 20.dp, 8.dp)
             isFocusable = true
             isClickable = true
         }
@@ -584,11 +587,11 @@ class MainActivity : AppCompatActivity() {
             textSize = 13f
             setTextColor(Color.WHITE)
             setBackgroundResource(R.drawable.selector_tv_btn_bg)
-            setPadding(20, 8, 20, 8)
+            setPadding(20.dp, 8.dp, 20.dp, 8.dp)
             isFocusable = true
             isClickable = true
             val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            lp.marginStart = 12
+            lp.marginStart = 12.dp
             layoutParams = lp
         }
 
@@ -599,7 +602,7 @@ class MainActivity : AppCompatActivity() {
 
         val rv = RecyclerView(this).apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            setPadding(4, 4, 4, 4)
+            setPadding(4.dp, 4.dp, 4.dp, 4.dp)
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 (resources.displayMetrics.heightPixels * 0.55).toInt()
@@ -656,7 +659,7 @@ class MainActivity : AppCompatActivity() {
                 val view = super.getView(position, convertView, parent) as android.widget.CheckedTextView
                 view.setTextColor(Color.WHITE)
                 view.textSize = 16f
-                view.setPadding(32, 24, 32, 24)
+                view.setPadding(32.dp, 24.dp, 32.dp, 24.dp)
                 return view
             }
         }
@@ -691,8 +694,8 @@ class MainActivity : AppCompatActivity() {
 
         val rv = RecyclerView(this).apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            setPadding(20, 16, 20, 16)
-            setBackgroundColor(Color.parseColor("#151722"))
+            setPadding(20.dp, 16.dp, 20.dp, 16.dp)
+            setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
         }
 
         var adapter: ReorderAppAdapter? = null
@@ -772,7 +775,7 @@ class MainActivity : AppCompatActivity() {
                 val view = super.getView(position, convertView, parent) as android.widget.TextView
                 view.setTextColor(android.graphics.Color.WHITE)
                 view.textSize = 16f
-                view.setPadding(32, 24, 32, 24)
+                view.setPadding(32.dp, 24.dp, 32.dp, 24.dp)
                 return view
             }
         }
@@ -818,7 +821,7 @@ class MainActivity : AppCompatActivity() {
                 val view = super.getView(position, convertView, parent) as android.widget.CheckedTextView
                 view.setTextColor(Color.WHITE)
                 view.textSize = 16f
-                view.setPadding(32, 24, 32, 24)
+                view.setPadding(32.dp, 24.dp, 32.dp, 24.dp)
                 return view
             }
         }
@@ -930,8 +933,8 @@ class MainActivity : AppCompatActivity() {
         ConfigManager.setListening(this, true, "TEST")
 
         val tv = TextView(this).apply {
-            setPadding(48, 36, 48, 28)
-            setTextColor(Color.parseColor("#E0E0E0"))
+            setPadding(48.dp, 36.dp, 48.dp, 28.dp)
+            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
             textSize = 16f
             text = getString(R.string.dialog_test_key_msg)
             setLineSpacing(0f, 1.3f)
@@ -1004,8 +1007,8 @@ class MainActivity : AppCompatActivity() {
 
         val rv = RecyclerView(this).apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            setPadding(16, 16, 16, 16)
-            setBackgroundColor(Color.parseColor("#1C1C28"))
+            setPadding(16.dp, 16.dp, 16.dp, 16.dp)
+            setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
         }
 
         val dialog = AlertDialog.Builder(this)
@@ -1030,7 +1033,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(R.string.close, null)
             .show()
 
-        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.parseColor("#E2E4F0"))
+        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
     }
 
     private fun openAccessibilitySettings() {
@@ -1052,7 +1055,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(R.string.cancel, null)
             .show()
 
-        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(Color.parseColor("#E2E4F0"))
+        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
     }
 
     private fun tryEnableServiceProgrammatically(): Boolean {

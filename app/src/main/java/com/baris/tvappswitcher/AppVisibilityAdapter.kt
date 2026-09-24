@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class AppVisibilityAdapter(
@@ -56,10 +57,10 @@ class AppVisibilityAdapter(
         val context = tvStatus.context
         if (isChecked) {
             tvStatus.text = context.getString(R.string.visibility_status_visible)
-            tvStatus.setTextColor(Color.parseColor("#00E5FF"))
+            tvStatus.setTextColor(ContextCompat.getColor(context, R.color.accent_primary))
         } else {
             tvStatus.text = context.getString(R.string.visibility_status_hidden)
-            tvStatus.setTextColor(Color.parseColor("#757B96"))
+            tvStatus.setTextColor(ContextCompat.getColor(context, R.color.text_muted))
         }
     }
 
