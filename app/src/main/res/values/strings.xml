@@ -53,6 +53,8 @@
     <string name="label_dock_transparency">Dock Transparency:</string>
     <string name="label_dock_margin">Dock Bottom Margin (Overscan):</string>
     <string name="label_dock_dim">Background Dimming:</string>
+    <string name="label_show_app_name">Show App Name Over Icon:</string>
+    <string name="desc_show_app_name">Displays floating application title above the focused dock icon</string>
     <string name="label_show_countdown">Show Countdown Bar:</string>
     <string name="desc_show_countdown">Displays animated progress bar under tooltip</string>
     <string name="single_key_subtitle">Cycle apps using only one remote button</string>

@@ -41,7 +41,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnManageVisibility: AppCompatButton
     private lateinit var switchSingleKey: IosSwitchView
     private lateinit var switchSound: IosSwitchView
+    private lateinit var switchShowAppName: IosSwitchView
     private lateinit var switchCountdown: IosSwitchView
+    private lateinit var rowCountdown: LinearLayout
     private lateinit var btnAddDirectShortcut: AppCompatButton
     private lateinit var btnTestKey: AppCompatButton
     private lateinit var tvNoShortcutsHint: TextView
@@ -164,7 +166,9 @@ class MainActivity : AppCompatActivity() {
         btnManageVisibility = findViewById(R.id.btnManageVisibility)
         switchSingleKey = findViewById(R.id.switchSingleKey)
         switchSound = findViewById(R.id.switchSound)
+        switchShowAppName = findViewById(R.id.switchShowAppName)
         switchCountdown = findViewById(R.id.switchCountdown)
+        rowCountdown = findViewById(R.id.rowCountdown)
         btnAddDirectShortcut = findViewById(R.id.btnAddDirectShortcut)
         btnTestKey = findViewById(R.id.btnTestKey)
         tvNoShortcutsHint = findViewById(R.id.tvNoShortcutsHint)
@@ -254,6 +258,11 @@ class MainActivity : AppCompatActivity() {
             if (isChecked) {
                 SoundCueHelper.playTick(this)
             }
+        }
+
+        switchShowAppName.setOnCheckedChangeListener { _, isChecked ->
+            ConfigManager.setShowAppNameEnabled(this, isChecked)
+            updateCountdownRowState(isChecked)
         }
 
         switchCountdown.setOnCheckedChangeListener { _, isChecked ->
@@ -528,6 +537,10 @@ class MainActivity : AppCompatActivity() {
         val soundEnabled = ConfigManager.isSoundEffectsEnabled(this)
         switchSound.setChecked(soundEnabled, false)
 
+        val showAppName = ConfigManager.isShowAppNameEnabled(this)
+        switchShowAppName.setChecked(showAppName, false)
+        updateCountdownRowState(showAppName)
+
         val countdownEnabled = ConfigManager.isCountdownBarEnabled(this)
         switchCountdown.setChecked(countdownEnabled, false)
 
@@ -549,6 +562,23 @@ class MainActivity : AppCompatActivity() {
 
         updateShortcutsList()
         updateServiceStatus()
+    }
+
+    private fun updateCountdownRowState(appNameEnabled: Boolean) {
+        switchCountdown.isEnabled = appNameEnabled
+        switchCountdown.isFocusable = appNameEnabled
+        switchCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
+        rowCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
+
+        if (appNameEnabled) {
+            switchShowAppName.nextFocusDownId = R.id.switchCountdown
+            btnAddDirectShortcut.nextFocusUpId = R.id.switchCountdown
+            btnTestKey.nextFocusUpId = R.id.switchCountdown
+        } else {
+            switchShowAppName.nextFocusDownId = R.id.btnAddDirectShortcut
+            btnAddDirectShortcut.nextFocusUpId = R.id.switchShowAppName
+            btnTestKey.nextFocusUpId = R.id.switchShowAppName
+        }
     }
 
     private val Int.dp: Int

@@ -123,11 +123,13 @@ class IosSwitchView @JvmOverloads constructor(
     }
 
     override fun toggle() {
+        if (!isEnabled) return
         playSoundEffect(SoundEffectConstants.CLICK)
         setChecked(!isCheckedState, animate = true)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (!isEnabled) return super.onKeyDown(keyCode, event)
         if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
             toggle()
             return true

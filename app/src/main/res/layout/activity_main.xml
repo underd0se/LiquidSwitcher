@@ -764,7 +764,7 @@
                         android:max="50"
                         android:progress="0"
                         android:nextFocusUp="@+id/sbDockMargin"
-                        android:nextFocusDown="@+id/switchCountdown"
+                        android:nextFocusDown="@+id/switchShowAppName"
                         android:focusable="true" />
 
                     <androidx.appcompat.widget.AppCompatButton
@@ -782,8 +782,53 @@
 
             </LinearLayout>
 
+            <!-- App Name Over Icon Toggle Row -->
+            <LinearLayout
+                android:id="@+id/rowShowAppName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="18dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_show_app_name"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/desc_show_app_name"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <com.baris.tvappswitcher.IosSwitchView
+                    android:id="@+id/switchShowAppName"
+                    android:layout_width="54dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="6dp"
+                    android:nextFocusUp="@+id/sbDockDim"
+                    android:nextFocusDown="@+id/switchCountdown"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
             <!-- Countdown Progress Bar Toggle Row -->
             <LinearLayout
+                android:id="@+id/rowCountdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -819,7 +864,7 @@
                     android:layout_width="54dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="6dp"
-                    android:nextFocusUp="@+id/sbDockDim"
+                    android:nextFocusUp="@+id/switchShowAppName"
                     android:nextFocusDown="@+id/btnAddDirectShortcut"
                     android:focusable="true" />
 

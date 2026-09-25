@@ -53,6 +53,8 @@
     <string name="label_dock_transparency">Dock Saydamlığı:</string>
     <string name="label_dock_margin">Dock Alt Boşluğu (Overscan):</string>
     <string name="label_dock_dim">Arka Plan Karartma:</string>
+    <string name="label_show_app_name">Simge Üstünde Uygulama Adı:</string>
+    <string name="desc_show_app_name">Seçili dock simgesinin üzerinde uygulama başlığını gösterir</string>
     <string name="label_show_countdown">Geri Sayım Çubuğunu Göster:</string>
     <string name="desc_show_countdown">İpucu altında animasyonlu ilerleme çubuğu gösterir</string>
     <string name="single_key_subtitle">Uygulamaları tek bir kumanda tuşuyla sırayla geçin</string>

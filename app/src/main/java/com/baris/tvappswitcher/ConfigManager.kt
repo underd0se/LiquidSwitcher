@@ -25,6 +25,7 @@ object ConfigManager {
     private const val KEY_DOCK_BACKGROUND_DIM = "dock_background_dim_percent"
     private const val KEY_SINGLE_KEY_MODE = "single_key_mode"
     private const val KEY_SHOW_COUNTDOWN_BAR = "show_countdown_bar"
+    private const val KEY_SHOW_APP_NAME = "show_app_name"
 
     enum class SortMode(val key: String, val label: String) {
         NAME("NAME", "Alphabetical (A - Z)"),
@@ -293,6 +294,14 @@ object ConfigManager {
 
     fun setCountdownBarEnabled(context: Context, enabled: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_SHOW_COUNTDOWN_BAR, enabled).apply()
+    }
+
+    fun isShowAppNameEnabled(context: Context): Boolean {
+        return getPrefs(context).getBoolean(KEY_SHOW_APP_NAME, true)
+    }
+
+    fun setShowAppNameEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_SHOW_APP_NAME, enabled).apply()
     }
 
     /**

@@ -146,11 +146,15 @@ class AppSwitcherOverlay(private val context: Context) {
             // API 21+ compatible scroll listener
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 hsvOverlay?.setOnScrollChangeListener { _, _, _, _, _ ->
-                    syncTooltipPosition(animate = false)
+                    if (ConfigManager.isShowAppNameEnabled(context)) {
+                        syncTooltipPosition(animate = false)
+                    }
                 }
             } else {
                 hsvOverlay?.viewTreeObserver?.addOnScrollChangedListener {
-                    syncTooltipPosition(animate = false)
+                    if (ConfigManager.isShowAppNameEnabled(context)) {
+                        syncTooltipPosition(animate = false)
+                    }
                 }
             }
         }
@@ -167,9 +171,14 @@ class AppSwitcherOverlay(private val context: Context) {
             (26f * density * scale).toInt(),
             (10f * density * scale).toInt()
         )
-        val tooltipParams = llDockTooltipContainer?.layoutParams as? android.view.ViewGroup.MarginLayoutParams
-        tooltipParams?.bottomMargin = (20f * density * scale).toInt()
-        llDockTooltipContainer?.layoutParams = tooltipParams
+        val showAppName = ConfigManager.isShowAppNameEnabled(context)
+        if (showAppName) {
+            val tooltipParams = llDockTooltipContainer?.layoutParams as? android.view.ViewGroup.MarginLayoutParams
+            tooltipParams?.bottomMargin = (20f * density * scale).toInt()
+            llDockTooltipContainer?.layoutParams = tooltipParams
+        } else {
+            llDockTooltipContainer?.visibility = View.GONE
+        }
 
         view.setPadding(
             view.paddingLeft,
@@ -298,9 +307,10 @@ class AppSwitcherOverlay(private val context: Context) {
         val selectedView = itemViews.getOrNull(selectedIndex)
         val density = context.resources.displayMetrics.density
         val scale = ConfigManager.getDockScalePercent(context) / 100f
+        val showAppName = ConfigManager.isShowAppNameEnabled(context)
 
         // Update floating dock tooltip text & position
-        if (currentApp != null && tooltip != null && tooltipContainer != null) {
+        if (showAppName && currentApp != null && tooltip != null && tooltipContainer != null) {
             tooltip.text = currentApp.name
             tooltipContainer.visibility = View.VISIBLE
             tooltipContainer.alpha = 1.0f
@@ -309,6 +319,8 @@ class AppSwitcherOverlay(private val context: Context) {
                 syncTooltipPosition(animate = !isFirstTooltipPlacement)
                 isFirstTooltipPlacement = false
             }
+        } else {
+            tooltipContainer?.visibility = View.GONE
         }
 
         // Animate dock items: fluid magnification bell-curve & lift effect
@@ -395,6 +407,7 @@ class AppSwitcherOverlay(private val context: Context) {
     }
 
     private fun syncTooltipPosition(animate: Boolean) {
+        if (!ConfigManager.isShowAppNameEnabled(context)) return
         val container = llDockTooltipContainer ?: return
         val root = overlayView ?: return
         val selectedView = itemViews.getOrNull(selectedIndex) ?: return
@@ -428,10 +441,11 @@ class AppSwitcherOverlay(private val context: Context) {
         val delaySec = ConfigManager.getSwitchDelaySeconds(context)
         val countdownView = vDockCountdown
         val showCountdown = ConfigManager.isCountdownBarEnabled(context)
+        val showAppName = ConfigManager.isShowAppNameEnabled(context)
 
         if (delaySec > 0) {
             mainHandler.postDelayed(autoDismissRunnable, delaySec * 1000L)
-            if (showCountdown && countdownView != null) {
+            if (showAppName && showCountdown && countdownView != null) {
                 countdownView.visibility = View.VISIBLE
                 countdownView.animate()?.cancel()
                 countdownView.scaleX = 1f
