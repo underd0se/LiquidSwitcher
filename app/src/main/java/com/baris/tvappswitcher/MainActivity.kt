@@ -30,7 +30,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvNextKey: TextView
     private lateinit var tvPrevKey: TextView
     private lateinit var tvSwitchDelay: TextView
+    private lateinit var tvVisibleAppsCount: TextView
     private lateinit var tvSortOrder: TextView
+    private lateinit var rowCustomOrder: View
     private lateinit var btnChangeNext: AppCompatButton
     private lateinit var btnChangePrev: AppCompatButton
     private lateinit var btnChangeDelay: AppCompatButton
@@ -151,7 +153,9 @@ class MainActivity : AppCompatActivity() {
         tvNextKey = findViewById(R.id.tvNextKey)
         tvPrevKey = findViewById(R.id.tvPrevKey)
         tvSwitchDelay = findViewById(R.id.tvSwitchDelay)
+        tvVisibleAppsCount = findViewById(R.id.tvVisibleAppsCount)
         tvSortOrder = findViewById(R.id.tvSortOrder)
+        rowCustomOrder = findViewById(R.id.rowCustomOrder)
         btnChangeNext = findViewById(R.id.btnChangeNext)
         btnChangePrev = findViewById(R.id.btnChangePrev)
         btnChangeDelay = findViewById(R.id.btnChangeDelay)
@@ -496,6 +500,16 @@ class MainActivity : AppCompatActivity() {
 
         tvSortOrder.text = getSortModeLabel(sortMode)
 
+        if (sortMode == ConfigManager.SortMode.CUSTOM) {
+            rowCustomOrder.visibility = View.VISIBLE
+            btnChangeSortOrder.nextFocusDownId = R.id.btnCustomizeOrder
+            switchSingleKey.nextFocusUpId = R.id.btnCustomizeOrder
+        } else {
+            rowCustomOrder.visibility = View.GONE
+            btnChangeSortOrder.nextFocusDownId = R.id.switchSingleKey
+            switchSingleKey.nextFocusUpId = R.id.btnChangeSortOrder
+        }
+
         val allApps = AppRepository.getAllApps(this)
         val enabledFilter = ConfigManager.getEnabledPackages(this)
         val visibleCount = if (enabledFilter != null && enabledFilter.isNotEmpty()) {
@@ -503,11 +517,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             allApps.size
         }
-        btnManageVisibility.text = if (visibleCount < allApps.size) {
-            getString(R.string.btn_visible_count_fmt, visibleCount, allApps.size)
-        } else {
-            getString(R.string.btn_hide_apps)
-        }
+        tvVisibleAppsCount.text = getString(R.string.visible_apps_count_fmt, visibleCount, allApps.size)
+        btnManageVisibility.text = getString(R.string.btn_manage)
 
         val singleKey = ConfigManager.isSingleKeyMode(this)
         switchSingleKey.setChecked(singleKey, false)
@@ -650,23 +661,9 @@ class MainActivity : AppCompatActivity() {
         val currentMode = ConfigManager.getSortMode(this)
         val currentIndex = modes.indexOf(currentMode).coerceAtLeast(0)
 
-        val adapter = object : android.widget.ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_list_item_single_choice,
-            labels
-        ) {
-            override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View {
-                val view = super.getView(position, convertView, parent) as android.widget.CheckedTextView
-                view.setTextColor(Color.WHITE)
-                view.textSize = 16f
-                view.setPadding(32.dp, 24.dp, 32.dp, 24.dp)
-                return view
-            }
-        }
-
         AlertDialog.Builder(this)
             .setTitle(R.string.dialog_select_sort_order)
-            .setSingleChoiceItems(adapter, currentIndex) { dialog, which ->
+            .setSingleChoiceItems(labels, currentIndex) { dialog, which ->
                 val selectedMode = modes[which]
                 ConfigManager.setSortMode(this, selectedMode)
                 updateUi()
@@ -812,23 +809,9 @@ class MainActivity : AppCompatActivity() {
         val currentDelay = ConfigManager.getSwitchDelaySeconds(this)
         val checkedIndex = values.indexOf(currentDelay).coerceAtLeast(0)
 
-        val adapter = object : android.widget.ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_list_item_single_choice,
-            options
-        ) {
-            override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View {
-                val view = super.getView(position, convertView, parent) as android.widget.CheckedTextView
-                view.setTextColor(Color.WHITE)
-                view.textSize = 16f
-                view.setPadding(32.dp, 24.dp, 32.dp, 24.dp)
-                return view
-            }
-        }
-
         AlertDialog.Builder(this)
             .setTitle(R.string.dialog_select_countdown_title)
-            .setSingleChoiceItems(adapter, checkedIndex) { dialog, which ->
+            .setSingleChoiceItems(options, checkedIndex) { dialog, which ->
                 val selectedSeconds = values[which]
                 ConfigManager.setSwitchDelaySeconds(this, selectedSeconds)
                 updateUi()

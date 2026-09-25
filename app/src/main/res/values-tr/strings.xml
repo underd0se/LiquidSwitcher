@@ -32,6 +32,11 @@
     <string name="btn_change">Değiştir</string>
     <string name="btn_reorder">Sırala</string>
     <string name="btn_hide_apps">Gizle</string>
+    <string name="label_visible_apps">Görünür Uygulamalar:</string>
+    <string name="btn_manage">Yönet</string>
+    <string name="visible_apps_count_fmt">%1$d / %2$d görünür</string>
+    <string name="label_custom_order">Özel Uygulama Sırası:</string>
+    <string name="desc_custom_order">El ile Sıralama</string>
     <string name="label_single_key_mode">Tek Tuşla Kumanda Modu:</string>
     <string name="single_key_enabled">Etkin (Tek Tuşla Döngü)</string>
     <string name="single_key_disabled">Devre Dışı (2 Tuş: CH+/CH-)</string>

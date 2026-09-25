@@ -32,6 +32,11 @@
     <string name="btn_change">Change</string>
     <string name="btn_reorder">Reorder</string>
     <string name="btn_hide_apps">Hide Apps</string>
+    <string name="label_visible_apps">Visible Apps:</string>
+    <string name="btn_manage">Manage</string>
+    <string name="visible_apps_count_fmt">%1$d of %2$d visible</string>
+    <string name="label_custom_order">Custom App Order:</string>
+    <string name="desc_custom_order">Manual Sequence</string>
     <string name="label_single_key_mode">One-Button Remote Mode:</string>
     <string name="single_key_enabled">Enabled (Single-Button Cycle)</string>
     <string name="single_key_disabled">Disabled (2 Keys: CH+/CH-)</string>

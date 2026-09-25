@@ -203,6 +203,51 @@
                     android:layout_marginEnd="6dp"
                     android:focusable="true"
                     android:nextFocusUp="@+id/btnChangePrev"
+                    android:nextFocusDown="@+id/btnManageVisibility" />
+
+            </LinearLayout>
+
+            <!-- Visible Apps Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:layout_marginBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_visible_apps"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvVisibleAppsCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="9 of 16 visible"
+                    android:textColor="@color/accent_primary"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:fontFeatureSettings="tnum"
+                    android:layout_marginEnd="16dp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnManageVisibility"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:text="@string/btn_manage"
+                    android:textColor="@color/selector_tv_btn_text"
+                    android:background="@drawable/selector_tv_btn_bg"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:layout_marginEnd="6dp"
+                    android:focusable="true"
+                    android:nextFocusUp="@+id/btnChangeDelay"
                     android:nextFocusDown="@+id/btnChangeSortOrder" />
 
             </LinearLayout>
@@ -244,11 +289,41 @@
                     android:background="@drawable/selector_tv_btn_bg"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:layout_marginEnd="8dp"
-                    android:nextFocusUp="@+id/btnChangeDelay"
-                    android:nextFocusRight="@+id/btnCustomizeOrder"
-                    android:nextFocusDown="@+id/switchSingleKey"
-                    android:focusable="true" />
+                    android:layout_marginEnd="6dp"
+                    android:focusable="true"
+                    android:nextFocusUp="@+id/btnManageVisibility"
+                    android:nextFocusDown="@+id/switchSingleKey" />
+
+            </LinearLayout>
+
+            <!-- Custom App Order Row (Reorder - only visible when SortMode == CUSTOM) -->
+            <LinearLayout
+                android:id="@+id/rowCustomOrder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:layout_marginBottom="14dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_custom_order"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/desc_custom_order"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="16dp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnCustomizeOrder"
@@ -257,29 +332,12 @@
                     android:text="@string/btn_reorder"
                     android:textColor="@color/selector_tv_btn_text"
                     android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:nextFocusUp="@+id/btnChangeDelay"
-                    android:nextFocusLeft="@+id/btnChangeSortOrder"
-                    android:nextFocusRight="@+id/btnManageVisibility"
-                    android:nextFocusDown="@+id/switchSingleKey"
-                    android:focusable="true" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnManageVisibility"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_hide_apps"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:layout_marginStart="8dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     android:layout_marginEnd="6dp"
-                    android:nextFocusUp="@+id/btnChangeDelay"
-                    android:nextFocusLeft="@+id/btnCustomizeOrder"
-                    android:nextFocusDown="@+id/switchSingleKey"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    android:nextFocusUp="@+id/btnChangeSortOrder"
+                    android:nextFocusDown="@+id/switchSingleKey" />
 
             </LinearLayout>
 
