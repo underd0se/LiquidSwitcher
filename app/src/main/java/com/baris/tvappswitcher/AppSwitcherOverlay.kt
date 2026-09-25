@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -236,7 +235,7 @@ class AppSwitcherOverlay(private val context: Context) {
         val scale = ConfigManager.getDockScalePercent(context) / 100f
         val density = context.resources.displayMetrics.density
         val iconSize = (66f * density * scale).toInt()
-        val padH = (8f * density * scale).toInt()
+        val padH = (12f * density * scale).toInt()
         val padV = (8f * density * scale).toInt()
 
         val canReuse = itemViews.size == currentApps.size && currentApps.indices.all { i ->
@@ -321,27 +320,34 @@ class AppSwitcherOverlay(private val context: Context) {
             val targetScale: Float
             val targetLiftY: Float
             val targetElevation: Float
+            val targetShiftX: Float
 
             when (dist) {
                 0 -> {
-                    targetScale = 1.38f
-                    targetLiftY = -16f * density * scale
+                    targetScale = 1.32f
+                    targetLiftY = -15f * density * scale
                     targetElevation = 20f
+                    targetShiftX = 0f
                 }
                 1 -> {
-                    targetScale = 1.18f
-                    targetLiftY = -7f * density * scale
+                    targetScale = 1.12f
+                    targetLiftY = -6f * density * scale
                     targetElevation = 14f
+                    val dir = if (i > selectedIndex) 1f else -1f
+                    targetShiftX = dir * 6f * density * scale
                 }
                 2 -> {
-                    targetScale = 1.06f
-                    targetLiftY = -2.5f * density * scale
+                    targetScale = 1.04f
+                    targetLiftY = -2f * density * scale
                     targetElevation = 8f
+                    val dir = if (i > selectedIndex) 1f else -1f
+                    targetShiftX = dir * 2f * density * scale
                 }
                 else -> {
                     targetScale = 1.0f
                     targetLiftY = 0f
                     targetElevation = 2f
+                    targetShiftX = 0f
                 }
             }
 
@@ -363,7 +369,7 @@ class AppSwitcherOverlay(private val context: Context) {
 
                 // Explicit Interpolator interface type ensures 100% API 21+ backwards-compatibility
                 val interpolator: android.view.animation.Interpolator = if (dist == 0) {
-                    OvershootInterpolator(1.15f)
+                    DecelerateInterpolator(1.6f)
                 } else {
                     DecelerateInterpolator(1.5f)
                 }
@@ -371,6 +377,7 @@ class AppSwitcherOverlay(private val context: Context) {
                 iconView.animate()
                     .scaleX(targetScale)
                     .scaleY(targetScale)
+                    .translationX(targetShiftX)
                     .translationY(targetLiftY)
                     .setDuration(180)
                     .setInterpolator(interpolator)
