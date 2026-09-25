@@ -44,6 +44,8 @@
         <item name="android:backgroundDimAmount">0.80</item>
         <item name="android:textAppearanceListItem">@style/Theme.TVAppSwitcher.Dialog.TextAppearanceListItem</item>
         <item name="android:textAppearanceListItemSmall">@style/Theme.TVAppSwitcher.Dialog.TextAppearanceListItem</item>
+        <item name="buttonBarStyle">@style/Theme.TVAppSwitcher.Dialog.ButtonBar</item>
+        <item name="android:buttonBarStyle">@style/Theme.TVAppSwitcher.Dialog.ButtonBar</item>
         <item name="buttonBarPositiveButtonStyle">@style/Theme.TVAppSwitcher.Dialog.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Theme.TVAppSwitcher.Dialog.Button</item>
         <item name="buttonBarNeutralButtonStyle">@style/Theme.TVAppSwitcher.Dialog.Button</item>
@@ -66,6 +68,14 @@
     <style name="Theme.TVAppSwitcher.Dialog.TextAppearanceListItem" parent="TextAppearance.AppCompat.Subhead">
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Theme.TVAppSwitcher.Dialog.ButtonBar" parent="Widget.AppCompat.ButtonBar.AlertDialog">
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:clipToPadding">false</item>
     </style>
 
     <style name="Theme.TVAppSwitcher.Dialog.Button" parent="Widget.MaterialComponents.Button.TextButton">
