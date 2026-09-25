@@ -655,15 +655,32 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun AlertDialog.setupTvFocus(): AlertDialog {
+        listView?.let { lv ->
+            lv.setOnFocusChangeListener { _, hasFocus ->
+                for (i in 0 until lv.childCount) {
+                    val child = lv.getChildAt(i)
+                    if (!hasFocus) {
+                        child.isSelected = false
+                    } else if (i == lv.selectedItemPosition - lv.firstVisiblePosition) {
+                        child.isSelected = true
+                    }
+                }
+            }
+        }
+        return this
+    }
+
     private fun showSortOrderSelectionDialog() {
         val modes = ConfigManager.SortMode.values()
         val labels = modes.map { getSortModeLabel(it) }.toTypedArray()
         val currentMode = ConfigManager.getSortMode(this)
         val currentIndex = modes.indexOf(currentMode).coerceAtLeast(0)
 
+        val adapter = android.widget.ArrayAdapter(this, R.layout.item_dialog_singlechoice, labels)
         AlertDialog.Builder(this)
             .setTitle(R.string.dialog_select_sort_order)
-            .setSingleChoiceItems(labels, currentIndex) { dialog, which ->
+            .setSingleChoiceItems(adapter, currentIndex) { dialog, which ->
                 val selectedMode = modes[which]
                 ConfigManager.setSortMode(this, selectedMode)
                 updateUi()
@@ -680,6 +697,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+            .setupTvFocus()
     }
 
     private fun showReorderAppsDialog() {
@@ -763,26 +781,14 @@ class MainActivity : AppCompatActivity() {
 
         if (options.isEmpty()) return
 
-        val adapter = object : android.widget.ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_list_item_1,
-            options
-        ) {
-            override fun getView(position: Int, convertView: android.view.View?, parent: android.view.ViewGroup): android.view.View {
-                val view = super.getView(position, convertView, parent) as android.widget.TextView
-                view.setTextColor(android.graphics.Color.WHITE)
-                view.textSize = 16f
-                view.setPadding(32.dp, 24.dp, 32.dp, 24.dp)
-                return view
-            }
-        }
-
+        val menuAdapter = android.widget.ArrayAdapter(this, R.layout.item_dialog_simple, options)
         AlertDialog.Builder(this)
             .setTitle("${app.name} (#${position + 1})")
-            .setAdapter(adapter) { _, which ->
+            .setAdapter(menuAdapter) { _, which ->
                 actions[which].invoke()
             }
             .show()
+            .setupTvFocus()
     }
 
     private fun getAllInstalledApps(): List<AppInfo> {
@@ -809,9 +815,10 @@ class MainActivity : AppCompatActivity() {
         val currentDelay = ConfigManager.getSwitchDelaySeconds(this)
         val checkedIndex = values.indexOf(currentDelay).coerceAtLeast(0)
 
+        val adapter = android.widget.ArrayAdapter(this, R.layout.item_dialog_singlechoice, options)
         AlertDialog.Builder(this)
             .setTitle(R.string.dialog_select_countdown_title)
-            .setSingleChoiceItems(options, checkedIndex) { dialog, which ->
+            .setSingleChoiceItems(adapter, checkedIndex) { dialog, which ->
                 val selectedSeconds = values[which]
                 ConfigManager.setSwitchDelaySeconds(this, selectedSeconds)
                 updateUi()
@@ -824,6 +831,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+            .setupTvFocus()
     }
 
     private fun updateShortcutsList() {
