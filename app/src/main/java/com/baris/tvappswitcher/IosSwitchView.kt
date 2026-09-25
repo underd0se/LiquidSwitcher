@@ -161,8 +161,8 @@ class IosSwitchView @JvmOverloads constructor(
 
         canvas.drawRoundRect(trackRect, trackRadius, trackRadius, trackPaint)
 
-        // Draw TV focus ring when focused
-        if (isFocused) {
+        // Draw TV focus ring when focused and window has focus
+        if (isFocused && hasWindowFocus()) {
             val ringPad = 1f * density
             focusRingRect.set(
                 trackRect.left - ringPad,
@@ -181,6 +181,11 @@ class IosSwitchView @JvmOverloads constructor(
         val thumbY = trackRect.centerY()
 
         canvas.drawCircle(thumbX, thumbY, thumbRadius, thumbPaint)
+    }
+
+    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+        super.onWindowFocusChanged(hasWindowFocus)
+        invalidate()
     }
 
     override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {

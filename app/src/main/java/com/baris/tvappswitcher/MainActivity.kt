@@ -656,8 +656,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun AlertDialog.setupTvFocus(): AlertDialog {
-        val previousFocus = currentFocus
-        previousFocus?.clearFocus()
+        val previousFocus = this@MainActivity.currentFocus
         setOnDismissListener {
             updateUi()
             previousFocus?.requestFocus()
