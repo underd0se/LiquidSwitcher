@@ -30,13 +30,13 @@
         <item name="colorPrimary">@color/accent_primary</item>
         <item name="colorSecondary">@color/accent_primary</item>
 
-        <!-- Global Focus Indicators for AlertDialog List Items on Android TV -->
-        <item name="android:listSelector">@drawable/selector_dialog_list_item</item>
+        <!-- Disable duplicate ListView selectors and choice indicators on TV dialogs -->
+        <item name="android:listSelector">@android:color/transparent</item>
         <item name="android:drawSelectorOnTop">false</item>
-        <item name="android:listChoiceBackgroundIndicator">@drawable/selector_dialog_list_item</item>
-        <item name="listChoiceBackgroundIndicator">@drawable/selector_dialog_list_item</item>
-        <item name="android:selectableItemBackground">@drawable/selector_dialog_list_item</item>
-        <item name="selectableItemBackground">@drawable/selector_dialog_list_item</item>
+        <item name="android:listChoiceBackgroundIndicator">@android:color/transparent</item>
+        <item name="listChoiceBackgroundIndicator">@android:color/transparent</item>
+        <item name="android:selectableItemBackground">@android:color/transparent</item>
+        <item name="selectableItemBackground">@android:color/transparent</item>
         <item name="singleChoiceItemLayout">@layout/item_dialog_singlechoice</item>
         <item name="listItemLayout">@layout/item_dialog_simple</item>
 
