@@ -40,6 +40,8 @@
         <item name="singleChoiceItemLayout">@layout/item_dialog_singlechoice</item>
         <item name="listItemLayout">@layout/item_dialog_simple</item>
 
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.80</item>
         <item name="android:textAppearanceListItem">@style/Theme.TVAppSwitcher.Dialog.TextAppearanceListItem</item>
         <item name="android:textAppearanceListItemSmall">@style/Theme.TVAppSwitcher.Dialog.TextAppearanceListItem</item>
         <item name="buttonBarPositiveButtonStyle">@style/Theme.TVAppSwitcher.Dialog.Button</item>
@@ -73,15 +75,14 @@
         <item name="rippleColor">@null</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="android:textColor">@color/selector_tv_btn_text</item>
+        <item name="android:textColor">@color/selector_dialog_btn_text</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:minHeight">40dp</item>
+        <item name="android:minHeight">36dp</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
-        <item name="android:layout_marginStart">6dp</item>
-        <item name="android:layout_marginEnd">6dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
         <item name="android:focusable">true</item>
     </style>
 

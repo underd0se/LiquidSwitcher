@@ -656,6 +656,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun AlertDialog.setupTvFocus(): AlertDialog {
+        val previousFocus = currentFocus
+        previousFocus?.clearFocus()
+        setOnDismissListener {
+            updateUi()
+            previousFocus?.requestFocus()
+        }
         listView?.let { lv ->
             lv.setOnFocusChangeListener { _, hasFocus ->
                 for (i in 0 until lv.childCount) {

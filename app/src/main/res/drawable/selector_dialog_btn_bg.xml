@@ -14,11 +14,8 @@
             <stroke android:width="2dp" android:color="#FFFFFF" />
         </shape>
     </item>
+    <!-- Idle state: transparent background, clean text button -->
     <item>
-        <shape android:shape="rectangle">
-            <corners android:radius="8dp" />
-            <solid android:color="#242436" />
-            <stroke android:width="1dp" android:color="#4A4A68" />
-        </shape>
+        <color android:color="@android:color/transparent" />
     </item>
 </selector>

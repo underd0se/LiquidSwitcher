@@ -3,10 +3,10 @@
     <!-- Focused item by D-pad remote navigation -->
     <item android:state_focused="true">
         <inset
-            android:insetLeft="10dp"
-            android:insetRight="10dp"
-            android:insetTop="3dp"
-            android:insetBottom="3dp">
+            android:insetLeft="8dp"
+            android:insetRight="8dp"
+            android:insetTop="2dp"
+            android:insetBottom="2dp">
             <shape android:shape="rectangle">
                 <corners android:radius="10dp" />
                 <solid android:color="#2E2E44" />
@@ -18,10 +18,10 @@
     <!-- Selected item in ListView -->
     <item android:state_selected="true">
         <inset
-            android:insetLeft="10dp"
-            android:insetRight="10dp"
-            android:insetTop="3dp"
-            android:insetBottom="3dp">
+            android:insetLeft="8dp"
+            android:insetRight="8dp"
+            android:insetTop="2dp"
+            android:insetBottom="2dp">
             <shape android:shape="rectangle">
                 <corners android:radius="10dp" />
                 <solid android:color="#2E2E44" />
@@ -33,10 +33,10 @@
     <!-- Pressed / Clicked -->
     <item android:state_pressed="true">
         <inset
-            android:insetLeft="10dp"
-            android:insetRight="10dp"
-            android:insetTop="3dp"
-            android:insetBottom="3dp">
+            android:insetLeft="8dp"
+            android:insetRight="8dp"
+            android:insetTop="2dp"
+            android:insetBottom="2dp">
             <shape android:shape="rectangle">
                 <corners android:radius="10dp" />
                 <solid android:color="#3D3D5C" />
@@ -45,36 +45,7 @@
         </inset>
     </item>
 
-    <!-- Checked / Activated (Active setting option when not actively focused) -->
-    <item android:state_checked="true">
-        <inset
-            android:insetLeft="10dp"
-            android:insetRight="10dp"
-            android:insetTop="3dp"
-            android:insetBottom="3dp">
-            <shape android:shape="rectangle">
-                <corners android:radius="10dp" />
-                <solid android:color="#222232" />
-                <stroke android:width="1dp" android:color="#4000E5FF" />
-            </shape>
-        </inset>
-    </item>
-
-    <item android:state_activated="true">
-        <inset
-            android:insetLeft="10dp"
-            android:insetRight="10dp"
-            android:insetTop="3dp"
-            android:insetBottom="3dp">
-            <shape android:shape="rectangle">
-                <corners android:radius="10dp" />
-                <solid android:color="#222232" />
-                <stroke android:width="1dp" android:color="#4000E5FF" />
-            </shape>
-        </inset>
-    </item>
-
-    <!-- Default Idle State -->
+    <!-- Default Idle State (including checked options when not focused): transparent! -->
     <item>
         <color android:color="@android:color/transparent" />
     </item>
