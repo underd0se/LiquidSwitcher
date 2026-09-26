@@ -425,7 +425,7 @@
                     android:layout_height="32dp"
                     android:layout_marginEnd="6dp"
                     android:nextFocusUp="@+id/switchSingleKey"
-                    android:nextFocusDown="@+id/sbDockSize"
+                    android:nextFocusDown="@+id/btnAssignLastApp"
                     android:focusable="true" />
 
             </LinearLayout>
@@ -692,7 +692,7 @@
                         android:paddingBottom="10dp"
                         android:max="80"
                         android:progress="40"
-                        android:nextFocusUp="@+id/switchSound"
+                        android:nextFocusUp="@+id/btnAssignLongPress"
                         android:nextFocusDown="@+id/sbDockTransparency"
                         android:focusable="true" />
 
