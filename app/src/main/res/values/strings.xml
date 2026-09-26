@@ -77,13 +77,9 @@
     <string name="dialog_test_key_detected">Detected Key: %1$s\nKeyCode: %2$d\n\nStatus: Supported for shortcuts &amp; switcher!</string>
 
     <!-- Section 4: Instructions -->
-    <string name="instructions_title">How to use:</string>
-    <string name="instructions_body">• From ANY app or the TV home screen, press Program Up or Down on your remote.\n• The App Switcher bar pops up instantly at the bottom.\n• Keep pressing Up/Down to cycle through apps.\n• It will automatically switch after your chosen countdown, or immediately when you press OK!</string>
 
     <!-- Section 5: About Card -->
     <string name="section_about">About Liquid Switcher</string>
-    <string name="about_version">Version 2.0 (Liquid Edition)</string>
-    <string name="about_desc">Fluid dynamic dock switcher for Android TV &amp; Google TV.\nCrafted with translucent glass materials, zero latency, and pure focus-driven navigation.</string>
 
     <!-- Dialogs & Prompts -->
     <string name="dialog_title_next_key">Press Remote Button for \'Switch Next\'</string>
@@ -183,20 +179,8 @@
     <string name="app_not_available">App not available</string>
 
     <!-- Last App Quick Switch -->
-    <string name="label_last_app_key">Last App Quick Switch:</string>
-    <string name="desc_last_app_key">Instantly switch to the previously used app</string>
-    <string name="last_app_key_none">Not assigned</string>
     <string name="btn_assign_key">Assign Key</string>
     <string name="btn_clear_key">Clear</string>
-    <string name="dialog_title_last_app_key">Press Remote Button for \'Last App Switch\'</string>
-    <string name="last_app_key_set_toast">Last App key set to: %1$s</string>
-    <string name="last_app_key_cleared_toast">Last App key cleared</string>
 
     <!-- Long Press Trigger -->
-    <string name="label_long_press_key">Long-Press Switcher Trigger:</string>
-    <string name="desc_long_press_key">Hold down a button to open the switcher (e.g. Home, Menu)</string>
-    <string name="long_press_key_none">Not assigned</string>
-    <string name="dialog_title_long_press_key">Press Remote Button for \'Long-Press Switcher Trigger\'</string>
-    <string name="long_press_key_set_toast">Long-Press trigger set to: %1$s</string>
-    <string name="long_press_key_cleared_toast">Long-Press trigger cleared</string>
 </resources>

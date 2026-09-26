@@ -17,7 +17,6 @@ class KeyInterceptorService : AccessibilityService() {
     private lateinit var overlay: AppSwitcherOverlay
     private var currentForegroundPackage: String? = null
     private var previousForegroundPackage: String? = null
-    private var longPressTriggeredKeyCode: Int? = null
 
     private val controlReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
