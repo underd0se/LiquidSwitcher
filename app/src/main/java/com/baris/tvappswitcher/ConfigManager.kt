@@ -61,14 +61,6 @@ object ConfigManager {
         getPrefs(context).edit().putInt(KEY_PREV, keyCode).apply()
     }
 
-    fun getLongPressKey(context: Context): Int {
-        return getPrefs(context).getInt(KEY_LONG_PRESS_TRIGGER, -1)
-    }
-
-    fun setLongPressKey(context: Context, keyCode: Int) {
-        getPrefs(context).edit().putInt(KEY_LONG_PRESS_TRIGGER, keyCode).apply()
-    }
-
     fun getSwitchDelaySeconds(context: Context): Int {
         return getPrefs(context).getInt(KEY_SWITCH_DELAY, 2)
     }
@@ -312,14 +304,6 @@ object ConfigManager {
 
     fun setShowAppNameEnabled(context: Context, enabled: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_SHOW_APP_NAME, enabled).apply()
-    }
-
-    fun getLastAppKey(context: Context): Int {
-        return getPrefs(context).getInt(KEY_LAST_APP_KEY, -1)
-    }
-
-    fun setLastAppKey(context: Context, keyCode: Int) {
-        getPrefs(context).edit().putInt(KEY_LAST_APP_KEY, keyCode).apply()
     }
 
     /**

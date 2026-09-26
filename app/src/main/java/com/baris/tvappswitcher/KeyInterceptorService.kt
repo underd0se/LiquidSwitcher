@@ -167,6 +167,7 @@ class KeyInterceptorService : AccessibilityService() {
     private fun handleKeyEventInternal(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val action = event.action
+        Log.d("KeyInterceptorService", "Received key event: code=$keyCode, action=$action, repeat=${event.repeatCount}")
 
         // Fast path for DPAD and standard navigation keys so zero delay is introduced
         if (!overlay.isShowing() && !ConfigManager.isListening(this)) {
@@ -278,40 +279,6 @@ class KeyInterceptorService : AccessibilityService() {
             return true
         }
 
-        // 5. Last App Quick-Switch (instantly switch to previous app without dock)
-        val lastAppKey = ConfigManager.getLastAppKey(this)
-        if (lastAppKey > 0 && keyCode == lastAppKey) {
-            if (action == KeyEvent.ACTION_DOWN) {
-                val prevPkg = previousForegroundPackage
-                if (prevPkg != null) {
-                    playNavSound()
-                    launchApp(prevPkg)
-                }
-            }
-            return true
-        }
-
-        // 6. Long-Press Key Mapping
-        val longPressKey = ConfigManager.getLongPressKey(this)
-        if (longPressKey > 0 && keyCode == longPressKey) {
-            if (action == KeyEvent.ACTION_DOWN) {
-                if (event.repeatCount == 0) {
-                    longPressTriggeredKeyCode = null
-                    return super.onKeyEvent(event)
-                } else if (event.repeatCount > 0 && longPressTriggeredKeyCode != keyCode) {
-                    longPressTriggeredKeyCode = keyCode
-                    triggerSwitcher(isNext = true)
-                    return true
-                } else if (longPressTriggeredKeyCode == keyCode) {
-                    return true
-                }
-            } else if (action == KeyEvent.ACTION_UP) {
-                if (longPressTriggeredKeyCode == keyCode) {
-                    longPressTriggeredKeyCode = null
-                    return true
-                }
-            }
-        }
 
         return super.onKeyEvent(event)
     }

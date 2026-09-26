@@ -48,12 +48,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnTestKey: AppCompatButton
     private lateinit var tvNoShortcutsHint: TextView
     private lateinit var rvShortcuts: RecyclerView
-    private lateinit var tvLastAppKey: TextView
-    private lateinit var btnAssignLastApp: AppCompatButton
-    private lateinit var btnClearLastApp: AppCompatButton
-    private lateinit var tvLongPressKey: TextView
-    private lateinit var btnAssignLongPress: AppCompatButton
-    private lateinit var btnClearLongPress: AppCompatButton
 
     private lateinit var tvDockSizeLabel: TextView
     private lateinit var sbDockSize: SeekBar
@@ -204,14 +198,6 @@ class MainActivity : AppCompatActivity() {
         sbDockTransparency.keyProgressIncrement = 5
         sbDockMargin.keyProgressIncrement = 4
         sbDockDim.keyProgressIncrement = 5
-
-        tvLastAppKey = findViewById(R.id.tvLastAppKey)
-        btnAssignLastApp = findViewById(R.id.btnAssignLastApp)
-        btnClearLastApp = findViewById(R.id.btnClearLastApp)
-
-        tvLongPressKey = findViewById(R.id.tvLongPressKey)
-        btnAssignLongPress = findViewById(R.id.btnAssignLongPress)
-        btnClearLongPress = findViewById(R.id.btnClearLongPress)
 
         rvShortcuts.layoutManager = LinearLayoutManager(this)
     }
@@ -368,26 +354,6 @@ class MainActivity : AppCompatActivity() {
         btnTestKey.setOnClickListener {
             showKeyTesterDialog()
         }
-
-        btnAssignLastApp.setOnClickListener {
-            startListeningForKey("LAST_APP", getString(R.string.dialog_title_last_app_key))
-        }
-
-        btnClearLastApp.setOnClickListener {
-            ConfigManager.setLastAppKey(this, -1)
-            updateLastAppKeyUi()
-            Toast.makeText(this, getString(R.string.last_app_key_cleared_toast), Toast.LENGTH_SHORT).show()
-        }
-
-        btnAssignLongPress.setOnClickListener {
-            startListeningForKey("LONG_PRESS", getString(R.string.dialog_title_long_press_key))
-        }
-
-        btnClearLongPress.setOnClickListener {
-            ConfigManager.setLongPressKey(this, -1)
-            updateLongPressKeyUi()
-            Toast.makeText(this, getString(R.string.long_press_key_cleared_toast), Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun setupFocusEffects() {
@@ -400,11 +366,7 @@ class MainActivity : AppCompatActivity() {
             btnCustomizeOrder,
             btnManageVisibility,
             btnAddDirectShortcut,
-            btnTestKey,
-            btnAssignLastApp,
-            btnClearLastApp,
-            btnAssignLongPress,
-            btnClearLongPress
+            btnTestKey
         )
 
         for (btn in buttons) {
@@ -599,31 +561,7 @@ class MainActivity : AppCompatActivity() {
         tvDockDimLabel.text = getDockDimLabel(dockDim)
 
         updateShortcutsList()
-        updateLastAppKeyUi()
-        updateLongPressKeyUi()
         updateServiceStatus()
-    }
-
-    private fun updateLastAppKeyUi() {
-        val lastAppKey = ConfigManager.getLastAppKey(this)
-        if (lastAppKey > 0) {
-            tvLastAppKey.text = ConfigManager.getKeyLabel(lastAppKey)
-            btnClearLastApp.visibility = View.VISIBLE
-        } else {
-            tvLastAppKey.text = getString(R.string.last_app_key_none)
-            btnClearLastApp.visibility = View.GONE
-        }
-    }
-
-    private fun updateLongPressKeyUi() {
-        val longPressKey = ConfigManager.getLongPressKey(this)
-        if (longPressKey > 0) {
-            tvLongPressKey.text = ConfigManager.getKeyLabel(longPressKey)
-            btnClearLongPress.visibility = View.VISIBLE
-        } else {
-            tvLongPressKey.text = getString(R.string.long_press_key_none)
-            btnClearLongPress.visibility = View.GONE
-        }
     }
 
     private fun updateCountdownRowState(appNameEnabled: Boolean) {
@@ -1093,16 +1031,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, getString(R.string.key_mapped_toast, ConfigManager.getKeyLabel(keyCode), chosenApp.name), Toast.LENGTH_SHORT).show()
                     updateUi()
                 }
-            }
-            "LAST_APP" -> {
-                ConfigManager.setLastAppKey(this, keyCode)
-                Toast.makeText(this, getString(R.string.last_app_key_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
-                updateLastAppKeyUi()
-            }
-            "LONG_PRESS" -> {
-                ConfigManager.setLongPressKey(this, keyCode)
-                Toast.makeText(this, getString(R.string.long_press_key_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
-                updateLongPressKeyUi()
             }
         }
     }
