@@ -25,10 +25,13 @@ class AppListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val app = apps[position]
-        holder.ivIcon.setImageDrawable(app.icon)
+        holder.ivIcon.setImageDrawable(AppRepository.getAppIcon(holder.itemView.context, app))
         holder.tvName.text = app.name
         holder.itemView.setOnClickListener {
-            onClick(app)
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onClick(apps[pos])
+            }
         }
     }
 

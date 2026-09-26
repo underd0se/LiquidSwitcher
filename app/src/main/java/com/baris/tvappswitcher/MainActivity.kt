@@ -48,6 +48,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnTestKey: AppCompatButton
     private lateinit var tvNoShortcutsHint: TextView
     private lateinit var rvShortcuts: RecyclerView
+    private lateinit var tvLastAppKey: TextView
+    private lateinit var btnAssignLastApp: AppCompatButton
+    private lateinit var btnClearLastApp: AppCompatButton
+    private lateinit var tvLongPressKey: TextView
+    private lateinit var btnAssignLongPress: AppCompatButton
+    private lateinit var btnClearLongPress: AppCompatButton
 
     private lateinit var tvDockSizeLabel: TextView
     private lateinit var sbDockSize: SeekBar
@@ -198,6 +204,14 @@ class MainActivity : AppCompatActivity() {
         sbDockTransparency.keyProgressIncrement = 5
         sbDockMargin.keyProgressIncrement = 4
         sbDockDim.keyProgressIncrement = 5
+
+        tvLastAppKey = findViewById(R.id.tvLastAppKey)
+        btnAssignLastApp = findViewById(R.id.btnAssignLastApp)
+        btnClearLastApp = findViewById(R.id.btnClearLastApp)
+
+        tvLongPressKey = findViewById(R.id.tvLongPressKey)
+        btnAssignLongPress = findViewById(R.id.btnAssignLongPress)
+        btnClearLongPress = findViewById(R.id.btnClearLongPress)
 
         rvShortcuts.layoutManager = LinearLayoutManager(this)
     }
@@ -354,6 +368,26 @@ class MainActivity : AppCompatActivity() {
         btnTestKey.setOnClickListener {
             showKeyTesterDialog()
         }
+
+        btnAssignLastApp.setOnClickListener {
+            startListeningForKey("LAST_APP", getString(R.string.dialog_title_last_app_key))
+        }
+
+        btnClearLastApp.setOnClickListener {
+            ConfigManager.setLastAppKey(this, -1)
+            updateLastAppKeyUi()
+            Toast.makeText(this, getString(R.string.last_app_key_cleared_toast), Toast.LENGTH_SHORT).show()
+        }
+
+        btnAssignLongPress.setOnClickListener {
+            startListeningForKey("LONG_PRESS", getString(R.string.dialog_title_long_press_key))
+        }
+
+        btnClearLongPress.setOnClickListener {
+            ConfigManager.setLongPressKey(this, -1)
+            updateLongPressKeyUi()
+            Toast.makeText(this, getString(R.string.long_press_key_cleared_toast), Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setupFocusEffects() {
@@ -366,7 +400,11 @@ class MainActivity : AppCompatActivity() {
             btnCustomizeOrder,
             btnManageVisibility,
             btnAddDirectShortcut,
-            btnTestKey
+            btnTestKey,
+            btnAssignLastApp,
+            btnClearLastApp,
+            btnAssignLongPress,
+            btnClearLongPress
         )
 
         for (btn in buttons) {
@@ -446,45 +484,45 @@ class MainActivity : AppCompatActivity() {
 
     private fun getDockSizeLabel(percent: Int): String {
         val qualifier = when {
-            percent < 80 -> "Small"
-            percent < 95 -> "Compact"
-            percent in 95..105 -> "Medium"
-            percent in 106..120 -> "Large"
-            else -> "Extra Large"
+            percent < 80 -> getString(R.string.dock_size_small)
+            percent < 95 -> getString(R.string.dock_size_compact)
+            percent in 95..105 -> getString(R.string.dock_size_medium)
+            percent in 106..120 -> getString(R.string.dock_size_large)
+            else -> getString(R.string.dock_size_extra_large)
         }
-        return "$percent% ($qualifier)"
+        return getString(R.string.dock_size_fmt, percent, qualifier)
     }
 
     private fun getDockTransparencyLabel(percent: Int): String {
         val qualifier = when {
-            percent == 0 -> "Opaque Solid"
-            percent <= 25 -> "Frosted Glass"
-            percent <= 50 -> "Subtle Glass"
-            percent <= 75 -> "Clear Glass"
-            else -> "Ultra Transparent"
+            percent == 0 -> getString(R.string.dock_trans_opaque)
+            percent <= 25 -> getString(R.string.dock_trans_frosted)
+            percent <= 50 -> getString(R.string.dock_trans_subtle)
+            percent <= 75 -> getString(R.string.dock_trans_clear)
+            else -> getString(R.string.dock_trans_ultra)
         }
-        return "$percent% ($qualifier)"
+        return getString(R.string.dock_trans_fmt, percent, qualifier)
     }
 
     private fun getDockMarginLabel(marginDp: Int): String {
         val qualifier = when {
-            marginDp == 0 -> "Flush Bottom"
-            marginDp in 1..16 -> "Low Margin"
-            marginDp in 17..32 -> "Standard TV"
-            marginDp in 33..48 -> "Elevated"
-            else -> "High Lift"
+            marginDp == 0 -> getString(R.string.dock_margin_flush)
+            marginDp in 1..16 -> getString(R.string.dock_margin_low)
+            marginDp in 17..32 -> getString(R.string.dock_margin_standard)
+            marginDp in 33..48 -> getString(R.string.dock_margin_elevated)
+            else -> getString(R.string.dock_margin_high)
         }
-        return "$marginDp dp ($qualifier)"
+        return getString(R.string.dock_margin_fmt, marginDp, qualifier)
     }
 
     private fun getDockDimLabel(percent: Int): String {
         val qualifier = when {
-            percent == 0 -> "No Dim"
-            percent <= 15 -> "Subtle"
-            percent <= 30 -> "Medium"
-            else -> "Cinema Dark"
+            percent == 0 -> getString(R.string.dock_dim_none)
+            percent <= 15 -> getString(R.string.dock_dim_subtle)
+            percent <= 30 -> getString(R.string.dock_dim_medium)
+            else -> getString(R.string.dock_dim_cinema)
         }
-        return "$percent% ($qualifier)"
+        return getString(R.string.dock_dim_fmt, percent, qualifier)
     }
 
     private fun getSortModeLabel(mode: ConfigManager.SortMode): String {
@@ -504,8 +542,8 @@ class MainActivity : AppCompatActivity() {
         tvNextKey.text = ConfigManager.getKeyLabel(nextKey)
         tvPrevKey.text = ConfigManager.getKeyLabel(prevKey)
 
-        tvSwitchDelay.text = ConfigManager.getSwitchDelayLabel(delaySec)
-        btnChangeDelay.text = getString(R.string.btn_change_delay_fmt, ConfigManager.getSwitchDelayShortLabel(delaySec))
+        tvSwitchDelay.text = ConfigManager.getSwitchDelayLabel(this, delaySec)
+        btnChangeDelay.text = getString(R.string.btn_change_delay_fmt, ConfigManager.getSwitchDelayShortLabel(this, delaySec))
 
         tvSortOrder.text = getSortModeLabel(sortMode)
 
@@ -561,7 +599,31 @@ class MainActivity : AppCompatActivity() {
         tvDockDimLabel.text = getDockDimLabel(dockDim)
 
         updateShortcutsList()
+        updateLastAppKeyUi()
+        updateLongPressKeyUi()
         updateServiceStatus()
+    }
+
+    private fun updateLastAppKeyUi() {
+        val lastAppKey = ConfigManager.getLastAppKey(this)
+        if (lastAppKey > 0) {
+            tvLastAppKey.text = ConfigManager.getKeyLabel(lastAppKey)
+            btnClearLastApp.visibility = View.VISIBLE
+        } else {
+            tvLastAppKey.text = getString(R.string.last_app_key_none)
+            btnClearLastApp.visibility = View.GONE
+        }
+    }
+
+    private fun updateLongPressKeyUi() {
+        val longPressKey = ConfigManager.getLongPressKey(this)
+        if (longPressKey > 0) {
+            tvLongPressKey.text = ConfigManager.getKeyLabel(longPressKey)
+            btnClearLongPress.visibility = View.VISIBLE
+        } else {
+            tvLongPressKey.text = getString(R.string.long_press_key_none)
+            btnClearLongPress.visibility = View.GONE
+        }
     }
 
     private fun updateCountdownRowState(appNameEnabled: Boolean) {
@@ -671,7 +733,7 @@ class MainActivity : AppCompatActivity() {
             adapter.deselectAll()
         }
 
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.dialog_manage_visibility_title)
             .setView(container)
             .setPositiveButton(R.string.save) { d, _ ->
@@ -683,6 +745,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
+        dialog.setupTvFocus()
     }
 
     private fun AlertDialog.setupTvFocus(): AlertDialog {
@@ -746,6 +809,10 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@MainActivity)
             setPadding(20.dp, 16.dp, 20.dp, 16.dp)
             setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                (resources.displayMetrics.heightPixels * 0.55).toInt()
+            )
         }
 
         var adapter: ReorderAppAdapter? = null
@@ -764,6 +831,7 @@ class MainActivity : AppCompatActivity() {
 
         rv.adapter = adapter
 
+        val previousFocus = currentFocus
         AlertDialog.Builder(this)
             .setTitle(R.string.dialog_customize_order_title)
             .setView(rv)
@@ -785,6 +853,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setOnDismissListener {
                 updateUi()
+                previousFocus?.requestFocus()
             }
             .show()
     }
@@ -839,12 +908,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun showDelaySelectionDialog() {
         val options = arrayOf(
-            "1 second (Fast)",
-            "2 seconds (Recommended)",
-            "3 seconds",
-            "4 seconds",
-            "5 seconds (Slow)",
-            "Manual Only (Press OK to switch)"
+            getString(R.string.delay_1_fast),
+            getString(R.string.delay_2_recommended),
+            getString(R.string.delay_3),
+            getString(R.string.delay_4),
+            getString(R.string.delay_5_slow),
+            getString(R.string.delay_manual)
         )
         val values = intArrayOf(1, 2, 3, 4, 5, 0)
         val currentDelay = ConfigManager.getSwitchDelaySeconds(this)
@@ -860,7 +929,7 @@ class MainActivity : AppCompatActivity() {
                 dialog.dismiss()
                 Toast.makeText(
                     this,
-                    getString(R.string.countdown_set_toast, ConfigManager.getSwitchDelayLabel(selectedSeconds)),
+                    getString(R.string.countdown_set_toast, ConfigManager.getSwitchDelayLabel(this@MainActivity, selectedSeconds)),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -1025,6 +1094,16 @@ class MainActivity : AppCompatActivity() {
                     updateUi()
                 }
             }
+            "LAST_APP" -> {
+                ConfigManager.setLastAppKey(this, keyCode)
+                Toast.makeText(this, getString(R.string.last_app_key_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
+                updateLastAppKeyUi()
+            }
+            "LONG_PRESS" -> {
+                ConfigManager.setLongPressKey(this, keyCode)
+                Toast.makeText(this, getString(R.string.long_press_key_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
+                updateLongPressKeyUi()
+            }
         }
     }
 
@@ -1037,9 +1116,13 @@ class MainActivity : AppCompatActivity() {
             setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
         }
 
+        val previousFocus = currentFocus
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.dialog_select_app_title)
             .setView(rv)
+            .setOnDismissListener {
+                previousFocus?.requestFocus()
+            }
             .show()
 
         rv.adapter = AppListAdapter(apps) { app ->

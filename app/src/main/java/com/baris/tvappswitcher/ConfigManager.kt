@@ -26,6 +26,8 @@ object ConfigManager {
     private const val KEY_SINGLE_KEY_MODE = "single_key_mode"
     private const val KEY_SHOW_COUNTDOWN_BAR = "show_countdown_bar"
     private const val KEY_SHOW_APP_NAME = "show_app_name"
+    private const val KEY_LAST_APP_KEY = "key_last_app"
+    private const val KEY_LONG_PRESS_TRIGGER = "key_long_press_trigger"
 
     enum class SortMode(val key: String, val label: String) {
         NAME("NAME", "Alphabetical (A - Z)"),
@@ -59,6 +61,14 @@ object ConfigManager {
         getPrefs(context).edit().putInt(KEY_PREV, keyCode).apply()
     }
 
+    fun getLongPressKey(context: Context): Int {
+        return getPrefs(context).getInt(KEY_LONG_PRESS_TRIGGER, -1)
+    }
+
+    fun setLongPressKey(context: Context, keyCode: Int) {
+        getPrefs(context).edit().putInt(KEY_LONG_PRESS_TRIGGER, keyCode).apply()
+    }
+
     fun getSwitchDelaySeconds(context: Context): Int {
         return getPrefs(context).getInt(KEY_SWITCH_DELAY, 2)
     }
@@ -67,18 +77,18 @@ object ConfigManager {
         getPrefs(context).edit().putInt(KEY_SWITCH_DELAY, seconds).apply()
     }
 
-    fun getSwitchDelayLabel(seconds: Int): String {
+    fun getSwitchDelayLabel(context: Context, seconds: Int): String {
         return when (seconds) {
-            0 -> "Manual (Press OK to Switch)"
-            1 -> "1 second"
-            else -> "$seconds seconds"
+            0 -> context.getString(R.string.delay_label_manual)
+            1 -> context.getString(R.string.delay_label_1s)
+            else -> context.getString(R.string.delay_label_ns, seconds)
         }
     }
 
-    fun getSwitchDelayShortLabel(seconds: Int): String {
+    fun getSwitchDelayShortLabel(context: Context, seconds: Int): String {
         return when (seconds) {
-            0 -> "Manual"
-            else -> "${seconds}s"
+            0 -> context.getString(R.string.delay_short_manual)
+            else -> context.getString(R.string.delay_short_ns, seconds)
         }
     }
 
@@ -302,6 +312,14 @@ object ConfigManager {
 
     fun setShowAppNameEnabled(context: Context, enabled: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_SHOW_APP_NAME, enabled).apply()
+    }
+
+    fun getLastAppKey(context: Context): Int {
+        return getPrefs(context).getInt(KEY_LAST_APP_KEY, -1)
+    }
+
+    fun setLastAppKey(context: Context, keyCode: Int) {
+        getPrefs(context).edit().putInt(KEY_LAST_APP_KEY, keyCode).apply()
     }
 
     /**

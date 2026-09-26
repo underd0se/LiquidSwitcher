@@ -185,6 +185,11 @@ class IosSwitchView @JvmOverloads constructor(
         canvas.drawCircle(thumbX, thumbY, thumbRadius, thumbPaint)
     }
 
+    override fun onDetachedFromWindow() {
+        animator?.cancel()
+        super.onDetachedFromWindow()
+    }
+
     override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
         super.onWindowFocusChanged(hasWindowFocus)
         invalidate()

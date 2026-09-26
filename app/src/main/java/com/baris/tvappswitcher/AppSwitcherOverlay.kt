@@ -49,7 +49,16 @@ class AppSwitcherOverlay(private val context: Context) {
         mainHandler.post {
             if (isDismissing) {
                 overlayView?.animate()?.cancel()
+                try {
+                    if (overlayView?.isAttachedToWindow == true) {
+                        windowManager.removeView(overlayView)
+                    }
+                } catch (e: Exception) {
+                    Log.w("AppSwitcherOverlay", "Error detaching view during show interrupt: ${e.message}")
+                }
+                isVisible = false
                 isDismissing = false
+                isFirstTooltipPlacement = true
             }
             if (!isVisible || overlayView?.isAttachedToWindow != true) {
                 createAndAddView()
@@ -92,6 +101,21 @@ class AppSwitcherOverlay(private val context: Context) {
         mainHandler.post {
             dismissInternal()
         }
+    }
+
+    fun destroy() {
+        mainHandler.removeCallbacksAndMessages(null)
+        overlayView?.animate()?.cancel()
+        vDockCountdown?.animate()?.cancel()
+        itemViews.forEach { it.findViewById<View>(R.id.flIconContainer)?.animate()?.cancel() }
+        try {
+            if (overlayView?.isAttachedToWindow == true) {
+                windowManager.removeView(overlayView)
+            }
+        } catch (_: Exception) {}
+        overlayView = null
+        isVisible = false
+        isDismissing = false
     }
 
     private fun dismissInternal(onComplete: (() -> Unit)? = null) {
@@ -292,7 +316,8 @@ class AppSwitcherOverlay(private val context: Context) {
             flIcon.clipToOutline = true
 
             val ivIcon = itemView.findViewById<ImageView>(R.id.ivOverlayAppIcon)
-            ivIcon.setImageDrawable(app.icon)
+            ivIcon.setImageDrawable(AppRepository.getAppIcon(context, app))
+            ivIcon.contentDescription = app.name
             ivIcon.alpha = 1.0f
 
             container.addView(itemView)

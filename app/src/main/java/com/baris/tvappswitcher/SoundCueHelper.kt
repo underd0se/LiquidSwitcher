@@ -47,7 +47,13 @@ object SoundCueHelper {
         }
 
         try {
-            toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 70)
+            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            val volume = if (audioManager != null) {
+                val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                if (max > 0) (current * 100 / max) else 70
+            } else 70
+            toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, volume)
         } catch (e: Exception) {
             Log.w(TAG, "Failed to initialize ToneGenerator fallback", e)
         }

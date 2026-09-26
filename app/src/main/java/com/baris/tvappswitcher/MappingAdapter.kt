@@ -46,13 +46,16 @@ class MappingAdapter(
                 holder.tvName.text = pm.getApplicationLabel(appInfo)
                 holder.ivIcon.setImageDrawable(pm.getApplicationIcon(appInfo))
             } catch (e: PackageManager.NameNotFoundException) {
-                holder.tvName.text = "$packageName (Uninstalled)"
+                holder.tvName.text = context.getString(R.string.app_uninstalled_fmt, packageName)
                 holder.ivIcon.setImageResource(android.R.drawable.sym_def_app_icon)
             }
         }
 
         holder.itemView.setOnClickListener {
-            onClick(keyCode)
+            val pos = holder.bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                onClick(keys[pos])
+            }
         }
     }
 

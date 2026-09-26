@@ -34,18 +34,21 @@ class AppVisibilityAdapter(
         val app = apps[position]
         val isChecked = enabledPackages.contains(app.packageName)
 
-        holder.ivIcon.setImageDrawable(app.icon)
+        holder.ivIcon.setImageDrawable(AppRepository.getAppIcon(holder.itemView.context, app))
         holder.tvName.text = app.name
         holder.cbCheck.isChecked = isChecked
 
         updateStatusView(holder.tvStatus, isChecked)
 
         holder.root.setOnClickListener {
-            val nextChecked = !enabledPackages.contains(app.packageName)
+            val pos = holder.bindingAdapterPosition
+            if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
+            val currentApp = apps[pos]
+            val nextChecked = !enabledPackages.contains(currentApp.packageName)
             if (nextChecked) {
-                enabledPackages.add(app.packageName)
+                enabledPackages.add(currentApp.packageName)
             } else {
-                enabledPackages.remove(app.packageName)
+                enabledPackages.remove(currentApp.packageName)
             }
             holder.cbCheck.isChecked = nextChecked
             updateStatusView(holder.tvStatus, nextChecked)

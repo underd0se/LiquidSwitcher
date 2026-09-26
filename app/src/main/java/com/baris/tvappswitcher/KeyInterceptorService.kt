@@ -16,6 +16,8 @@ class KeyInterceptorService : AccessibilityService() {
 
     private lateinit var overlay: AppSwitcherOverlay
     private var currentForegroundPackage: String? = null
+    private var previousForegroundPackage: String? = null
+    private var longPressTriggeredKeyCode: Int? = null
 
     private val controlReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -82,8 +84,8 @@ class KeyInterceptorService : AccessibilityService() {
         super.onDestroy()
         SoundCueHelper.release()
         try {
-            if (this::overlay.isInitialized && overlay.isShowing()) {
-                overlay.dismiss()
+            if (this::overlay.isInitialized) {
+                overlay.destroy()
             }
         } catch (e: Exception) {
             // Ignore
@@ -107,6 +109,8 @@ class KeyInterceptorService : AccessibilityService() {
             Log.e("KeyInterceptorService", "Error configuring service info", e)
         }
         Log.d("KeyInterceptorService", "Liquid Switcher Service Connected & Filter Flags Set")
+        // Pre-warm the app cache so the first overlay trigger doesn't block the main thread
+        AppRepository.refreshAppsAsync(this)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -123,6 +127,9 @@ class KeyInterceptorService : AccessibilityService() {
                 !pkg.contains("backdrop", ignoreCase = true) &&
                 !pkg.contains("googlequicksearchbox", ignoreCase = true)
             ) {
+                if (pkg != currentForegroundPackage) {
+                    previousForegroundPackage = currentForegroundPackage
+                }
                 currentForegroundPackage = pkg
                 ConfigManager.recordAppUsed(this, pkg)
             }
@@ -141,10 +148,8 @@ class KeyInterceptorService : AccessibilityService() {
 
     private fun isKeyThrottled(event: KeyEvent): Boolean {
         val now = android.os.SystemClock.uptimeMillis()
-        if (event.repeatCount > 0) {
-            if (now - lastKeyPressTime < keyRepeatThrottleMs) {
-                return true
-            }
+        if (now - lastKeyPressTime < keyRepeatThrottleMs) {
+            return true
         }
         lastKeyPressTime = now
         return false
@@ -273,12 +278,50 @@ class KeyInterceptorService : AccessibilityService() {
             return true
         }
 
+        // 5. Last App Quick-Switch (instantly switch to previous app without dock)
+        val lastAppKey = ConfigManager.getLastAppKey(this)
+        if (lastAppKey > 0 && keyCode == lastAppKey) {
+            if (action == KeyEvent.ACTION_DOWN) {
+                val prevPkg = previousForegroundPackage
+                if (prevPkg != null) {
+                    playNavSound()
+                    launchApp(prevPkg)
+                }
+            }
+            return true
+        }
+
+        // 6. Long-Press Key Mapping
+        val longPressKey = ConfigManager.getLongPressKey(this)
+        if (longPressKey > 0 && keyCode == longPressKey) {
+            if (action == KeyEvent.ACTION_DOWN) {
+                if (event.repeatCount == 0) {
+                    longPressTriggeredKeyCode = null
+                    return super.onKeyEvent(event)
+                } else if (event.repeatCount > 0 && longPressTriggeredKeyCode != keyCode) {
+                    longPressTriggeredKeyCode = keyCode
+                    triggerSwitcher(isNext = true)
+                    return true
+                } else if (longPressTriggeredKeyCode == keyCode) {
+                    return true
+                }
+            } else if (action == KeyEvent.ACTION_UP) {
+                if (longPressTriggeredKeyCode == keyCode) {
+                    longPressTriggeredKeyCode = null
+                    return true
+                }
+            }
+        }
+
         return super.onKeyEvent(event)
     }
 
     private fun triggerSwitcher(isNext: Boolean) {
         val apps = AppRepository.getFilteredAndSortedApps(this)
-        if (apps.isEmpty()) return
+        if (apps.isEmpty()) {
+            android.widget.Toast.makeText(this, "No apps available in switcher", android.widget.Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val currentIndex = apps.indexOfFirst { it.packageName == currentForegroundPackage }
             .takeIf { it >= 0 } ?: 0
@@ -335,6 +378,9 @@ class KeyInterceptorService : AccessibilityService() {
             }
         } catch (e: Exception) {
             Log.e("KeyInterceptorService", "Failed to launch $targetPackage", e)
+            try {
+                android.widget.Toast.makeText(this, "App not available", android.widget.Toast.LENGTH_SHORT).show()
+            } catch (_: Exception) {}
         }
     }
 }

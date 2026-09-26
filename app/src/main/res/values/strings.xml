@@ -129,4 +129,74 @@
     <string name="add_mapping">Add Key Mapping</string>
     <string name="press_key_msg">Press a key on your remote now...</string>
     <string name="invalid_key">Invalid Key. You cannot map directional or system keys.</string>
+    <!-- Dock Size Labels -->
+    <string name="dock_size_small">Small</string>
+    <string name="dock_size_compact">Compact</string>
+    <string name="dock_size_medium">Medium</string>
+    <string name="dock_size_large">Large</string>
+    <string name="dock_size_extra_large">Extra Large</string>
+    <string name="dock_size_fmt">%1$d%% (%2$s)</string>
+
+    <!-- Dock Transparency Labels -->
+    <string name="dock_trans_opaque">Opaque Solid</string>
+    <string name="dock_trans_frosted">Frosted Glass</string>
+    <string name="dock_trans_subtle">Subtle Glass</string>
+    <string name="dock_trans_clear">Clear Glass</string>
+    <string name="dock_trans_ultra">Ultra Transparent</string>
+    <string name="dock_trans_fmt">%1$d%% (%2$s)</string>
+
+    <!-- Dock Margin Labels -->
+    <string name="dock_margin_flush">Flush Bottom</string>
+    <string name="dock_margin_low">Low Margin</string>
+    <string name="dock_margin_standard">Standard TV</string>
+    <string name="dock_margin_elevated">Elevated</string>
+    <string name="dock_margin_high">High Lift</string>
+    <string name="dock_margin_fmt">%1$d dp (%2$s)</string>
+
+    <!-- Dock Dim Labels -->
+    <string name="dock_dim_none">No Dim</string>
+    <string name="dock_dim_subtle">Subtle</string>
+    <string name="dock_dim_medium">Medium</string>
+    <string name="dock_dim_cinema">Cinema Dark</string>
+    <string name="dock_dim_fmt">%1$d%% (%2$s)</string>
+
+    <!-- Delay Selection Dialog -->
+    <string name="delay_1_fast">1 second (Fast)</string>
+    <string name="delay_2_recommended">2 seconds (Recommended)</string>
+    <string name="delay_3">3 seconds</string>
+    <string name="delay_4">4 seconds</string>
+    <string name="delay_5_slow">5 seconds (Slow)</string>
+    <string name="delay_manual">Manual Only (Press OK to switch)</string>
+
+    <!-- Switch Delay Labels -->
+    <string name="delay_label_manual">Manual (Press OK to Switch)</string>
+    <string name="delay_label_1s">1 second</string>
+    <string name="delay_label_ns">%1$d seconds</string>
+    <string name="delay_short_manual">Manual</string>
+    <string name="delay_short_ns">%1$ds</string>
+
+    <!-- Uninstalled App -->
+    <string name="app_uninstalled_fmt">%1$s (Uninstalled)</string>
+
+    <!-- Empty Switcher -->
+    <string name="no_apps_in_switcher">No apps available in switcher</string>
+    <string name="app_not_available">App not available</string>
+
+    <!-- Last App Quick Switch -->
+    <string name="label_last_app_key">Last App Quick Switch:</string>
+    <string name="desc_last_app_key">Instantly switch to the previously used app</string>
+    <string name="last_app_key_none">Not assigned</string>
+    <string name="btn_assign_key">Assign Key</string>
+    <string name="btn_clear_key">Clear</string>
+    <string name="dialog_title_last_app_key">Press Remote Button for \'Last App Switch\'</string>
+    <string name="last_app_key_set_toast">Last App key set to: %1$s</string>
+    <string name="last_app_key_cleared_toast">Last App key cleared</string>
+
+    <!-- Long Press Trigger -->
+    <string name="label_long_press_key">Long-Press Switcher Trigger:</string>
+    <string name="desc_long_press_key">Hold down a button to open the switcher (e.g. Home, Menu)</string>
+    <string name="long_press_key_none">Not assigned</string>
+    <string name="dialog_title_long_press_key">Press Remote Button for \'Long-Press Switcher Trigger\'</string>
+    <string name="long_press_key_set_toast">Long-Press trigger set to: %1$s</string>
+    <string name="long_press_key_cleared_toast">Long-Press trigger cleared</string>
 </resources>

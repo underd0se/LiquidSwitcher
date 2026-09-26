@@ -31,7 +31,7 @@ class ReorderAppAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val app = apps[position]
         holder.tvRank.text = "#${position + 1}"
-        holder.ivIcon.setImageDrawable(app.icon)
+        holder.ivIcon.setImageDrawable(AppRepository.getAppIcon(holder.itemView.context, app))
         holder.tvName.text = app.name
 
         holder.btnUp.isEnabled = position > 0

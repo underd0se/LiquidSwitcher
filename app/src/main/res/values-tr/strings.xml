@@ -129,4 +129,74 @@
     <string name="add_mapping">Tuş Kısayolu Ekle</string>
     <string name="press_key_msg">Şimdi kumandanızdan bir tuşa basın...</string>
     <string name="invalid_key">Geçersiz Tuş. Yön veya sistem tuşlarını atayamazsınız.</string>
+    <!-- Dock Size Labels -->
+    <string name="dock_size_small">Küçük</string>
+    <string name="dock_size_compact">Kompakt</string>
+    <string name="dock_size_medium">Orta</string>
+    <string name="dock_size_large">Büyük</string>
+    <string name="dock_size_extra_large">Çok Büyük</string>
+    <string name="dock_size_fmt">%1$d%% (%2$s)</string>
+
+    <!-- Dock Transparency Labels -->
+    <string name="dock_trans_opaque">Opak</string>
+    <string name="dock_trans_frosted">Buzlu Cam</string>
+    <string name="dock_trans_subtle">Hafif Cam</string>
+    <string name="dock_trans_clear">Berrak Cam</string>
+    <string name="dock_trans_ultra">Çok Saydam</string>
+    <string name="dock_trans_fmt">%1$d%% (%2$s)</string>
+
+    <!-- Dock Margin Labels -->
+    <string name="dock_margin_flush">Sıfır Boşluk</string>
+    <string name="dock_margin_low">Az Boşluk</string>
+    <string name="dock_margin_standard">Standart TV</string>
+    <string name="dock_margin_elevated">Yükseltilmiş</string>
+    <string name="dock_margin_high">Yüksek Kaldırma</string>
+    <string name="dock_margin_fmt">%1$d dp (%2$s)</string>
+
+    <!-- Dock Dim Labels -->
+    <string name="dock_dim_none">Karartma Yok</string>
+    <string name="dock_dim_subtle">Hafif</string>
+    <string name="dock_dim_medium">Orta</string>
+    <string name="dock_dim_cinema">Sinema Karanlığı</string>
+    <string name="dock_dim_fmt">%1$d%% (%2$s)</string>
+
+    <!-- Delay Selection Dialog -->
+    <string name="delay_1_fast">1 saniye (Hızlı)</string>
+    <string name="delay_2_recommended">2 saniye (Önerilen)</string>
+    <string name="delay_3">3 saniye</string>
+    <string name="delay_4">4 saniye</string>
+    <string name="delay_5_slow">5 saniye (Yavaş)</string>
+    <string name="delay_manual">Sadece Manuel (Geçiş için OK tuşuna basın)</string>
+
+    <!-- Switch Delay Labels -->
+    <string name="delay_label_manual">Manuel (Geçiş için OK Tuşuna Basın)</string>
+    <string name="delay_label_1s">1 saniye</string>
+    <string name="delay_label_ns">%1$d saniye</string>
+    <string name="delay_short_manual">Manuel</string>
+    <string name="delay_short_ns">%1$d sn</string>
+
+    <!-- Uninstalled App -->
+    <string name="app_uninstalled_fmt">%1$s (Kaldırılmış)</string>
+
+    <!-- Empty Switcher -->
+    <string name="no_apps_in_switcher">Değiştiricide kullanılabilir uygulama yok</string>
+    <string name="app_not_available">Uygulama kullanılamıyor</string>
+
+    <!-- Last App Quick Switch -->
+    <string name="label_last_app_key">Son Uygulamaya Hızlı Geçiş:</string>
+    <string name="desc_last_app_key">Önceki uygulamaya anında geri dön</string>
+    <string name="last_app_key_none">Atanmamış</string>
+    <string name="btn_assign_key">Tuş Ata</string>
+    <string name="btn_clear_key">Temizle</string>
+    <string name="dialog_title_last_app_key">\'Son Uygulama Geçişi\' için Kumanda Tuşuna Basın</string>
+    <string name="last_app_key_set_toast">Son Uygulama tuşu: %1$s</string>
+    <string name="last_app_key_cleared_toast">Son Uygulama tuşu temizlendi</string>
+
+    <!-- Long Press Trigger -->
+    <string name="label_long_press_key">Basılı Tutarak Geçiş Çubuğunu Aç:</string>
+    <string name="desc_long_press_key">Geçiş çubuğunu açmak için bir tuşa basılı tutun (örn. Ana Ekran, Menü)</string>
+    <string name="long_press_key_none">Atanmamış</string>
+    <string name="dialog_title_long_press_key">\'Basılı Tutma Tetikleyicisi\' için Kumanda Tuşuna Basın</string>
+    <string name="long_press_key_set_toast">Basılı tutma tuşu: %1$s</string>
+    <string name="long_press_key_cleared_toast">Basılı tutma tuşu temizlendi</string>
 </resources>

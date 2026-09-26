@@ -28,6 +28,8 @@ object AppRepository {
     @Volatile
     private var cachedAllApps: List<AppInfo> = emptyList()
 
+    private val iconCache = android.util.LruCache<String, android.graphics.drawable.Drawable>(30)
+
     private val isInitialized = AtomicBoolean(false)
     private val isFetching = AtomicBoolean(false)
 
@@ -151,6 +153,31 @@ object AppRepository {
         }
     }
 
+    fun getAppIcon(context: Context, app: AppInfo): android.graphics.drawable.Drawable? {
+        app.icon?.let { return it }
+        val cached = iconCache.get(app.packageName)
+        if (cached != null) {
+            app.icon = cached
+            return cached
+        }
+        
+        return try {
+            val pm = context.packageManager
+            val intent = pm.getLaunchIntentForPackage(app.packageName)
+            val drawable = if (intent != null) {
+                val ri = pm.resolveActivity(intent, 0)
+                ri?.activityInfo?.loadIcon(pm) ?: pm.getApplicationIcon(app.packageName)
+            } else {
+                pm.getApplicationIcon(app.packageName)
+            }
+            iconCache.put(app.packageName, drawable)
+            app.icon = drawable
+            drawable
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     private fun loadAppsFromPackageManager(context: Context): List<AppInfo> {
         val pm = context.packageManager
         val appsMap = mutableMapOf<String, AppInfo>()
@@ -176,8 +203,7 @@ object AppRepository {
                 val actName = ri.activityInfo.name ?: ""
                 if (ConfigManager.isSystemExcludedApp(pkg, actName, label)) continue
 
-                val icon = ri.activityInfo.loadIcon(pm)
-                appsMap[pkg] = AppInfo(label, pkg, icon)
+                appsMap[pkg] = AppInfo(label, pkg, null)
             } catch (e: Exception) {
                 // Ignore single package resolution failure
             }
@@ -203,8 +229,7 @@ object AppRepository {
                 val actName = ri.activityInfo.name ?: ""
                 if (ConfigManager.isSystemExcludedApp(pkg, actName, label)) continue
 
-                val icon = ri.activityInfo.loadIcon(pm)
-                appsMap[pkg] = AppInfo(label, pkg, icon)
+                appsMap[pkg] = AppInfo(label, pkg, null)
             } catch (e: Exception) {
                 // Ignore single package resolution failure
             }
