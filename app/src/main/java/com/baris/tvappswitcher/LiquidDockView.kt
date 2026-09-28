@@ -5,6 +5,7 @@ import android.graphics.BlendMode
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
+import android.graphics.Outline
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
@@ -13,6 +14,8 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.os.Build
 import android.util.AttributeSet
+import android.view.View
+import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
 
 /**
@@ -37,9 +40,6 @@ class LiquidDockView @JvmOverloads constructor(
     private var cornerRadius = 32f * density
 
     private val dockRect = RectF()
-    private val shadowOuterRect = RectF()
-    private val shadowMidRect = RectF()
-    private val shadowNearRect = RectF()
     private val sheenRect = RectF()
     private val bottomCatchRect = RectF()
     private val rimRect = RectF()
@@ -49,18 +49,6 @@ class LiquidDockView @JvmOverloads constructor(
     private val childClipPath = Path()
 
     // Paints
-    private val shadowOuterPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-
-    private val shadowMidPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-
-    private val shadowNearPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-
     private val bodyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
@@ -88,6 +76,16 @@ class LiquidDockView @JvmOverloads constructor(
         setWillNotDraw(false)
         clipChildren = false
         clipToPadding = false
+
+        outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                outline.setRoundRect(0, 0, view.width, view.height, cornerRadius)
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            outlineAmbientShadowColor = Color.argb(0x35, 0, 0, 0)
+            outlineSpotShadowColor = Color.argb(0x45, 0, 0, 0)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             sheenPaint.blendMode = BlendMode.SCREEN
@@ -124,21 +122,9 @@ class LiquidDockView @JvmOverloads constructor(
         val opacity = (1f - (transPercent / 100f)).coerceIn(0.06f, 1.0f)
 
         cornerRadius = 32f * density * scaleFactor
+        invalidateOutline()
 
         dockRect.set(0f, 0f, fw, fh)
-
-        // Floating ambient drop shadows (scaled by opacity)
-        val shadowAlphaOuter = (0x1C * opacity).toInt().coerceIn(0, 255)
-        val shadowAlphaMid = (0x35 * opacity).toInt().coerceIn(0, 255)
-        val shadowAlphaNear = (0x50 * opacity).toInt().coerceIn(0, 255)
-
-        shadowOuterPaint.color = Color.argb(shadowAlphaOuter, 0, 0, 0)
-        shadowMidPaint.color = Color.argb(shadowAlphaMid, 0, 0, 0)
-        shadowNearPaint.color = Color.argb(shadowAlphaNear, 0, 0, 0)
-
-        shadowOuterRect.set(-4f * density, 4f * density, fw + 4f * density, fh + 10f * density)
-        shadowMidRect.set(-2f * density, 2.5f * density, fw + 2f * density, fh + 6f * density)
-        shadowNearRect.set(0f, 1.5f * density, fw, fh + 3f * density)
 
         // 1. Translucent obsidian glass base gradient (scaled by user transparency)
         val topAlpha = (0x80 * opacity).toInt().coerceIn(0x0a, 255)
@@ -239,12 +225,7 @@ class LiquidDockView @JvmOverloads constructor(
         val fh = height.toFloat()
         if (fw <= 0f || fh <= 0f) return
 
-        // 1. Draw multi-pass ambient drop shadows
-        canvas.drawRoundRect(shadowOuterRect, cornerRadius + 4f * density, cornerRadius + 4f * density, shadowOuterPaint)
-        canvas.drawRoundRect(shadowMidRect, cornerRadius + 2f * density, cornerRadius + 2f * density, shadowMidPaint)
-        canvas.drawRoundRect(shadowNearRect, cornerRadius, cornerRadius, shadowNearPaint)
-
-        // 2. Draw translucent glass body
+        // 1. Draw translucent glass body
         canvas.drawRoundRect(dockRect, cornerRadius, cornerRadius, bodyPaint)
 
         // 3. Draw specular top sheen and bottom shelf reflection inside the rounded glass bounds
