@@ -154,21 +154,24 @@ class KeyInterceptorService : AccessibilityService() {
         return false
     }
 
+    private fun isStandardNavKey(keyCode: Int): Boolean = when (keyCode) {
+        KeyEvent.KEYCODE_DPAD_CENTER,
+        KeyEvent.KEYCODE_ENTER,
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_LEFT,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_BACK,
+        KeyEvent.KEYCODE_ESCAPE,
+        KeyEvent.KEYCODE_HOME -> true
+        else -> false
+    }
+
     override fun onKeyEvent(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         // Instant microsecond bypass for standard navigation keys when overlay is not showing
         if ((!this::overlay.isInitialized || !overlay.isShowing()) && !ConfigManager.isListening(this)) {
-            when (keyCode) {
-                KeyEvent.KEYCODE_DPAD_CENTER,
-                KeyEvent.KEYCODE_ENTER,
-                KeyEvent.KEYCODE_DPAD_UP,
-                KeyEvent.KEYCODE_DPAD_DOWN,
-                KeyEvent.KEYCODE_DPAD_LEFT,
-                KeyEvent.KEYCODE_DPAD_RIGHT,
-                KeyEvent.KEYCODE_BACK,
-                KeyEvent.KEYCODE_ESCAPE,
-                KeyEvent.KEYCODE_HOME -> return false
-            }
+            if (isStandardNavKey(keyCode)) return false
         }
 
         return try {
@@ -185,13 +188,7 @@ class KeyInterceptorService : AccessibilityService() {
 
         // 1. Key Configuration Mode (When user is in Settings assigning a key)
         if (ConfigManager.isListening(this)) {
-            val navKeys = listOf(
-                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
-                KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE, KeyEvent.KEYCODE_HOME
-            )
-            if (navKeys.contains(keyCode)) {
+            if (isStandardNavKey(keyCode)) {
                 return super.onKeyEvent(event)
             }
 

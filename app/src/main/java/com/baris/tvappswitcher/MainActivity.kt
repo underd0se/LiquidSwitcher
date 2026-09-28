@@ -371,46 +371,31 @@ class MainActivity : AppCompatActivity() {
 
         for (btn in buttons) {
             btn.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    v.animate()
-                        .scaleX(1.05f)
-                        .scaleY(1.05f)
-                        .translationZ(8f)
-                        .setDuration(140)
-                        .withLayer()
-                        .start()
-                } else {
-                    v.animate()
-                        .scaleX(1.0f)
-                        .scaleY(1.0f)
-                        .translationZ(0f)
-                        .setDuration(140)
-                        .withLayer()
-                        .start()
-                }
+                val scale = if (hasFocus) 1.05f else 1.0f
+                val transZ = if (hasFocus) 8f else 0f
+                v.animate()
+                    .scaleX(scale)
+                    .scaleY(scale)
+                    .translationZ(transZ)
+                    .setDuration(140)
+                    .withLayer()
+                    .start()
             }
         }
 
         val seekBars = listOf(sbDockSize, sbDockTransparency, sbDockMargin, sbDockDim)
         for (sb in seekBars) {
             sb.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    v.animate()
-                        .scaleX(1.03f)
-                        .scaleY(1.15f)
-                        .translationZ(8f)
-                        .setDuration(150)
-                        .withLayer()
-                        .start()
-                } else {
-                    v.animate()
-                        .scaleX(1.0f)
-                        .scaleY(1.0f)
-                        .translationZ(0f)
-                        .setDuration(150)
-                        .withLayer()
-                        .start()
-                }
+                val scaleX = if (hasFocus) 1.03f else 1.0f
+                val scaleY = if (hasFocus) 1.15f else 1.0f
+                val transZ = if (hasFocus) 8f else 0f
+                v.animate()
+                    .scaleX(scaleX)
+                    .scaleY(scaleY)
+                    .translationZ(transZ)
+                    .setDuration(150)
+                    .withLayer()
+                    .start()
             }
         }
     }

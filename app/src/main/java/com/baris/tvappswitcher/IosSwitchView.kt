@@ -67,25 +67,16 @@ class IosSwitchView @JvmOverloads constructor(
         }
 
         setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                animate()
-                    .scaleX(1.08f)
-                    .scaleY(1.08f)
-                    .translationZ(8f * density)
-                    .setDuration(140L)
-                    .setInterpolator(DecelerateInterpolator())
-                    .withLayer()
-                    .start()
-            } else {
-                animate()
-                    .scaleX(1.0f)
-                    .scaleY(1.0f)
-                    .translationZ(0f)
-                    .setDuration(140L)
-                    .setInterpolator(DecelerateInterpolator())
-                    .withLayer()
-                    .start()
-            }
+            val targetScale = if (hasFocus) 1.08f else 1.0f
+            val targetTransZ = if (hasFocus) 8f * density else 0f
+            animate()
+                .scaleX(targetScale)
+                .scaleY(targetScale)
+                .translationZ(targetTransZ)
+                .setDuration(140L)
+                .setInterpolator(DecelerateInterpolator())
+                .withLayer()
+                .start()
             invalidate()
         }
 

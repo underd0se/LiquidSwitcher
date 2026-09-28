@@ -23,44 +23,32 @@ import androidx.dynamicanimation.animation.SpringForce
 
 class AppSwitcherOverlay(private val context: Context) {
 
-    private class IconSprings(val targetView: View) {
-        val scaleXAnim = SpringAnimation(targetView, DynamicAnimation.SCALE_X).apply {
-            spring = SpringForce().apply {
-                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-                stiffness = 900f
+    private class IconSprings(private val targetView: View) {
+        private fun createSpring(property: DynamicAnimation.ViewProperty) =
+            SpringAnimation(targetView, property).apply {
+                spring = SpringForce().apply {
+                    dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+                    stiffness = 900f
+                }
             }
-        }
-        val scaleYAnim = SpringAnimation(targetView, DynamicAnimation.SCALE_Y).apply {
-            spring = SpringForce().apply {
-                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-                stiffness = 900f
-            }
-        }
-        val transXAnim = SpringAnimation(targetView, DynamicAnimation.TRANSLATION_X).apply {
-            spring = SpringForce().apply {
-                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-                stiffness = 900f
-            }
-        }
-        val transYAnim = SpringAnimation(targetView, DynamicAnimation.TRANSLATION_Y).apply {
-            spring = SpringForce().apply {
-                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
-                stiffness = 900f
-            }
-        }
+
+        private val scaleX = createSpring(DynamicAnimation.SCALE_X)
+        private val scaleY = createSpring(DynamicAnimation.SCALE_Y)
+        private val transX = createSpring(DynamicAnimation.TRANSLATION_X)
+        private val transY = createSpring(DynamicAnimation.TRANSLATION_Y)
 
         fun animateTo(targetScale: Float, targetX: Float, targetY: Float) {
-            scaleXAnim.animateToFinalPosition(targetScale)
-            scaleYAnim.animateToFinalPosition(targetScale)
-            transXAnim.animateToFinalPosition(targetX)
-            transYAnim.animateToFinalPosition(targetY)
+            scaleX.animateToFinalPosition(targetScale)
+            scaleY.animateToFinalPosition(targetScale)
+            transX.animateToFinalPosition(targetX)
+            transY.animateToFinalPosition(targetY)
         }
 
         fun cancel() {
-            scaleXAnim.cancel()
-            scaleYAnim.cancel()
-            transXAnim.cancel()
-            transYAnim.cancel()
+            scaleX.cancel()
+            scaleY.cancel()
+            transX.cancel()
+            transY.cancel()
         }
     }
 
@@ -459,11 +447,6 @@ class AppSwitcherOverlay(private val context: Context) {
                 if (iconView.width > 0 && iconView.height > 0) {
                     iconView.pivotX = iconView.width / 2f
                     iconView.pivotY = iconView.height * 0.95f
-                } else {
-                    iconView.post {
-                        iconView.pivotX = iconView.width / 2f
-                        iconView.pivotY = iconView.height * 0.95f
-                    }
                 }
 
                 iconSprings.getOrNull(i)?.animateTo(targetScale, targetShiftX, targetLiftY)
