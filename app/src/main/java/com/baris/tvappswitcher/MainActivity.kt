@@ -377,6 +377,7 @@ class MainActivity : AppCompatActivity() {
                         .scaleY(1.05f)
                         .translationZ(8f)
                         .setDuration(140)
+                        .withLayer()
                         .start()
                 } else {
                     v.animate()
@@ -384,6 +385,7 @@ class MainActivity : AppCompatActivity() {
                         .scaleY(1.0f)
                         .translationZ(0f)
                         .setDuration(140)
+                        .withLayer()
                         .start()
                 }
             }
@@ -398,6 +400,7 @@ class MainActivity : AppCompatActivity() {
                         .scaleY(1.15f)
                         .translationZ(8f)
                         .setDuration(150)
+                        .withLayer()
                         .start()
                 } else {
                     v.animate()
@@ -405,6 +408,7 @@ class MainActivity : AppCompatActivity() {
                         .scaleY(1.0f)
                         .translationZ(0f)
                         .setDuration(150)
+                        .withLayer()
                         .start()
                 }
             }

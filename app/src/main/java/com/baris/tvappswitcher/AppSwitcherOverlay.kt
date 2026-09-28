@@ -2,6 +2,7 @@ package com.baris.tvappswitcher
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -9,13 +10,59 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 
 class AppSwitcherOverlay(private val context: Context) {
+
+    private class IconSprings(val targetView: View) {
+        val scaleXAnim = SpringAnimation(targetView, DynamicAnimation.SCALE_X).apply {
+            spring = SpringForce().apply {
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+                stiffness = 900f
+            }
+        }
+        val scaleYAnim = SpringAnimation(targetView, DynamicAnimation.SCALE_Y).apply {
+            spring = SpringForce().apply {
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+                stiffness = 900f
+            }
+        }
+        val transXAnim = SpringAnimation(targetView, DynamicAnimation.TRANSLATION_X).apply {
+            spring = SpringForce().apply {
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+                stiffness = 900f
+            }
+        }
+        val transYAnim = SpringAnimation(targetView, DynamicAnimation.TRANSLATION_Y).apply {
+            spring = SpringForce().apply {
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+                stiffness = 900f
+            }
+        }
+
+        fun animateTo(targetScale: Float, targetX: Float, targetY: Float) {
+            scaleXAnim.animateToFinalPosition(targetScale)
+            scaleYAnim.animateToFinalPosition(targetScale)
+            transXAnim.animateToFinalPosition(targetX)
+            transYAnim.animateToFinalPosition(targetY)
+        }
+
+        fun cancel() {
+            scaleXAnim.cancel()
+            scaleYAnim.cancel()
+            transXAnim.cancel()
+            transYAnim.cancel()
+        }
+    }
 
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var overlayView: View? = null
@@ -36,6 +83,7 @@ class AppSwitcherOverlay(private val context: Context) {
     private var hsvOverlay: HorizontalScrollView? = null
     private var llApps: LinearLayout? = null
     private val itemViews = mutableListOf<View>()
+    private val iconSprings = mutableListOf<IconSprings>()
     private var isFirstTooltipPlacement = true
 
     fun isShowing(): Boolean = isVisible && !isDismissing
@@ -59,6 +107,7 @@ class AppSwitcherOverlay(private val context: Context) {
                 isVisible = false
                 isDismissing = false
                 isFirstTooltipPlacement = true
+                iconSprings.forEach { it.cancel() }
             }
             if (!isVisible || overlayView?.isAttachedToWindow != true) {
                 createAndAddView()
@@ -107,7 +156,8 @@ class AppSwitcherOverlay(private val context: Context) {
         mainHandler.removeCallbacksAndMessages(null)
         overlayView?.animate()?.cancel()
         vDockCountdown?.animate()?.cancel()
-        itemViews.forEach { it.findViewById<View>(R.id.flIconContainer)?.animate()?.cancel() }
+        iconSprings.forEach { it.cancel() }
+        iconSprings.clear()
         try {
             if (overlayView?.isAttachedToWindow == true) {
                 windowManager.removeView(overlayView)
@@ -135,7 +185,8 @@ class AppSwitcherOverlay(private val context: Context) {
             .scaleX(0.96f)
             .scaleY(0.96f)
             .setDuration(120)
-            .setInterpolator(android.view.animation.AccelerateInterpolator())
+            .setInterpolator(AccelerateInterpolator())
+            .withLayer()
             .withEndAction {
                 try {
                     if (view.isAttachedToWindow) {
@@ -147,6 +198,7 @@ class AppSwitcherOverlay(private val context: Context) {
                 isVisible = false
                 isDismissing = false
                 isFirstTooltipPlacement = true
+                iconSprings.forEach { it.cancel() }
                 onComplete?.invoke()
             }
             .start()
@@ -203,6 +255,11 @@ class AppSwitcherOverlay(private val context: Context) {
         )
 
         val dimFlag = if (dimPercent > 0) WindowManager.LayoutParams.FLAG_DIM_BEHIND else 0
+        val blurFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+        } else {
+            0
+        }
         @Suppress("InlinedApi")
         val overlayType = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
 
@@ -213,12 +270,16 @@ class AppSwitcherOverlay(private val context: Context) {
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    dimFlag,
+                    dimFlag or
+                    blurFlag,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             dimAmount = (dimPercent / 100f).coerceIn(0f, 0.8f)
             y = 0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                blurBehindRadius = (22f * density).toInt()
+            }
         }
 
         view.translationY = 48f * density
@@ -241,8 +302,9 @@ class AppSwitcherOverlay(private val context: Context) {
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setDuration(160)
-                .setInterpolator(DecelerateInterpolator(1.6f))
+                .setDuration(180)
+                .setInterpolator(OvershootInterpolator(1.15f))
+                .withLayer()
                 .start()
 
             Log.d("AppSwitcherOverlay", "Dock overlay view added successfully with entrance animation")
@@ -283,6 +345,8 @@ class AppSwitcherOverlay(private val context: Context) {
 
         container.removeAllViews()
         itemViews.clear()
+        iconSprings.forEach { it.cancel() }
+        iconSprings.clear()
 
         val inflater = LayoutInflater.from(context)
         for (i in currentApps.indices) {
@@ -306,6 +370,11 @@ class AppSwitcherOverlay(private val context: Context) {
             }
             flIcon.clipToOutline = true
 
+            flIcon.post {
+                flIcon.pivotX = flIcon.width / 2f
+                flIcon.pivotY = flIcon.height * 0.95f
+            }
+
             val ivIcon = itemView.findViewById<ImageView>(R.id.ivOverlayAppIcon)
             ivIcon.setImageDrawable(AppRepository.getAppIcon(context, app))
             ivIcon.contentDescription = app.name
@@ -313,6 +382,7 @@ class AppSwitcherOverlay(private val context: Context) {
 
             container.addView(itemView)
             itemViews.add(itemView)
+            iconSprings.add(IconSprings(flIcon))
         }
     }
 
@@ -395,21 +465,7 @@ class AppSwitcherOverlay(private val context: Context) {
                     }
                 }
 
-                // Explicit Interpolator interface type ensures 100% API 21+ backwards-compatibility
-                val interpolator: android.view.animation.Interpolator = if (dist == 0) {
-                    DecelerateInterpolator(1.6f)
-                } else {
-                    DecelerateInterpolator(1.5f)
-                }
-
-                iconView.animate()
-                    .scaleX(targetScale)
-                    .scaleY(targetScale)
-                    .translationX(targetShiftX)
-                    .translationY(targetLiftY)
-                    .setDuration(180)
-                    .setInterpolator(interpolator)
-                    .start()
+                iconSprings.getOrNull(i)?.animateTo(targetScale, targetShiftX, targetLiftY)
             }
 
             if (dist == 0) {
@@ -445,6 +501,7 @@ class AppSwitcherOverlay(private val context: Context) {
                     .alpha(1f)
                     .setDuration(160)
                     .setInterpolator(DecelerateInterpolator())
+                    .withLayer()
                     .start()
             } else {
                 container.translationX = targetTranslationX

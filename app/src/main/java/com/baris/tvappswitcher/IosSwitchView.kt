@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Build
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.SoundEffectConstants
@@ -61,7 +62,9 @@ class IosSwitchView @JvmOverloads constructor(
     init {
         isFocusable = true
         isClickable = true
-        setLayerType(LAYER_TYPE_SOFTWARE, null)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            setLayerType(LAYER_TYPE_SOFTWARE, null)
+        }
 
         setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -71,6 +74,7 @@ class IosSwitchView @JvmOverloads constructor(
                     .translationZ(8f * density)
                     .setDuration(140L)
                     .setInterpolator(DecelerateInterpolator())
+                    .withLayer()
                     .start()
             } else {
                 animate()
@@ -79,6 +83,7 @@ class IosSwitchView @JvmOverloads constructor(
                     .translationZ(0f)
                     .setDuration(140L)
                     .setInterpolator(DecelerateInterpolator())
+                    .withLayer()
                     .start()
             }
             invalidate()
@@ -186,6 +191,7 @@ class IosSwitchView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
+        animate()?.cancel()
         animator?.cancel()
         super.onDetachedFromWindow()
     }

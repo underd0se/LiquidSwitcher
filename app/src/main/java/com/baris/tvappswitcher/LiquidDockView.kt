@@ -1,13 +1,17 @@
 package com.baris.tvappswitcher
 
 import android.content.Context
+import android.graphics.BlendMode
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.graphics.Shader
+import android.os.Build
 import android.util.AttributeSet
 import android.widget.FrameLayout
 
@@ -84,6 +88,18 @@ class LiquidDockView @JvmOverloads constructor(
         setWillNotDraw(false)
         clipChildren = false
         clipToPadding = false
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            sheenPaint.blendMode = BlendMode.SCREEN
+            bottomCatchPaint.blendMode = BlendMode.SCREEN
+            outerRimPaint.blendMode = BlendMode.OVERLAY
+            topMicroHighlightPaint.blendMode = BlendMode.SCREEN
+        } else {
+            val screenXfermode = PorterDuffXfermode(PorterDuff.Mode.SCREEN)
+            sheenPaint.xfermode = screenXfermode
+            bottomCatchPaint.xfermode = screenXfermode
+            topMicroHighlightPaint.xfermode = screenXfermode
+        }
     }
 
     fun refreshCustomization() {
