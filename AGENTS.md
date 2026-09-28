@@ -20,15 +20,17 @@ adb -s 192.168.50.247:5555 shell "rm -f /data/local/tmp/screen.png"
 
 ## Autonomous Subagent Delegation & Dynamic Routing (Laya MLX Protocol)
 
-To optimize context window usage and minimize cloud tokens in TVAppSwitcher:
+To eliminate the "micro-delegation tax" and keep iterations fast:
 
-### 1. Autonomous Task Decomposition
-Do not run heavy or noisy operations monolithically in the primary thread. Autonomously decompose and delegate them to background subagents:
-- **Builds & Tests**: Gradle builds (`./gradlew assembleDebug`, `./gradlew test`), linting, and APK verification.
-- **Log Scraping & Device Diagnostics**: Long-running ADB logcat parsing, keycode event tests, or inspecting device state (`adb shell ...`).
-- **Multi-File Audits & Exploration**: Semantic source retrieval with `jg "<question>" .` or reviewing strings (`values/`, `values-tr/`), layout XMLs, or accessibility configs in parallel.
+### 1. Direct Execution in Primary Thread
+- **Always run directly via `run_command` in the primary thread**: Gradle builds (`./gradlew assembleDebug`, `./gradlew test`), ADB commands (`adb install`, `dumpsys`, logcat, keyevents), and screenshot pulls. Spawning subagents for these commands creates severe token and latency penalties.
 
-### 2. Zero-Token Local Routing via Laya-MLX
+### 2. When to Delegate to Subagents
+Delegate via `invoke_subagent` ONLY for:
+- **Parallel Multi-File Audits**: Concurrently auditing XML layouts, strings, and accessibility configs.
+- **Broad Source Exploration**: Using `jg "<question>" .` across unfamiliar codebases.
+
+### 3. Local Routing via Laya-MLX
 Before spawning each subagent via `invoke_subagent`:
-1. Run `laya-route --tier-only "<subagent task description>"` locally in sub-15ms.
-2. Pass the resulting tier directly to `invoke_subagent`'s `Model` parameter (`flash_lite`, `flash`, or `pro`).
+1. Run `laya-route --tier-only "<subagent task description>"` locally in sub-20ms.
+2. Pass the resulting tier directly to `invoke_subagent`'s `Model` parameter (`flash_lite`, `flash`, or `pro`). Utility tasks must be capped to `flash_lite` or `flash`.
