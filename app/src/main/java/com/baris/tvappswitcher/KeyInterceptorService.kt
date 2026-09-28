@@ -169,8 +169,8 @@ class KeyInterceptorService : AccessibilityService() {
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
-        // Instant microsecond bypass for standard navigation keys when overlay is not showing
-        if ((!this::overlay.isInitialized || !overlay.isShowing()) && !ConfigManager.isListening(this)) {
+        // Instant microsecond bypass for standard navigation keys when overlay is not visible
+        if ((!this::overlay.isInitialized || !overlay.isVisible()) && !ConfigManager.isListening(this)) {
             if (isStandardNavKey(keyCode)) return false
         }
 
@@ -210,8 +210,24 @@ class KeyInterceptorService : AccessibilityService() {
         val customMappings = ConfigManager.getCustomMappings(this)
         val singleKeyMode = ConfigManager.isSingleKeyMode(this)
 
-        // 2. If Overlay is Currently Showing on Screen
-        if (overlay.isShowing()) {
+        // 2. If Overlay is Currently Visible on Screen (Showing or Dismissing)
+        if (overlay.isVisible()) {
+            val isHandledNavKey = when (keyCode) {
+                nextKey, prevKey,
+                KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT,
+                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
+                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE -> true
+                else -> false
+            }
+
+            if (overlay.isDismissing()) {
+                // While dock is in its exit animation, swallow key events so no orphan clicks or navigation leaks through
+                if (isHandledNavKey) return true
+                if (action == KeyEvent.ACTION_DOWN) return true
+                return super.onKeyEvent(event)
+            }
+
             if (action == KeyEvent.ACTION_DOWN) {
                 if (isKeyThrottled(event)) {
                     return true
@@ -244,14 +260,7 @@ class KeyInterceptorService : AccessibilityService() {
                     }
                 }
             } else if (action == KeyEvent.ACTION_UP) {
-                val handledKeys = listOf(
-                    nextKey, prevKey,
-                    KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT,
-                    KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
-                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                    KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE
-                )
-                if (handledKeys.contains(keyCode)) {
+                if (isHandledNavKey) {
                     return true
                 }
             }

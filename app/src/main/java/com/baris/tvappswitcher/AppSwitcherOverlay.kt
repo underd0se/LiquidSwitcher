@@ -75,6 +75,8 @@ class AppSwitcherOverlay(private val context: Context) {
     private var isFirstTooltipPlacement = true
 
     fun isShowing(): Boolean = isVisible && !isDismissing
+    fun isVisible(): Boolean = isVisible
+    fun isDismissing(): Boolean = isDismissing
 
     fun show(apps: List<AppInfo>, initialIndex: Int, onSelected: (AppInfo) -> Unit) {
         if (apps.isEmpty()) return
@@ -144,14 +146,21 @@ class AppSwitcherOverlay(private val context: Context) {
         mainHandler.removeCallbacksAndMessages(null)
         overlayView?.animate()?.cancel()
         vDockCountdown?.animate()?.cancel()
+        llDockTooltipContainer?.animate()?.cancel()
         iconSprings.forEach { it.cancel() }
         iconSprings.clear()
+        itemViews.clear()
         try {
             if (overlayView?.isAttachedToWindow == true) {
                 windowManager.removeView(overlayView)
             }
         } catch (_: Exception) {}
         overlayView = null
+        llApps = null
+        hsvOverlay = null
+        tvDockTooltip = null
+        llDockTooltipContainer = null
+        vDockCountdown = null
         isVisible = false
         isDismissing = false
     }
@@ -160,6 +169,7 @@ class AppSwitcherOverlay(private val context: Context) {
         mainHandler.removeCallbacks(autoDismissRunnable)
         vDockCountdown?.animate()?.cancel()
         vDockCountdown?.visibility = View.GONE
+        llDockTooltipContainer?.animate()?.cancel()
         iconSprings.forEach { it.cancel() }
         val view = overlayView
         if (!isVisible || view == null || isDismissing) {
@@ -313,9 +323,11 @@ class AppSwitcherOverlay(private val context: Context) {
         val padH = (12f * density * scale).toInt()
         val padV = (8f * density * scale).toInt()
 
-        val canReuse = itemViews.size == currentApps.size && currentApps.indices.all { i ->
-            (itemViews[i].tag as? String) == currentApps[i].packageName
-        }
+        val canReuse = itemViews.size == currentApps.size &&
+                container.childCount == itemViews.size &&
+                currentApps.indices.all { i ->
+                    (itemViews[i].tag as? String) == currentApps[i].packageName
+                }
 
         if (canReuse) {
             for (i in currentApps.indices) {

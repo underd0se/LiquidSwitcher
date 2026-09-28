@@ -116,15 +116,22 @@ class MainActivity : AppCompatActivity() {
         ConfigManager.setListening(this, false)
     }
 
+    private fun isStandardNavKey(keyCode: Int): Boolean = when (keyCode) {
+        KeyEvent.KEYCODE_DPAD_UP,
+        KeyEvent.KEYCODE_DPAD_DOWN,
+        KeyEvent.KEYCODE_DPAD_LEFT,
+        KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_DPAD_CENTER,
+        KeyEvent.KEYCODE_ENTER,
+        KeyEvent.KEYCODE_BACK,
+        KeyEvent.KEYCODE_ESCAPE,
+        KeyEvent.KEYCODE_HOME -> true
+        else -> false
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (ConfigManager.isListening(this)) {
-            val navKeys = listOf(
-                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
-                KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_HOME
-            )
-            if (navKeys.contains(event.keyCode)) {
+            if (isStandardNavKey(event.keyCode)) {
                 return super.dispatchKeyEvent(event)
             }
 
@@ -931,13 +938,7 @@ class MainActivity : AppCompatActivity() {
                 ConfigManager.setListening(this, false)
             }
             .setOnKeyListener { _, keyCode, event ->
-                val navKeys = listOf(
-                    KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
-                    KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
-                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                    KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_HOME
-                )
-                if (navKeys.contains(keyCode)) {
+                if (isStandardNavKey(keyCode)) {
                     return@setOnKeyListener false
                 }
                 if (event.action == KeyEvent.ACTION_DOWN) {
@@ -977,13 +978,7 @@ class MainActivity : AppCompatActivity() {
                 testDialogTextView = null
             }
             .setOnKeyListener { _, keyCode, event ->
-                val navKeys = listOf(
-                    KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
-                    KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
-                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                    KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_HOME
-                )
-                if (navKeys.contains(keyCode)) {
+                if (isStandardNavKey(keyCode)) {
                     return@setOnKeyListener false
                 }
                 if (event.action == KeyEvent.ACTION_DOWN) {

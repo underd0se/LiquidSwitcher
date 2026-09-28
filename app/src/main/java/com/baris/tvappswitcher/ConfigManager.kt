@@ -162,9 +162,21 @@ object ConfigManager {
     }
 
     fun removeCustomMapping(context: Context, keyCode: Int) {
+        removeCustomMappings(context, listOf(keyCode))
+    }
+
+    fun removeCustomMappings(context: Context, keyCodes: Collection<Int>) {
+        if (keyCodes.isEmpty()) return
         val mappings = getCustomMappings(context).toMutableMap()
-        mappings.remove(keyCode)
-        getPrefs(context).edit().putString(KEY_CUSTOM_MAPPINGS, Gson().toJson(mappings)).apply()
+        var changed = false
+        for (code in keyCodes) {
+            if (mappings.remove(code) != null) {
+                changed = true
+            }
+        }
+        if (changed) {
+            getPrefs(context).edit().putString(KEY_CUSTOM_MAPPINGS, Gson().toJson(mappings)).apply()
+        }
     }
 
     fun getEnabledPackages(context: Context): Set<String>? {

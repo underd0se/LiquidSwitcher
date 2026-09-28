@@ -112,9 +112,8 @@ object AppRepository {
 
                 mainHandler.post {
                     onComplete?.invoke()
-                    synchronized(listeners) {
-                        listeners.forEach { it.invoke() }
-                    }
+                    val callbacks = synchronized(listeners) { listeners.toList() }
+                    callbacks.forEach { it.invoke() }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading installed TV apps in background", e)
@@ -146,7 +145,9 @@ object AppRepository {
             val customMappings = ConfigManager.getCustomMappings(context)
             if (customMappings.isNotEmpty()) {
                 val invalidKeys = customMappings.filter { !installedPackages.contains(it.value) }.keys
-                invalidKeys.forEach { ConfigManager.removeCustomMapping(context, it) }
+                if (invalidKeys.isNotEmpty()) {
+                    ConfigManager.removeCustomMappings(context, invalidKeys)
+                }
             }
         } catch (e: Exception) {
             Log.w(TAG, "Error pruning uninstalled packages", e)
