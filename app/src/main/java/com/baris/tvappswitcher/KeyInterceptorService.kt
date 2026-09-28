@@ -326,8 +326,8 @@ class KeyInterceptorService : AccessibilityService() {
                     addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
                     setPackage(targetPackage)
                 }
-                val list = pm.queryIntentActivities(leanbackIntent, 0)
-                val targetInfo = list.firstOrNull() ?: pm.queryIntentActivities(
+                val list = pm.compatQueryIntentActivities(leanbackIntent, 0)
+                val targetInfo = list.firstOrNull() ?: pm.compatQueryIntentActivities(
                     Intent(Intent.ACTION_MAIN, null).apply {
                         addCategory(Intent.CATEGORY_LAUNCHER)
                         setPackage(targetPackage)

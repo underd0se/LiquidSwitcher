@@ -165,7 +165,7 @@ object AppRepository {
             val pm = context.packageManager
             val intent = pm.getLaunchIntentForPackage(app.packageName)
             val drawable = if (intent != null) {
-                val ri = pm.resolveActivity(intent, 0)
+                val ri = pm.compatResolveActivity(intent, 0)
                 ri?.activityInfo?.loadIcon(pm) ?: pm.getApplicationIcon(app.packageName)
             } else {
                 pm.getApplicationIcon(app.packageName)
@@ -187,7 +187,7 @@ object AppRepository {
         val leanbackIntent = Intent(Intent.ACTION_MAIN).apply {
             addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
         }
-        val leanbackList = pm.queryIntentActivities(leanbackIntent, 0)
+        val leanbackList = pm.compatQueryIntentActivities(leanbackIntent, 0)
         for (ri in leanbackList) {
             val pkg = ri.activityInfo.packageName
             if (pkg == selfPkg) continue
@@ -213,7 +213,7 @@ object AppRepository {
         val standardIntent = Intent(Intent.ACTION_MAIN).apply {
             addCategory(Intent.CATEGORY_LAUNCHER)
         }
-        val standardList = pm.queryIntentActivities(standardIntent, 0)
+        val standardList = pm.compatQueryIntentActivities(standardIntent, 0)
         for (ri in standardList) {
             val pkg = ri.activityInfo.packageName
             if (pkg == selfPkg || appsMap.containsKey(pkg)) continue

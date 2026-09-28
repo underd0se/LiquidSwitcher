@@ -167,18 +167,9 @@ class AppSwitcherOverlay(private val context: Context) {
             hsvOverlay = it.findViewById(R.id.hsvOverlay)
             llApps = it.findViewById(R.id.llOverlayApps)
 
-            // API 21+ compatible scroll listener
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                hsvOverlay?.setOnScrollChangeListener { _, _, _, _, _ ->
-                    if (ConfigManager.isShowAppNameEnabled(context)) {
-                        syncTooltipPosition(animate = false)
-                    }
-                }
-            } else {
-                hsvOverlay?.viewTreeObserver?.addOnScrollChangedListener {
-                    if (ConfigManager.isShowAppNameEnabled(context)) {
-                        syncTooltipPosition(animate = false)
-                    }
+            hsvOverlay?.setOnScrollChangeListener { _, _, _, _, _ ->
+                if (ConfigManager.isShowAppNameEnabled(context)) {
+                    syncTooltipPosition(animate = false)
                 }
             }
         }

@@ -26,8 +26,6 @@ object ConfigManager {
     private const val KEY_SINGLE_KEY_MODE = "single_key_mode"
     private const val KEY_SHOW_COUNTDOWN_BAR = "show_countdown_bar"
     private const val KEY_SHOW_APP_NAME = "show_app_name"
-    private const val KEY_LAST_APP_KEY = "key_last_app"
-    private const val KEY_LONG_PRESS_TRIGGER = "key_long_press_trigger"
 
     enum class SortMode(val key: String, val label: String) {
         NAME("NAME", "Alphabetical (A - Z)"),
