@@ -171,6 +171,8 @@ class AppSwitcherOverlay(private val context: Context) {
     private fun dismissInternal(onComplete: (() -> Unit)? = null) {
         mainHandler.removeCallbacks(autoDismissRunnable)
         vDockCountdown?.animate()?.cancel()
+        vDockCountdown?.visibility = View.GONE
+        iconSprings.forEach { it.cancel() }
         val view = overlayView
         if (!isVisible || view == null || isDismissing) {
             onComplete?.invoke()
@@ -186,8 +188,8 @@ class AppSwitcherOverlay(private val context: Context) {
             .scaleY(0.96f)
             .setDuration(120)
             .setInterpolator(AccelerateInterpolator())
-            .withLayer()
             .withEndAction {
+                view.visibility = View.GONE
                 try {
                     if (view.isAttachedToWindow) {
                         windowManager.removeView(view)
@@ -198,7 +200,6 @@ class AppSwitcherOverlay(private val context: Context) {
                 isVisible = false
                 isDismissing = false
                 isFirstTooltipPlacement = true
-                iconSprings.forEach { it.cancel() }
                 onComplete?.invoke()
             }
             .start()
@@ -282,6 +283,7 @@ class AppSwitcherOverlay(private val context: Context) {
             }
         }
 
+        view.visibility = View.VISIBLE
         view.translationY = 48f * density
         view.alpha = 0f
         view.scaleX = 0.96f
@@ -303,8 +305,7 @@ class AppSwitcherOverlay(private val context: Context) {
                 .scaleX(1f)
                 .scaleY(1f)
                 .setDuration(180)
-                .setInterpolator(OvershootInterpolator(1.15f))
-                .withLayer()
+                .setInterpolator(DecelerateInterpolator(1.6f))
                 .start()
 
             Log.d("AppSwitcherOverlay", "Dock overlay view added successfully with entrance animation")

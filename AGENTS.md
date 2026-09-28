@@ -26,7 +26,7 @@ To optimize context window usage and minimize cloud tokens in TVAppSwitcher:
 Do not run heavy or noisy operations monolithically in the primary thread. Autonomously decompose and delegate them to background subagents:
 - **Builds & Tests**: Gradle builds (`./gradlew assembleDebug`, `./gradlew test`), linting, and APK verification.
 - **Log Scraping & Device Diagnostics**: Long-running ADB logcat parsing, keycode event tests, or inspecting device state (`adb shell ...`).
-- **Multi-File Audits**: Reviewing strings (`values/`, `values-tr/`), layout XMLs, or accessibility configs in parallel.
+- **Multi-File Audits & Exploration**: Semantic source retrieval with `jg "<question>" .` or reviewing strings (`values/`, `values-tr/`), layout XMLs, or accessibility configs in parallel.
 
 ### 2. Zero-Token Local Routing via Laya-MLX
 Before spawning each subagent via `invoke_subagent`:
