@@ -102,7 +102,7 @@ class KeyInterceptorService : AccessibilityService() {
             val info = serviceInfo ?: AccessibilityServiceInfo()
             info.flags = info.flags or AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
             info.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-            info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
+            info.feedbackType = 0
             serviceInfo = info
         } catch (e: Exception) {
             Log.e("KeyInterceptorService", "Error configuring service info", e)
@@ -155,6 +155,22 @@ class KeyInterceptorService : AccessibilityService() {
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
+        val keyCode = event.keyCode
+        // Instant microsecond bypass for standard navigation keys when overlay is not showing
+        if ((!this::overlay.isInitialized || !overlay.isShowing()) && !ConfigManager.isListening(this)) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_CENTER,
+                KeyEvent.KEYCODE_ENTER,
+                KeyEvent.KEYCODE_DPAD_UP,
+                KeyEvent.KEYCODE_DPAD_DOWN,
+                KeyEvent.KEYCODE_DPAD_LEFT,
+                KeyEvent.KEYCODE_DPAD_RIGHT,
+                KeyEvent.KEYCODE_BACK,
+                KeyEvent.KEYCODE_ESCAPE,
+                KeyEvent.KEYCODE_HOME -> return false
+            }
+        }
+
         return try {
             handleKeyEventInternal(event)
         } catch (t: Throwable) {
@@ -166,19 +182,6 @@ class KeyInterceptorService : AccessibilityService() {
     private fun handleKeyEventInternal(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val action = event.action
-        Log.d("KeyInterceptorService", "Received key event: code=$keyCode, action=$action, repeat=${event.repeatCount}")
-
-        // Fast path for DPAD and standard navigation keys so zero delay is introduced
-        if (!overlay.isShowing() && !ConfigManager.isListening(this)) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER ||
-                keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN ||
-                keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
-                keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE ||
-                keyCode == KeyEvent.KEYCODE_HOME
-            ) {
-                return false
-            }
-        }
 
         // 1. Key Configuration Mode (When user is in Settings assigning a key)
         if (ConfigManager.isListening(this)) {
