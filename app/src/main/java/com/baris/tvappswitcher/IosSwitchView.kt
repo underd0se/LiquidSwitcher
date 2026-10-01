@@ -25,30 +25,35 @@ import android.widget.Checkable
  * - TV Focus feedback: Cyan focus ring + subtle scale elevation
  * - Hardware key navigation (DPAD_CENTER, ENTER) and Checkable contract
  */
-class IosSwitchView @JvmOverloads constructor(
+class IosSwitchView
+@JvmOverloads
+constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr), Checkable {
-
+    defStyleAttr: Int = 0,
+) : View(context, attrs, defStyleAttr),
+    Checkable {
     private val density = resources.displayMetrics.density
 
     private val trackRect = RectF()
     private val focusRingRect = RectF()
 
-    private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-    private val thumbPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = Color.WHITE
-        setShadowLayer(2.5f * density, 0f, 1.5f * density, 0x4D000000)
-    }
-    private val focusRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = 2f * density
-        color = Color.parseColor("#00E5FF")
-    }
+    private val trackPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+        }
+    private val thumbPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+            color = Color.WHITE
+            setShadowLayer(2.5f * density, 0f, 1.5f * density, 0x4D000000)
+        }
+    private val focusRingPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 2f * density
+            color = Color.parseColor("#00E5FF")
+        }
 
     private val offTrackColor = Color.parseColor("#38394A")
     private val onTrackColor = Color.parseColor("#34C759")
@@ -95,22 +100,26 @@ class IosSwitchView @JvmOverloads constructor(
         setChecked(checked, animate = isAttachedToWindow)
     }
 
-    fun setChecked(checked: Boolean, animate: Boolean) {
+    fun setChecked(
+        checked: Boolean,
+        animate: Boolean,
+    ) {
         if (this.isCheckedState == checked) return
         this.isCheckedState = checked
 
         animator?.cancel()
         if (animate) {
             val target = if (checked) 1f else 0f
-            animator = ValueAnimator.ofFloat(progress, target).apply {
-                duration = 180L
-                interpolator = DecelerateInterpolator()
-                addUpdateListener { va ->
-                    progress = va.animatedValue as Float
-                    invalidate()
+            animator =
+                ValueAnimator.ofFloat(progress, target).apply {
+                    duration = 180L
+                    interpolator = DecelerateInterpolator()
+                    addUpdateListener { va ->
+                        progress = va.animatedValue as Float
+                        invalidate()
+                    }
+                    start()
                 }
-                start()
-            }
         } else {
             progress = if (checked) 1f else 0f
             invalidate()
@@ -124,7 +133,10 @@ class IosSwitchView @JvmOverloads constructor(
         setChecked(!isCheckedState, animate = true)
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+    override fun onKeyDown(
+        keyCode: Int,
+        event: KeyEvent?,
+    ): Boolean {
         if (!isEnabled) return super.onKeyDown(keyCode, event)
         if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
             toggle()
@@ -133,7 +145,10 @@ class IosSwitchView @JvmOverloads constructor(
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int,
+    ) {
         val defW = (54f * density).toInt()
         val defH = (32f * density).toInt()
         val w = resolveSize(defW, widthMeasureSpec)
@@ -166,7 +181,7 @@ class IosSwitchView @JvmOverloads constructor(
                 trackRect.left - ringPad,
                 trackRect.top - ringPad,
                 trackRect.right + ringPad,
-                trackRect.bottom + ringPad
+                trackRect.bottom + ringPad,
             )
             canvas.drawRoundRect(focusRingRect, trackRadius + ringPad, trackRadius + ringPad, focusRingPaint)
         }

@@ -1,23 +1,23 @@
 package com.baris.tvappswitcher
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class ConfigManagerLogicTest {
-
     @Test
     fun testGsonSerializationRoundTrip() {
         // Custom Mappings
-        val originalMappings = mapOf(
-            183 to "com.netflix.ninja",
-            184 to "com.google.android.youtube.tv"
-        )
+        val originalMappings =
+            mapOf(
+                183 to "com.netflix.ninja",
+                184 to "com.google.android.youtube.tv",
+            )
         val mappingsJson = Gson().toJson(originalMappings)
         val mappingsType = object : TypeToken<Map<Int, String>>() {}.type
         val decodedMappings: Map<Int, String> = Gson().fromJson(mappingsJson, mappingsType)
-        
+
         assertEquals(originalMappings, decodedMappings)
 
         // Custom App Order
@@ -25,7 +25,7 @@ class ConfigManagerLogicTest {
         val orderJson = Gson().toJson(originalOrder)
         val orderType = object : TypeToken<List<String>>() {}.type
         val decodedOrder: List<String> = Gson().fromJson(orderJson, orderType)
-        
+
         assertEquals(originalOrder, decodedOrder)
 
         // Recency map
@@ -33,7 +33,7 @@ class ConfigManagerLogicTest {
         val recencyJson = Gson().toJson(originalRecency)
         val recencyType = object : TypeToken<Map<String, Long>>() {}.type
         val decodedRecency: Map<String, Long> = Gson().fromJson(recencyJson, recencyType)
-        
+
         assertEquals(originalRecency, decodedRecency)
     }
 

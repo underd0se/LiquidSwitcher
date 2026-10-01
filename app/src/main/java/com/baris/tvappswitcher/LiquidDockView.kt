@@ -30,12 +30,13 @@ import android.widget.FrameLayout
  *  6. Razor-sharp top edge micro-highlight line
  *  7. Safe vertical child clipping (allows upward magnification while containing horizontal scrolling)
  */
-class LiquidDockView @JvmOverloads constructor(
+class LiquidDockView
+@JvmOverloads
+constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
-
     private val density = resources.displayMetrics.density
     private var cornerRadius = 32f * density
 
@@ -49,39 +50,48 @@ class LiquidDockView @JvmOverloads constructor(
     private val childClipPath = Path()
 
     // Paints
-    private val bodyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
+    private val bodyPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+        }
 
-    private val sheenPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
+    private val sheenPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+        }
 
-    private val bottomCatchPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
+    private val bottomCatchPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+        }
 
     // Barely visible, hair-thin rim stroke (hairline ~0.5dp / 1px)
-    private val outerRimPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = maxOf(1f, 0.45f * density)
-    }
+    private val outerRimPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = maxOf(1f, 0.45f * density)
+        }
 
-    private val topMicroHighlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = maxOf(1f, 0.6f * density)
-    }
+    private val topMicroHighlightPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = maxOf(1f, 0.6f * density)
+        }
 
     init {
         setWillNotDraw(false)
         clipChildren = false
         clipToPadding = false
 
-        outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                outline.setRoundRect(0, 0, view.width, view.height, cornerRadius)
+        outlineProvider =
+            object : ViewOutlineProvider() {
+                override fun getOutline(
+                    view: View,
+                    outline: Outline,
+                ) {
+                    outline.setRoundRect(0, 0, view.width, view.height, cornerRadius)
+                }
             }
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             outlineAmbientShadowColor = Color.argb(0x35, 0, 0, 0)
             outlineSpotShadowColor = Color.argb(0x45, 0, 0, 0)
@@ -107,13 +117,21 @@ class LiquidDockView @JvmOverloads constructor(
         }
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    override fun onSizeChanged(
+        w: Int,
+        h: Int,
+        oldw: Int,
+        oldh: Int,
+    ) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (w <= 0 || h <= 0) return
         updateGeometryAndShaders(w, h)
     }
 
-    private fun updateGeometryAndShaders(w: Int, h: Int) {
+    private fun updateGeometryAndShaders(
+        w: Int,
+        h: Int,
+    ) {
         val fw = w.toFloat()
         val fh = h.toFloat()
 
@@ -131,77 +149,97 @@ class LiquidDockView @JvmOverloads constructor(
         val midAlpha = (0x95 * opacity).toInt().coerceIn(0x10, 255)
         val botAlpha = (0xAA * opacity).toInt().coerceIn(0x18, 255)
 
-        bodyPaint.shader = LinearGradient(
-            0f, 0f, 0f, fh,
-            intArrayOf(
-                Color.argb(topAlpha, 0x1E, 0x22, 0x33), // Top: Translucent twilight indigo
-                Color.argb(midAlpha, 0x14, 0x17, 0x24), // Mid: Deep charcoal
-                Color.argb(botAlpha, 0x0A, 0x0C, 0x16)  // Bottom: Dark obsidian
-            ),
-            floatArrayOf(0f, 0.45f, 1.0f),
-            Shader.TileMode.CLAMP
-        )
+        bodyPaint.shader =
+            LinearGradient(
+                0f,
+                0f,
+                0f,
+                fh,
+                intArrayOf(
+                    Color.argb(topAlpha, 0x1E, 0x22, 0x33), // Top: Translucent twilight indigo
+                    Color.argb(midAlpha, 0x14, 0x17, 0x24), // Mid: Deep charcoal
+                    Color.argb(botAlpha, 0x0A, 0x0C, 0x16), // Bottom: Dark obsidian
+                ),
+                floatArrayOf(0f, 0.45f, 1.0f),
+                Shader.TileMode.CLAMP,
+            )
 
         // 2. Specular top gloss sheen (curved glass surface reflection)
         val sheenHeight = fh * 0.45f
         sheenRect.set(0f, 0f, fw, sheenHeight)
         val sheenTopAlpha = (0x48 * (0.4f + 0.6f * opacity)).toInt().coerceIn(0, 255)
         val sheenMidAlpha = (0x16 * (0.4f + 0.6f * opacity)).toInt().coerceIn(0, 255)
-        sheenPaint.shader = LinearGradient(
-            0f, 0f, 0f, sheenHeight,
-            intArrayOf(
-                Color.argb(sheenTopAlpha, 0xFF, 0xFF, 0xFF),
-                Color.argb(sheenMidAlpha, 0xFF, 0xFF, 0xFF),
-                Color.argb(0x00, 0xFF, 0xFF, 0xFF)
-            ),
-            floatArrayOf(0f, 0.40f, 1.0f),
-            Shader.TileMode.CLAMP
-        )
+        sheenPaint.shader =
+            LinearGradient(
+                0f,
+                0f,
+                0f,
+                sheenHeight,
+                intArrayOf(
+                    Color.argb(sheenTopAlpha, 0xFF, 0xFF, 0xFF),
+                    Color.argb(sheenMidAlpha, 0xFF, 0xFF, 0xFF),
+                    Color.argb(0x00, 0xFF, 0xFF, 0xFF),
+                ),
+                floatArrayOf(0f, 0.40f, 1.0f),
+                Shader.TileMode.CLAMP,
+            )
 
         // 3. Bottom shelf reflection catch
         val bottomCatchHeight = 12f * density * scaleFactor
         bottomCatchRect.set(0f, fh - bottomCatchHeight, fw, fh)
-        bottomCatchPaint.shader = LinearGradient(
-            0f, fh - bottomCatchHeight, 0f, fh,
-            intArrayOf(
-                Color.argb(0x00, 0xFF, 0xFF, 0xFF),
-                Color.argb((0x1C * opacity).toInt().coerceIn(0, 255), 0xFF, 0xFF, 0xFF)
-            ),
-            null,
-            Shader.TileMode.CLAMP
-        )
+        bottomCatchPaint.shader =
+            LinearGradient(
+                0f,
+                fh - bottomCatchHeight,
+                0f,
+                fh,
+                intArrayOf(
+                    Color.argb(0x00, 0xFF, 0xFF, 0xFF),
+                    Color.argb((0x1C * opacity).toInt().coerceIn(0, 255), 0xFF, 0xFF, 0xFF),
+                ),
+                null,
+                Shader.TileMode.CLAMP,
+            )
 
         // 4. Barely visible, hair-thin specular rim highlight (single hairline stroke)
         outerRimPaint.strokeWidth = maxOf(1f, 0.45f * density)
         val halfRim = outerRimPaint.strokeWidth / 2f
         rimRect.set(halfRim, halfRim, fw - halfRim, fh - halfRim)
-        outerRimPaint.shader = LinearGradient(
-            0f, 0f, fw, fh,
-            intArrayOf(
-                Color.argb(0x65, 0xFF, 0xFF, 0xFF), // Gentle specular corner glint
-                Color.argb(0x22, 0xFF, 0xFF, 0xFF), // Hairline top edge
-                Color.argb(0x0E, 0xFF, 0xFF, 0xFF), // Barely visible ambient side
-                Color.argb(0x18, 0xFF, 0xFF, 0xFF), // Subtle bottom curve
-                Color.argb(0x30, 0xFF, 0xFF, 0xFF)  // Soft bottom corner catch
-            ),
-            floatArrayOf(0f, 0.25f, 0.50f, 0.75f, 1.0f),
-            Shader.TileMode.CLAMP
-        )
+        outerRimPaint.shader =
+            LinearGradient(
+                0f,
+                0f,
+                fw,
+                fh,
+                intArrayOf(
+                    Color.argb(0x65, 0xFF, 0xFF, 0xFF), // Gentle specular corner glint
+                    Color.argb(0x22, 0xFF, 0xFF, 0xFF), // Hairline top edge
+                    Color.argb(0x0E, 0xFF, 0xFF, 0xFF), // Barely visible ambient side
+                    Color.argb(0x18, 0xFF, 0xFF, 0xFF), // Subtle bottom curve
+                    Color.argb(0x30, 0xFF, 0xFF, 0xFF), // Soft bottom corner catch
+                ),
+                floatArrayOf(0f, 0.25f, 0.50f, 0.75f, 1.0f),
+                Shader.TileMode.CLAMP,
+            )
 
         // 5. Razor-sharp top edge micro-highlight line (hairline glint)
         topMicroHighlightPaint.strokeWidth = maxOf(1f, 0.6f * density)
         val hlStart = cornerRadius * 0.7f
         val hlEnd = fw - hlStart
-        topMicroHighlightPaint.shader = LinearGradient(
-            hlStart, 0f, hlEnd, 0f,
-            intArrayOf(
-                Color.argb(0x00, 0xFF, 0xFF, 0xFF),
-                Color.argb(0x60, 0xFF, 0xFF, 0xFF),
-                Color.argb(0x00, 0xFF, 0xFF, 0xFF)
-            ),
-            floatArrayOf(0f, 0.5f, 1.0f),
-            Shader.TileMode.CLAMP
-        )
+        topMicroHighlightPaint.shader =
+            LinearGradient(
+                hlStart,
+                0f,
+                hlEnd,
+                0f,
+                intArrayOf(
+                    Color.argb(0x00, 0xFF, 0xFF, 0xFF),
+                    Color.argb(0x60, 0xFF, 0xFF, 0xFF),
+                    Color.argb(0x00, 0xFF, 0xFF, 0xFF),
+                ),
+                floatArrayOf(0f, 0.5f, 1.0f),
+                Shader.TileMode.CLAMP,
+            )
 
         clipPath.reset()
         clipPath.addRoundRect(dockRect, cornerRadius, cornerRadius, Path.Direction.CW)
@@ -210,12 +248,17 @@ class LiquidDockView @JvmOverloads constructor(
         // but preserves bottom and side curvature so scrolling icons never bleed past left/right ends.
         val topExtension = 90f * density * scaleFactor
         childRect.set(0f, -topExtension, fw, fh)
-        val radii = floatArrayOf(
-            cornerRadius, cornerRadius, // top-left
-            cornerRadius, cornerRadius, // top-right
-            cornerRadius, cornerRadius, // bottom-right
-            cornerRadius, cornerRadius  // bottom-left
-        )
+        val radii =
+            floatArrayOf(
+                cornerRadius,
+                cornerRadius, // top-left
+                cornerRadius,
+                cornerRadius, // top-right
+                cornerRadius,
+                cornerRadius, // bottom-right
+                cornerRadius,
+                cornerRadius, // bottom-left
+            )
         childClipPath.reset()
         childClipPath.addRoundRect(childRect, radii, Path.Direction.CW)
     }
@@ -248,7 +291,7 @@ class LiquidDockView @JvmOverloads constructor(
             halfRim,
             hlEnd,
             halfRim,
-            topMicroHighlightPaint
+            topMicroHighlightPaint,
         )
 
         super.onDraw(canvas)

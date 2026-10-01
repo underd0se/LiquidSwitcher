@@ -1,6 +1,5 @@
 package com.baris.tvappswitcher
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +12,11 @@ import androidx.recyclerview.widget.RecyclerView
 class AppVisibilityAdapter(
     private val apps: List<AppInfo>,
     private val enabledPackages: MutableSet<String>,
-    private val onCountChanged: () -> Unit
+    private val onCountChanged: () -> Unit,
 ) : RecyclerView.Adapter<AppVisibilityAdapter.ViewHolder>() {
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val root: View = view
         val ivIcon: ImageView = view.findViewById(R.id.ivVisIcon)
         val tvName: TextView = view.findViewById(R.id.tvVisName)
@@ -24,13 +24,21 @@ class AppVisibilityAdapter(
         val cbCheck: AppCompatCheckBox = view.findViewById(R.id.cbVisCheck)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_app_visibility, parent, false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
+        val view =
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.item_app_visibility, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         val app = apps[position]
         val isChecked = enabledPackages.contains(app.packageName)
 
@@ -56,7 +64,10 @@ class AppVisibilityAdapter(
         }
     }
 
-    private fun updateStatusView(tvStatus: TextView, isChecked: Boolean) {
+    private fun updateStatusView(
+        tvStatus: TextView,
+        isChecked: Boolean,
+    ) {
         val context = tvStatus.context
         if (isChecked) {
             tvStatus.text = context.getString(R.string.visibility_status_visible)

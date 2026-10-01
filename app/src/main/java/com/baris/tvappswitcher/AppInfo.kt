@@ -5,5 +5,5 @@ import android.graphics.drawable.Drawable
 data class AppInfo(
     val name: String,
     val packageName: String,
-    var icon: Drawable? = null
+    var icon: Drawable? = null,
 )

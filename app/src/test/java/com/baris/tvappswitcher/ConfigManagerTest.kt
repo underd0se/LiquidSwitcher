@@ -7,7 +7,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ConfigManagerTest {
-
     @Test
     fun testSortModeFromKey() {
         assertEquals(ConfigManager.SortMode.NAME, ConfigManager.SortMode.fromKey("NAME"))

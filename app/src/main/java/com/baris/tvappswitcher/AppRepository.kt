@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -20,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  * Automatically monitors package addition, removal, and updates via broadcast.
  */
 object AppRepository {
-
     private const val TAG = "AppRepository"
     private val executor = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -35,26 +33,31 @@ object AppRepository {
 
     private val listeners = mutableListOf<() -> Unit>()
 
-    private val packageChangeReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "Package change detected: ${intent?.action} for ${intent?.data?.schemeSpecificPart}")
-            context?.let { refreshAppsAsync(it.applicationContext) }
+    private val packageChangeReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context?,
+                intent: Intent?,
+            ) {
+                Log.d(TAG, "Package change detected: ${intent?.action} for ${intent?.data?.schemeSpecificPart}")
+                context?.let { refreshAppsAsync(it.applicationContext) }
+            }
         }
-    }
 
     fun init(context: Context) {
         if (isInitialized.compareAndSet(false, true)) {
-            val filter = IntentFilter().apply {
-                addAction(Intent.ACTION_PACKAGE_ADDED)
-                addAction(Intent.ACTION_PACKAGE_REMOVED)
-                addAction(Intent.ACTION_PACKAGE_REPLACED)
-                addDataScheme("package")
-            }
+            val filter =
+                IntentFilter().apply {
+                    addAction(Intent.ACTION_PACKAGE_ADDED)
+                    addAction(Intent.ACTION_PACKAGE_REMOVED)
+                    addAction(Intent.ACTION_PACKAGE_REPLACED)
+                    addDataScheme("package")
+                }
             ContextCompat.registerReceiver(
                 context.applicationContext,
                 packageChangeReceiver,
                 filter,
-                ContextCompat.RECEIVER_EXPORTED
+                ContextCompat.RECEIVER_EXPORTED,
             )
             refreshAppsAsync(context.applicationContext)
         }
@@ -89,15 +92,19 @@ object AppRepository {
     fun getFilteredAndSortedApps(context: Context): List<AppInfo> {
         val allApps = getAllApps(context)
         val enabledFilter = ConfigManager.getEnabledPackages(context)
-        val filtered = if (enabledFilter != null && enabledFilter.isNotEmpty()) {
-            allApps.filter { enabledFilter.contains(it.packageName) }
-        } else {
-            allApps
-        }
+        val filtered =
+            if (enabledFilter != null && enabledFilter.isNotEmpty()) {
+                allApps.filter { enabledFilter.contains(it.packageName) }
+            } else {
+                allApps
+            }
         return ConfigManager.sortApps(context, filtered)
     }
 
-    fun refreshAppsAsync(context: Context, onComplete: (() -> Unit)? = null) {
+    fun refreshAppsAsync(
+        context: Context,
+        onComplete: (() -> Unit)? = null,
+    ) {
         if (isFetching.getAndSet(true)) {
             onComplete?.let { mainHandler.post(it) }
             return
@@ -123,7 +130,10 @@ object AppRepository {
         }
     }
 
-    private fun pruneUninstalledPackages(context: Context, installedPackages: Set<String>) {
+    private fun pruneUninstalledPackages(
+        context: Context,
+        installedPackages: Set<String>,
+    ) {
         if (installedPackages.isEmpty()) return
         try {
             val currentOrder = ConfigManager.getCustomAppOrder(context)
@@ -154,23 +164,27 @@ object AppRepository {
         }
     }
 
-    fun getAppIcon(context: Context, app: AppInfo): android.graphics.drawable.Drawable? {
+    fun getAppIcon(
+        context: Context,
+        app: AppInfo,
+    ): android.graphics.drawable.Drawable? {
         app.icon?.let { return it }
         val cached = iconCache.get(app.packageName)
         if (cached != null) {
             app.icon = cached
             return cached
         }
-        
+
         return try {
             val pm = context.packageManager
             val intent = pm.getLaunchIntentForPackage(app.packageName)
-            val drawable = if (intent != null) {
-                val ri = pm.compatResolveActivity(intent, 0)
-                ri?.activityInfo?.loadIcon(pm) ?: pm.getApplicationIcon(app.packageName)
-            } else {
-                pm.getApplicationIcon(app.packageName)
-            }
+            val drawable =
+                if (intent != null) {
+                    val ri = pm.compatResolveActivity(intent, 0)
+                    ri?.activityInfo?.loadIcon(pm) ?: pm.getApplicationIcon(app.packageName)
+                } else {
+                    pm.getApplicationIcon(app.packageName)
+                }
             iconCache.put(app.packageName, drawable)
             app.icon = drawable
             drawable
@@ -185,22 +199,34 @@ object AppRepository {
         val selfPkg = context.packageName
 
         // 1. Query Leanback Launcher apps (primary TV interface apps)
-        val leanbackIntent = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-        }
+        val leanbackIntent =
+            Intent(Intent.ACTION_MAIN).apply {
+                addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+            }
         val leanbackList = pm.compatQueryIntentActivities(leanbackIntent, 0)
         for (ri in leanbackList) {
             val pkg = ri.activityInfo.packageName
             if (pkg == selfPkg) continue
             try {
-                val rawLabel = try { ri.loadLabel(pm).toString() } catch (e: Exception) { "" }
-                val appLabel = try { pm.getApplicationLabel(ri.activityInfo.applicationInfo).toString() } catch (e: Exception) { "" }
-                val label = when {
-                    appLabel.isNotBlank() && !appLabel.contains('.') -> appLabel
-                    rawLabel.isNotBlank() && !rawLabel.contains('.') -> rawLabel
-                    rawLabel.isNotBlank() -> rawLabel.substringAfterLast('.')
-                    else -> pkg.substringAfterLast('.')
-                }
+                val rawLabel =
+                    try {
+                        ri.loadLabel(pm).toString()
+                    } catch (e: Exception) {
+                        ""
+                    }
+                val appLabel =
+                    try {
+                        pm.getApplicationLabel(ri.activityInfo.applicationInfo).toString()
+                    } catch (e: Exception) {
+                        ""
+                    }
+                val label =
+                    when {
+                        appLabel.isNotBlank() && !appLabel.contains('.') -> appLabel
+                        rawLabel.isNotBlank() && !rawLabel.contains('.') -> rawLabel
+                        rawLabel.isNotBlank() -> rawLabel.substringAfterLast('.')
+                        else -> pkg.substringAfterLast('.')
+                    }
                 val actName = ri.activityInfo.name ?: ""
                 if (ConfigManager.isSystemExcludedApp(pkg, actName, label)) continue
 
@@ -211,22 +237,34 @@ object AppRepository {
         }
 
         // 2. Query Standard Launcher apps as fallback (sideloaded or non-leanback apps)
-        val standardIntent = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_LAUNCHER)
-        }
+        val standardIntent =
+            Intent(Intent.ACTION_MAIN).apply {
+                addCategory(Intent.CATEGORY_LAUNCHER)
+            }
         val standardList = pm.compatQueryIntentActivities(standardIntent, 0)
         for (ri in standardList) {
             val pkg = ri.activityInfo.packageName
             if (pkg == selfPkg || appsMap.containsKey(pkg)) continue
             try {
-                val rawLabel = try { ri.loadLabel(pm).toString() } catch (e: Exception) { "" }
-                val appLabel = try { pm.getApplicationLabel(ri.activityInfo.applicationInfo).toString() } catch (e: Exception) { "" }
-                val label = when {
-                    appLabel.isNotBlank() && !appLabel.contains('.') -> appLabel
-                    rawLabel.isNotBlank() && !rawLabel.contains('.') -> rawLabel
-                    rawLabel.isNotBlank() -> rawLabel.substringAfterLast('.')
-                    else -> pkg.substringAfterLast('.')
-                }
+                val rawLabel =
+                    try {
+                        ri.loadLabel(pm).toString()
+                    } catch (e: Exception) {
+                        ""
+                    }
+                val appLabel =
+                    try {
+                        pm.getApplicationLabel(ri.activityInfo.applicationInfo).toString()
+                    } catch (e: Exception) {
+                        ""
+                    }
+                val label =
+                    when {
+                        appLabel.isNotBlank() && !appLabel.contains('.') -> appLabel
+                        rawLabel.isNotBlank() && !rawLabel.contains('.') -> rawLabel
+                        rawLabel.isNotBlank() -> rawLabel.substringAfterLast('.')
+                        else -> pkg.substringAfterLast('.')
+                    }
                 val actName = ri.activityInfo.name ?: ""
                 if (ConfigManager.isSystemExcludedApp(pkg, actName, label)) continue
 

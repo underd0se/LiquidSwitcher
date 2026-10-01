@@ -11,10 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 class ReorderAppAdapter(
     private val apps: MutableList<AppInfo>,
     private val onOrderChanged: (List<AppInfo>) -> Unit,
-    private val onItemClick: (AppInfo, Int) -> Unit
+    private val onItemClick: (AppInfo, Int) -> Unit,
 ) : RecyclerView.Adapter<ReorderAppAdapter.ViewHolder>() {
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val tvRank: TextView = view.findViewById(R.id.tvOrderRank)
         val ivIcon: ImageView = view.findViewById(R.id.ivReorderAppIcon)
         val tvName: TextView = view.findViewById(R.id.tvReorderAppName)
@@ -22,13 +23,21 @@ class ReorderAppAdapter(
         val btnDown: AppCompatButton = view.findViewById(R.id.btnMoveDown)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_reorder_app, parent, false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
+        val view =
+            LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.item_reorder_app, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         val app = apps[position]
         holder.tvRank.text = "#${position + 1}"
         holder.ivIcon.setImageDrawable(AppRepository.getAppIcon(holder.itemView.context, app))
@@ -62,7 +71,10 @@ class ReorderAppAdapter(
         }
     }
 
-    fun moveItem(fromPos: Int, toPos: Int) {
+    fun moveItem(
+        fromPos: Int,
+        toPos: Int,
+    ) {
         if (fromPos == toPos || fromPos !in 0 until apps.size || toPos !in 0 until apps.size) return
         val item = apps.removeAt(fromPos)
         apps.add(toPos, item)

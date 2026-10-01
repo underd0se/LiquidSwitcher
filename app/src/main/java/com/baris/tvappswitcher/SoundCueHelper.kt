@@ -20,15 +20,19 @@ object SoundCueHelper {
         if (soundPool != null) return
 
         try {
-            val audioAttributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build()
+            val audioAttributes =
+                AudioAttributes
+                    .Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
 
-            val pool = SoundPool.Builder()
-                .setMaxStreams(3)
-                .setAudioAttributes(audioAttributes)
-                .build()
+            val pool =
+                SoundPool
+                    .Builder()
+                    .setMaxStreams(3)
+                    .setAudioAttributes(audioAttributes)
+                    .build()
 
             pool.setOnLoadCompleteListener { _, sampleId, status ->
                 if (status == 0 && sampleId == tickSoundId) {
@@ -48,11 +52,14 @@ object SoundCueHelper {
 
         try {
             val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-            val volume = if (audioManager != null) {
-                val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-                val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-                if (max > 0) (current * 100 / max) else 70
-            } else 70
+            val volume =
+                if (audioManager != null) {
+                    val current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                    val max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                    if (max > 0) (current * 100 / max) else 70
+                } else {
+                    70
+                }
             toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, volume)
         } catch (e: Exception) {
             Log.w(TAG, "Failed to initialize ToneGenerator fallback", e)
@@ -87,14 +94,16 @@ object SoundCueHelper {
     fun release() {
         try {
             soundPool?.release()
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         soundPool = null
         tickSoundId = 0
         isLoaded = false
 
         try {
             toneGenerator?.release()
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
         toneGenerator = null
     }
 }

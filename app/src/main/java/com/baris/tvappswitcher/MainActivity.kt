@@ -1,7 +1,6 @@
 package com.baris.tvappswitcher
 
 import android.accessibilityservice.AccessibilityServiceInfo
-import androidx.appcompat.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,57 +16,18 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.baris.tvappswitcher.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tvServiceStatus: AppCompatButton
-    private lateinit var tvNextKey: TextView
-    private lateinit var tvPrevKey: TextView
-    private lateinit var tvSwitchDelay: TextView
-    private lateinit var tvVisibleAppsCount: TextView
-    private lateinit var tvSortOrder: TextView
-    private lateinit var rowCustomOrder: View
-    private lateinit var btnChangeNext: AppCompatButton
-    private lateinit var btnChangePrev: AppCompatButton
-    private lateinit var btnChangeDelay: AppCompatButton
-    private lateinit var btnChangeSortOrder: AppCompatButton
-    private lateinit var btnCustomizeOrder: AppCompatButton
-    private lateinit var btnManageVisibility: AppCompatButton
-    private lateinit var switchSingleKey: IosSwitchView
-    private lateinit var switchSound: IosSwitchView
-    private lateinit var switchShowAppName: IosSwitchView
-    private lateinit var switchCountdown: IosSwitchView
-    private lateinit var rowCountdown: LinearLayout
-    private lateinit var btnAddDirectShortcut: AppCompatButton
-    private lateinit var btnTestKey: AppCompatButton
-    private lateinit var tvNoShortcutsHint: TextView
-    private lateinit var rvShortcuts: RecyclerView
-
-    private lateinit var tvDockSizeLabel: TextView
-    private lateinit var sbDockSize: SeekBar
-    private lateinit var btnDockSizeMinus: AppCompatButton
-    private lateinit var btnDockSizePlus: AppCompatButton
-
-    private lateinit var tvDockTransparencyLabel: TextView
-    private lateinit var sbDockTransparency: SeekBar
-    private lateinit var btnDockTransMinus: AppCompatButton
-    private lateinit var btnDockTransPlus: AppCompatButton
-
-    private lateinit var tvDockMarginLabel: TextView
-    private lateinit var sbDockMargin: SeekBar
-    private lateinit var btnDockMarginMinus: AppCompatButton
-    private lateinit var btnDockMarginPlus: AppCompatButton
-
-    private lateinit var tvDockDimLabel: TextView
-    private lateinit var sbDockDim: SeekBar
-    private lateinit var btnDockDimMinus: AppCompatButton
-    private lateinit var btnDockDimPlus: AppCompatButton
+    private lateinit var binding: ActivityMainBinding
 
     private var waitingDialog: AlertDialog? = null
     private var testKeyDialog: AlertDialog? = null
@@ -84,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                         testDialogTextView?.text = getString(
                             R.string.dialog_test_key_detected,
                             ConfigManager.getKeyLabel(keyCode),
-                            keyCode
+                            keyCode,
                         )
                     }
                     return
@@ -103,7 +63,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         AppRepository.init(this)
         SoundCueHelper.init(this)
@@ -125,7 +86,8 @@ class MainActivity : AppCompatActivity() {
         KeyEvent.KEYCODE_ENTER,
         KeyEvent.KEYCODE_BACK,
         KeyEvent.KEYCODE_ESCAPE,
-        KeyEvent.KEYCODE_HOME -> true
+        KeyEvent.KEYCODE_HOME,
+        -> true
         else -> false
     }
 
@@ -141,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                     testDialogTextView?.text = getString(
                         R.string.dialog_test_key_detected,
                         ConfigManager.getKeyLabel(event.keyCode),
-                        event.keyCode
+                        event.keyCode,
                     )
                     return true
                 } else if (target.isNotEmpty()) {
@@ -158,251 +120,213 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        tvServiceStatus = findViewById(R.id.tvServiceStatus)
-        tvNextKey = findViewById(R.id.tvNextKey)
-        tvPrevKey = findViewById(R.id.tvPrevKey)
-        tvSwitchDelay = findViewById(R.id.tvSwitchDelay)
-        tvVisibleAppsCount = findViewById(R.id.tvVisibleAppsCount)
-        tvSortOrder = findViewById(R.id.tvSortOrder)
-        rowCustomOrder = findViewById(R.id.rowCustomOrder)
-        btnChangeNext = findViewById(R.id.btnChangeNext)
-        btnChangePrev = findViewById(R.id.btnChangePrev)
-        btnChangeDelay = findViewById(R.id.btnChangeDelay)
-        btnChangeSortOrder = findViewById(R.id.btnChangeSortOrder)
-        btnCustomizeOrder = findViewById(R.id.btnCustomizeOrder)
-        btnManageVisibility = findViewById(R.id.btnManageVisibility)
-        switchSingleKey = findViewById(R.id.switchSingleKey)
-        switchSound = findViewById(R.id.switchSound)
-        switchShowAppName = findViewById(R.id.switchShowAppName)
-        switchCountdown = findViewById(R.id.switchCountdown)
-        rowCountdown = findViewById(R.id.rowCountdown)
-        btnAddDirectShortcut = findViewById(R.id.btnAddDirectShortcut)
-        btnTestKey = findViewById(R.id.btnTestKey)
-        tvNoShortcutsHint = findViewById(R.id.tvNoShortcutsHint)
-        rvShortcuts = findViewById(R.id.rvShortcuts)
-
-        tvDockSizeLabel = findViewById(R.id.tvDockSizeLabel)
-        sbDockSize = findViewById(R.id.sbDockSize)
-        btnDockSizeMinus = findViewById(R.id.btnDockSizeMinus)
-        btnDockSizePlus = findViewById(R.id.btnDockSizePlus)
-
-        tvDockTransparencyLabel = findViewById(R.id.tvDockTransparencyLabel)
-        sbDockTransparency = findViewById(R.id.sbDockTransparency)
-        btnDockTransMinus = findViewById(R.id.btnDockTransMinus)
-        btnDockTransPlus = findViewById(R.id.btnDockTransPlus)
-
-        tvDockMarginLabel = findViewById(R.id.tvDockMarginLabel)
-        sbDockMargin = findViewById(R.id.sbDockMargin)
-        btnDockMarginMinus = findViewById(R.id.btnDockMarginMinus)
-        btnDockMarginPlus = findViewById(R.id.btnDockMarginPlus)
-
-        tvDockDimLabel = findViewById(R.id.tvDockDimLabel)
-        sbDockDim = findViewById(R.id.sbDockDim)
-        btnDockDimMinus = findViewById(R.id.btnDockDimMinus)
-        btnDockDimPlus = findViewById(R.id.btnDockDimPlus)
-
-        sbDockSize.keyProgressIncrement = 5
-        sbDockTransparency.keyProgressIncrement = 5
-        sbDockMargin.keyProgressIncrement = 4
-        sbDockDim.keyProgressIncrement = 5
-
-        rvShortcuts.layoutManager = LinearLayoutManager(this)
+        with(binding) {
+            sbDockSize.keyProgressIncrement = 5
+            sbDockTransparency.keyProgressIncrement = 5
+            sbDockMargin.keyProgressIncrement = 4
+            sbDockDim.keyProgressIncrement = 5
+            rvShortcuts.layoutManager = LinearLayoutManager(this@MainActivity)
+        }
     }
 
     private fun setupListeners() {
-        tvServiceStatus.setOnClickListener {
-            if (isServiceCurrentlyEnabled()) {
-                val dialog = AlertDialog.Builder(this)
-                    .setTitle(R.string.service_active_title)
-                    .setMessage(R.string.service_active_message)
-                    .setPositiveButton(R.string.open_settings) { _, _ ->
-                        launchTvSettings()
-                    }
-                    .setNeutralButton(R.string.btn_show_adb_command) { _, _ ->
-                        showAdbSetupDialog()
-                    }
-                    .setNegativeButton(R.string.close, null)
-                    .show()
+        with(binding) {
+            tvServiceStatus.setOnClickListener {
+                if (isServiceCurrentlyEnabled()) {
+                    val dialog = AlertDialog.Builder(this@MainActivity)
+                        .setTitle(R.string.service_active_title)
+                        .setMessage(R.string.service_active_message)
+                        .setPositiveButton(R.string.open_settings) { _, _ ->
+                            launchTvSettings()
+                        }
+                        .setNeutralButton(R.string.btn_show_adb_command) { _, _ ->
+                            showAdbSetupDialog()
+                        }
+                        .setNegativeButton(R.string.close, null)
+                        .show()
 
-                dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
-            } else {
-                openAccessibilitySettings()
+                    dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_secondary))
+                } else {
+                    openAccessibilitySettings()
+                }
             }
-        }
 
-        btnChangeNext.setOnClickListener {
-            startListeningForKey("NEXT", getString(R.string.dialog_title_next_key))
-        }
-
-        btnChangePrev.setOnClickListener {
-            startListeningForKey("PREV", getString(R.string.dialog_title_prev_key))
-        }
-
-        btnChangeDelay.setOnClickListener {
-            showDelaySelectionDialog()
-        }
-
-        btnChangeSortOrder.setOnClickListener {
-            showSortOrderSelectionDialog()
-        }
-
-        btnCustomizeOrder.setOnClickListener {
-            showReorderAppsDialog()
-        }
-
-        btnManageVisibility.setOnClickListener {
-            showAppVisibilityDialog()
-        }
-
-        switchSingleKey.setOnCheckedChangeListener { _, isChecked ->
-            ConfigManager.setSingleKeyMode(this, isChecked)
-            btnChangePrev.isEnabled = !isChecked
-            btnChangePrev.alpha = if (isChecked) 0.4f else 1.0f
-        }
-
-        switchSound.setOnCheckedChangeListener { _, isChecked ->
-            ConfigManager.setSoundEffectsEnabled(this, isChecked)
-            if (isChecked) {
-                SoundCueHelper.playTick(this)
+            btnChangeNext.setOnClickListener {
+                startListeningForKey("NEXT", getString(R.string.dialog_title_next_key))
             }
-        }
 
-        switchShowAppName.setOnCheckedChangeListener { _, isChecked ->
-            ConfigManager.setShowAppNameEnabled(this, isChecked)
-            updateCountdownRowState(isChecked)
-        }
-
-        switchCountdown.setOnCheckedChangeListener { _, isChecked ->
-            ConfigManager.setCountdownBarEnabled(this, isChecked)
-        }
-
-        sbDockSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val percent = 60 + progress
-                ConfigManager.setDockScalePercent(this@MainActivity, percent)
-                tvDockSizeLabel.text = getDockSizeLabel(percent)
+            btnChangePrev.setOnClickListener {
+                startListeningForKey("PREV", getString(R.string.dialog_title_prev_key))
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
 
-        btnDockSizeMinus.setOnClickListener {
-            val current = sbDockSize.progress
-            sbDockSize.progress = (current - 5).coerceAtLeast(0)
-        }
-
-        btnDockSizePlus.setOnClickListener {
-            val current = sbDockSize.progress
-            sbDockSize.progress = (current + 5).coerceAtMost(80)
-        }
-
-        sbDockTransparency.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val percent = progress
-                ConfigManager.setDockTransparencyPercent(this@MainActivity, percent)
-                tvDockTransparencyLabel.text = getDockTransparencyLabel(percent)
+            btnChangeDelay.setOnClickListener {
+                showDelaySelectionDialog()
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
 
-        btnDockTransMinus.setOnClickListener {
-            val current = sbDockTransparency.progress
-            sbDockTransparency.progress = (current - 5).coerceAtLeast(0)
-        }
-
-        btnDockTransPlus.setOnClickListener {
-            val current = sbDockTransparency.progress
-            sbDockTransparency.progress = (current + 5).coerceAtMost(90)
-        }
-
-        sbDockMargin.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                ConfigManager.setDockBottomMarginDp(this@MainActivity, progress)
-                tvDockMarginLabel.text = getDockMarginLabel(progress)
+            btnChangeSortOrder.setOnClickListener {
+                showSortOrderSelectionDialog()
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
 
-        btnDockMarginMinus.setOnClickListener {
-            val current = sbDockMargin.progress
-            sbDockMargin.progress = (current - 4).coerceAtLeast(0)
-        }
-
-        btnDockMarginPlus.setOnClickListener {
-            val current = sbDockMargin.progress
-            sbDockMargin.progress = (current + 4).coerceAtMost(72)
-        }
-
-        sbDockDim.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                ConfigManager.setDockBackgroundDimPercent(this@MainActivity, progress)
-                tvDockDimLabel.text = getDockDimLabel(progress)
+            btnCustomizeOrder.setOnClickListener {
+                showReorderAppsDialog()
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
 
-        btnDockDimMinus.setOnClickListener {
-            val current = sbDockDim.progress
-            sbDockDim.progress = (current - 5).coerceAtLeast(0)
-        }
+            btnManageVisibility.setOnClickListener {
+                showAppVisibilityDialog()
+            }
 
-        btnDockDimPlus.setOnClickListener {
-            val current = sbDockDim.progress
-            sbDockDim.progress = (current + 5).coerceAtMost(50)
-        }
+            switchSingleKey.setOnCheckedChangeListener { _, isChecked ->
+                ConfigManager.setSingleKeyMode(this@MainActivity, isChecked)
+                btnChangePrev.isEnabled = !isChecked
+                btnChangePrev.alpha = if (isChecked) 0.4f else 1.0f
+            }
 
-        btnAddDirectShortcut.setOnClickListener {
-            startListeningForKey("CUSTOM", getString(R.string.dialog_title_custom_key))
-        }
+            switchSound.setOnCheckedChangeListener { _, isChecked ->
+                ConfigManager.setSoundEffectsEnabled(this@MainActivity, isChecked)
+                if (isChecked) {
+                    SoundCueHelper.playTick(this@MainActivity)
+                }
+            }
 
-        btnTestKey.setOnClickListener {
-            showKeyTesterDialog()
+            switchShowAppName.setOnCheckedChangeListener { _, isChecked ->
+                ConfigManager.setShowAppNameEnabled(this@MainActivity, isChecked)
+                updateCountdownRowState(isChecked)
+            }
+
+            switchCountdown.setOnCheckedChangeListener { _, isChecked ->
+                ConfigManager.setCountdownBarEnabled(this@MainActivity, isChecked)
+            }
+
+            sbDockSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    val percent = 60 + progress
+                    ConfigManager.setDockScalePercent(this@MainActivity, percent)
+                    tvDockSizeLabel.text = getDockSizeLabel(percent)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+
+            btnDockSizeMinus.setOnClickListener {
+                val current = sbDockSize.progress
+                sbDockSize.progress = (current - 5).coerceAtLeast(0)
+            }
+
+            btnDockSizePlus.setOnClickListener {
+                val current = sbDockSize.progress
+                sbDockSize.progress = (current + 5).coerceAtMost(80)
+            }
+
+            sbDockTransparency.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    val percent = progress
+                    ConfigManager.setDockTransparencyPercent(this@MainActivity, percent)
+                    tvDockTransparencyLabel.text = getDockTransparencyLabel(percent)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+
+            btnDockTransMinus.setOnClickListener {
+                val current = sbDockTransparency.progress
+                sbDockTransparency.progress = (current - 5).coerceAtLeast(0)
+            }
+
+            btnDockTransPlus.setOnClickListener {
+                val current = sbDockTransparency.progress
+                sbDockTransparency.progress = (current + 5).coerceAtMost(90)
+            }
+
+            sbDockMargin.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    ConfigManager.setDockBottomMarginDp(this@MainActivity, progress)
+                    tvDockMarginLabel.text = getDockMarginLabel(progress)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+
+            btnDockMarginMinus.setOnClickListener {
+                val current = sbDockMargin.progress
+                sbDockMargin.progress = (current - 4).coerceAtLeast(0)
+            }
+
+            btnDockMarginPlus.setOnClickListener {
+                val current = sbDockMargin.progress
+                sbDockMargin.progress = (current + 4).coerceAtMost(72)
+            }
+
+            sbDockDim.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    ConfigManager.setDockBackgroundDimPercent(this@MainActivity, progress)
+                    tvDockDimLabel.text = getDockDimLabel(progress)
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+
+            btnDockDimMinus.setOnClickListener {
+                val current = sbDockDim.progress
+                sbDockDim.progress = (current - 5).coerceAtLeast(0)
+            }
+
+            btnDockDimPlus.setOnClickListener {
+                val current = sbDockDim.progress
+                sbDockDim.progress = (current + 5).coerceAtMost(50)
+            }
+
+            btnAddDirectShortcut.setOnClickListener {
+                startListeningForKey("CUSTOM", getString(R.string.dialog_title_custom_key))
+            }
+
+            btnTestKey.setOnClickListener {
+                showKeyTesterDialog()
+            }
         }
     }
 
     private fun setupFocusEffects() {
-        val buttons = listOf(
-            tvServiceStatus,
-            btnChangeNext,
-            btnChangePrev,
-            btnChangeDelay,
-            btnChangeSortOrder,
-            btnCustomizeOrder,
-            btnManageVisibility,
-            btnAddDirectShortcut,
-            btnTestKey
-        )
+        with(binding) {
+            val buttons = listOf(
+                tvServiceStatus,
+                btnChangeNext,
+                btnChangePrev,
+                btnChangeDelay,
+                btnChangeSortOrder,
+                btnCustomizeOrder,
+                btnManageVisibility,
+                btnAddDirectShortcut,
+                btnTestKey,
+            )
 
-        for (btn in buttons) {
-            btn.setOnFocusChangeListener { v, hasFocus ->
-                val scale = if (hasFocus) 1.05f else 1.0f
-                val transZ = if (hasFocus) 8f else 0f
-                v.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
-                    .translationZ(transZ)
-                    .setDuration(140)
-                    .withLayer()
-                    .start()
+            for (btn in buttons) {
+                btn.setOnFocusChangeListener { v, hasFocus ->
+                    val scale = if (hasFocus) 1.05f else 1.0f
+                    val transZ = if (hasFocus) 8f else 0f
+                    v.animate()
+                        .scaleX(scale)
+                        .scaleY(scale)
+                        .translationZ(transZ)
+                        .setDuration(140)
+                        .withLayer()
+                        .start()
+                }
             }
-        }
 
-        val seekBars = listOf(sbDockSize, sbDockTransparency, sbDockMargin, sbDockDim)
-        for (sb in seekBars) {
-            sb.setOnFocusChangeListener { v, hasFocus ->
-                val scaleX = if (hasFocus) 1.03f else 1.0f
-                val scaleY = if (hasFocus) 1.15f else 1.0f
-                val transZ = if (hasFocus) 8f else 0f
-                v.animate()
-                    .scaleX(scaleX)
-                    .scaleY(scaleY)
-                    .translationZ(transZ)
-                    .setDuration(150)
-                    .withLayer()
-                    .start()
+            val seekBars = listOf(sbDockSize, sbDockTransparency, sbDockMargin, sbDockDim)
+            for (sb in seekBars) {
+                sb.setOnFocusChangeListener { v, hasFocus ->
+                    val scaleX = if (hasFocus) 1.03f else 1.0f
+                    val scaleY = if (hasFocus) 1.15f else 1.0f
+                    val transZ = if (hasFocus) 8f else 0f
+                    v.animate()
+                        .scaleX(scaleX)
+                        .scaleY(scaleY)
+                        .translationZ(transZ)
+                        .setDuration(150)
+                        .withLayer()
+                        .start()
+                }
             }
         }
     }
@@ -417,12 +341,12 @@ class MainActivity : AppCompatActivity() {
             this,
             keyReceiver,
             filter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED,
         )
 
         // Ensure first button gets focus immediately so user can see where cursor is
-        btnChangeNext.post {
-            btnChangeNext.requestFocus()
+        binding.btnChangeNext.post {
+            binding.btnChangeNext.requestFocus()
         }
     }
 
@@ -483,97 +407,99 @@ class MainActivity : AppCompatActivity() {
         return getString(R.string.dock_dim_fmt, percent, qualifier)
     }
 
-    private fun getSortModeLabel(mode: ConfigManager.SortMode): String {
-        return when (mode) {
-            ConfigManager.SortMode.NAME -> getString(R.string.sort_alphabetical)
-            ConfigManager.SortMode.RECENCY -> getString(R.string.sort_recency)
-            ConfigManager.SortMode.CUSTOM -> getString(R.string.sort_custom)
-        }
+    private fun getSortModeLabel(mode: ConfigManager.SortMode): String = when (mode) {
+        ConfigManager.SortMode.NAME -> getString(R.string.sort_alphabetical)
+        ConfigManager.SortMode.RECENCY -> getString(R.string.sort_recency)
+        ConfigManager.SortMode.CUSTOM -> getString(R.string.sort_custom)
     }
 
     private fun updateUi() {
-        val nextKey = ConfigManager.getNextKey(this)
-        val prevKey = ConfigManager.getPrevKey(this)
-        val delaySec = ConfigManager.getSwitchDelaySeconds(this)
-        val sortMode = ConfigManager.getSortMode(this)
+        with(binding) {
+            val nextKey = ConfigManager.getNextKey(this@MainActivity)
+            val prevKey = ConfigManager.getPrevKey(this@MainActivity)
+            val delaySec = ConfigManager.getSwitchDelaySeconds(this@MainActivity)
+            val sortMode = ConfigManager.getSortMode(this@MainActivity)
 
-        tvNextKey.text = ConfigManager.getKeyLabel(nextKey)
-        tvPrevKey.text = ConfigManager.getKeyLabel(prevKey)
+            tvNextKey.text = ConfigManager.getKeyLabel(nextKey)
+            tvPrevKey.text = ConfigManager.getKeyLabel(prevKey)
 
-        tvSwitchDelay.text = ConfigManager.getSwitchDelayLabel(this, delaySec)
-        btnChangeDelay.text = getString(R.string.btn_change_delay_fmt, ConfigManager.getSwitchDelayShortLabel(this, delaySec))
+            tvSwitchDelay.text = ConfigManager.getSwitchDelayLabel(this@MainActivity, delaySec)
+            btnChangeDelay.text = getString(R.string.btn_change_delay_fmt, ConfigManager.getSwitchDelayShortLabel(this@MainActivity, delaySec))
 
-        tvSortOrder.text = getSortModeLabel(sortMode)
+            tvSortOrder.text = getSortModeLabel(sortMode)
 
-        if (sortMode == ConfigManager.SortMode.CUSTOM) {
-            rowCustomOrder.visibility = View.VISIBLE
-            btnChangeSortOrder.nextFocusDownId = R.id.btnCustomizeOrder
-            switchSingleKey.nextFocusUpId = R.id.btnCustomizeOrder
-        } else {
-            rowCustomOrder.visibility = View.GONE
-            btnChangeSortOrder.nextFocusDownId = R.id.switchSingleKey
-            switchSingleKey.nextFocusUpId = R.id.btnChangeSortOrder
+            if (sortMode == ConfigManager.SortMode.CUSTOM) {
+                rowCustomOrder.visibility = View.VISIBLE
+                btnChangeSortOrder.nextFocusDownId = R.id.btnCustomizeOrder
+                switchSingleKey.nextFocusUpId = R.id.btnCustomizeOrder
+            } else {
+                rowCustomOrder.visibility = View.GONE
+                btnChangeSortOrder.nextFocusDownId = R.id.switchSingleKey
+                switchSingleKey.nextFocusUpId = R.id.btnChangeSortOrder
+            }
+
+            val allApps = AppRepository.getAllApps(this@MainActivity)
+            val enabledFilter = ConfigManager.getEnabledPackages(this@MainActivity)
+            val visibleCount = if (enabledFilter != null && enabledFilter.isNotEmpty()) {
+                allApps.count { enabledFilter.contains(it.packageName) }
+            } else {
+                allApps.size
+            }
+            tvVisibleAppsCount.text = getString(R.string.visible_apps_count_fmt, visibleCount, allApps.size)
+            btnManageVisibility.text = getString(R.string.btn_manage)
+
+            val singleKey = ConfigManager.isSingleKeyMode(this@MainActivity)
+            switchSingleKey.setChecked(singleKey, false)
+            btnChangePrev.isEnabled = !singleKey
+            btnChangePrev.alpha = if (singleKey) 0.4f else 1.0f
+
+            val soundEnabled = ConfigManager.isSoundEffectsEnabled(this@MainActivity)
+            switchSound.setChecked(soundEnabled, false)
+
+            val showAppName = ConfigManager.isShowAppNameEnabled(this@MainActivity)
+            switchShowAppName.setChecked(showAppName, false)
+            updateCountdownRowState(showAppName)
+
+            val countdownEnabled = ConfigManager.isCountdownBarEnabled(this@MainActivity)
+            switchCountdown.setChecked(countdownEnabled, false)
+
+            val dockScale = ConfigManager.getDockScalePercent(this@MainActivity)
+            sbDockSize.progress = dockScale - 60
+            tvDockSizeLabel.text = getDockSizeLabel(dockScale)
+
+            val dockTrans = ConfigManager.getDockTransparencyPercent(this@MainActivity)
+            sbDockTransparency.progress = dockTrans
+            tvDockTransparencyLabel.text = getDockTransparencyLabel(dockTrans)
+
+            val dockMargin = ConfigManager.getDockBottomMarginDp(this@MainActivity)
+            sbDockMargin.progress = dockMargin
+            tvDockMarginLabel.text = getDockMarginLabel(dockMargin)
+
+            val dockDim = ConfigManager.getDockBackgroundDimPercent(this@MainActivity)
+            sbDockDim.progress = dockDim
+            tvDockDimLabel.text = getDockDimLabel(dockDim)
+
+            updateShortcutsList()
+            updateServiceStatus()
         }
-
-        val allApps = AppRepository.getAllApps(this)
-        val enabledFilter = ConfigManager.getEnabledPackages(this)
-        val visibleCount = if (enabledFilter != null && enabledFilter.isNotEmpty()) {
-            allApps.count { enabledFilter.contains(it.packageName) }
-        } else {
-            allApps.size
-        }
-        tvVisibleAppsCount.text = getString(R.string.visible_apps_count_fmt, visibleCount, allApps.size)
-        btnManageVisibility.text = getString(R.string.btn_manage)
-
-        val singleKey = ConfigManager.isSingleKeyMode(this)
-        switchSingleKey.setChecked(singleKey, false)
-        btnChangePrev.isEnabled = !singleKey
-        btnChangePrev.alpha = if (singleKey) 0.4f else 1.0f
-
-        val soundEnabled = ConfigManager.isSoundEffectsEnabled(this)
-        switchSound.setChecked(soundEnabled, false)
-
-        val showAppName = ConfigManager.isShowAppNameEnabled(this)
-        switchShowAppName.setChecked(showAppName, false)
-        updateCountdownRowState(showAppName)
-
-        val countdownEnabled = ConfigManager.isCountdownBarEnabled(this)
-        switchCountdown.setChecked(countdownEnabled, false)
-
-        val dockScale = ConfigManager.getDockScalePercent(this)
-        sbDockSize.progress = dockScale - 60
-        tvDockSizeLabel.text = getDockSizeLabel(dockScale)
-
-        val dockTrans = ConfigManager.getDockTransparencyPercent(this)
-        sbDockTransparency.progress = dockTrans
-        tvDockTransparencyLabel.text = getDockTransparencyLabel(dockTrans)
-
-        val dockMargin = ConfigManager.getDockBottomMarginDp(this)
-        sbDockMargin.progress = dockMargin
-        tvDockMarginLabel.text = getDockMarginLabel(dockMargin)
-
-        val dockDim = ConfigManager.getDockBackgroundDimPercent(this)
-        sbDockDim.progress = dockDim
-        tvDockDimLabel.text = getDockDimLabel(dockDim)
-
-        updateShortcutsList()
-        updateServiceStatus()
     }
 
     private fun updateCountdownRowState(appNameEnabled: Boolean) {
-        switchCountdown.isEnabled = appNameEnabled
-        switchCountdown.isFocusable = appNameEnabled
-        switchCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
-        rowCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
+        with(binding) {
+            switchCountdown.isEnabled = appNameEnabled
+            switchCountdown.isFocusable = appNameEnabled
+            switchCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
+            rowCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
 
-        if (appNameEnabled) {
-            switchShowAppName.nextFocusDownId = R.id.switchCountdown
-            btnAddDirectShortcut.nextFocusUpId = R.id.switchCountdown
-            btnTestKey.nextFocusUpId = R.id.switchCountdown
-        } else {
-            switchShowAppName.nextFocusDownId = R.id.btnAddDirectShortcut
-            btnAddDirectShortcut.nextFocusUpId = R.id.switchShowAppName
-            btnTestKey.nextFocusUpId = R.id.switchShowAppName
+            if (appNameEnabled) {
+                switchShowAppName.nextFocusDownId = R.id.switchCountdown
+                btnAddDirectShortcut.nextFocusUpId = R.id.switchCountdown
+                btnTestKey.nextFocusUpId = R.id.switchCountdown
+            } else {
+                switchShowAppName.nextFocusDownId = R.id.btnAddDirectShortcut
+                btnAddDirectShortcut.nextFocusUpId = R.id.switchShowAppName
+                btnTestKey.nextFocusUpId = R.id.switchShowAppName
+            }
         }
     }
 
@@ -642,7 +568,7 @@ class MainActivity : AppCompatActivity() {
             setPadding(4.dp, 4.dp, 4.dp, 4.dp)
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                (resources.displayMetrics.heightPixels * 0.55).toInt()
+                (resources.displayMetrics.heightPixels * 0.55).toInt(),
             )
             layoutParams = lp
         }
@@ -655,7 +581,7 @@ class MainActivity : AppCompatActivity() {
         adapter = AppVisibilityAdapter(
             apps = allApps,
             enabledPackages = currentEnabled,
-            onCountChanged = { updateSummary() }
+            onCountChanged = { updateSummary() },
         )
         rv.adapter = adapter
         container.addView(rv)
@@ -720,7 +646,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this,
                     getString(R.string.sort_order_set_toast, getSortModeLabel(selectedMode)),
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                 ).show()
 
                 if (selectedMode == ConfigManager.SortMode.CUSTOM) {
@@ -745,7 +671,7 @@ class MainActivity : AppCompatActivity() {
             setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                (resources.displayMetrics.heightPixels * 0.55).toInt()
+                (resources.displayMetrics.heightPixels * 0.55).toInt(),
             )
         }
 
@@ -760,7 +686,7 @@ class MainActivity : AppCompatActivity() {
             },
             onItemClick = { app, position ->
                 showItemPositionMenu(app, position, appsList, adapter!!)
-            }
+            },
         )
 
         rv.adapter = adapter
@@ -796,7 +722,7 @@ class MainActivity : AppCompatActivity() {
         app: AppInfo,
         position: Int,
         appsList: MutableList<AppInfo>,
-        adapter: ReorderAppAdapter
+        adapter: ReorderAppAdapter,
     ) {
         val options = mutableListOf<String>()
         val actions = mutableListOf<() -> Unit>()
@@ -836,7 +762,7 @@ class MainActivity : AppCompatActivity() {
             compareBy<AppInfo> {
                 val idx = customOrder.indexOf(it.packageName)
                 if (idx >= 0) idx else Int.MAX_VALUE
-            }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+            }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.name },
         )
     }
 
@@ -847,7 +773,7 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.delay_3),
             getString(R.string.delay_4),
             getString(R.string.delay_5_slow),
-            getString(R.string.delay_manual)
+            getString(R.string.delay_manual),
         )
         val values = intArrayOf(1, 2, 3, 4, 5, 0)
         val currentDelay = ConfigManager.getSwitchDelaySeconds(this)
@@ -864,7 +790,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this,
                     getString(R.string.countdown_set_toast, ConfigManager.getSwitchDelayLabel(this@MainActivity, selectedSeconds)),
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_SHORT,
                 ).show()
             }
             .setNegativeButton(R.string.cancel, null)
@@ -873,23 +799,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateShortcutsList() {
-        val mappings = ConfigManager.getCustomMappings(this)
-        if (mappings.isEmpty()) {
-            tvNoShortcutsHint.visibility = View.VISIBLE
-            rvShortcuts.visibility = View.GONE
-        } else {
-            tvNoShortcutsHint.visibility = View.GONE
-            rvShortcuts.visibility = View.VISIBLE
-            rvShortcuts.adapter = MappingAdapter(this, mappings) { keyCode ->
-                AlertDialog.Builder(this)
-                    .setTitle(R.string.dialog_remove_shortcut_title)
-                    .setMessage(getString(R.string.dialog_remove_shortcut_msg, ConfigManager.getKeyLabel(keyCode)))
-                    .setPositiveButton(R.string.delete) { _, _ ->
-                        ConfigManager.removeCustomMapping(this, keyCode)
-                        updateShortcutsList()
-                    }
-                    .setNegativeButton(R.string.cancel, null)
-                    .show()
+        with(binding) {
+            val mappings = ConfigManager.getCustomMappings(this@MainActivity)
+            if (mappings.isEmpty()) {
+                tvNoShortcutsHint.visibility = View.VISIBLE
+                rvShortcuts.visibility = View.GONE
+            } else {
+                tvNoShortcutsHint.visibility = View.GONE
+                rvShortcuts.visibility = View.VISIBLE
+                rvShortcuts.adapter = MappingAdapter(this@MainActivity, mappings) { keyCode ->
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle(R.string.dialog_remove_shortcut_title)
+                        .setMessage(getString(R.string.dialog_remove_shortcut_msg, ConfigManager.getKeyLabel(keyCode)))
+                        .setPositiveButton(R.string.delete) { _, _ ->
+                            ConfigManager.removeCustomMapping(this@MainActivity, keyCode)
+                            updateShortcutsList()
+                        }
+                        .setNegativeButton(R.string.cancel, null)
+                        .show()
+                }
             }
         }
     }
@@ -898,7 +826,7 @@ class MainActivity : AppCompatActivity() {
         // Check 1: Settings.Secure
         val enabledServices = Settings.Secure.getString(
             contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
         )
         if (enabledServices != null && enabledServices.contains("KeyInterceptorService")) {
             return true
@@ -916,11 +844,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateServiceStatus() {
-        val isEnabled = isServiceCurrentlyEnabled()
-        if (isEnabled) {
-            tvServiceStatus.text = getString(R.string.service_status_active)
-        } else {
-            tvServiceStatus.text = getString(R.string.service_status_inactive)
+        with(binding) {
+            val isEnabled = isServiceCurrentlyEnabled()
+            if (isEnabled) {
+                tvServiceStatus.text = getString(R.string.service_status_active)
+            } else {
+                tvServiceStatus.text = getString(R.string.service_status_inactive)
+            }
         }
     }
 
@@ -985,7 +915,7 @@ class MainActivity : AppCompatActivity() {
                     testDialogTextView?.text = getString(
                         R.string.dialog_test_key_detected,
                         ConfigManager.getKeyLabel(keyCode),
-                        keyCode
+                        keyCode,
                     )
                     return@setOnKeyListener true
                 }
@@ -1079,34 +1009,32 @@ class MainActivity : AppCompatActivity() {
         dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
     }
 
-    private fun tryEnableServiceProgrammatically(): Boolean {
-        return try {
-            val serviceComponent = "${packageName}/${KeyInterceptorService::class.java.name}"
-            val currentServices = Settings.Secure.getString(
-                contentResolver,
-                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-            ) ?: ""
+    private fun tryEnableServiceProgrammatically(): Boolean = try {
+        val serviceComponent = "$packageName/${KeyInterceptorService::class.java.name}"
+        val currentServices = Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+        ) ?: ""
 
-            val newServices = if (!currentServices.contains(serviceComponent)) {
-                if (currentServices.isBlank()) serviceComponent else "$currentServices:$serviceComponent"
-            } else {
-                currentServices
-            }
-
-            val setServices = Settings.Secure.putString(
-                contentResolver,
-                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-                newServices
-            )
-            val setEnabled = Settings.Secure.putInt(
-                contentResolver,
-                Settings.Secure.ACCESSIBILITY_ENABLED,
-                1
-            )
-            setServices && setEnabled
-        } catch (e: Exception) {
-            false
+        val newServices = if (!currentServices.contains(serviceComponent)) {
+            if (currentServices.isBlank()) serviceComponent else "$currentServices:$serviceComponent"
+        } else {
+            currentServices
         }
+
+        val setServices = Settings.Secure.putString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+            newServices,
+        )
+        val setEnabled = Settings.Secure.putInt(
+            contentResolver,
+            Settings.Secure.ACCESSIBILITY_ENABLED,
+            1,
+        )
+        setServices && setEnabled
+    } catch (e: Exception) {
+        false
     }
 
     private fun launchTvSettings() {
@@ -1114,7 +1042,7 @@ class MainActivity : AppCompatActivity() {
             Intent().setClassName("com.android.tv.settings", "com.android.tv.settings.MainSettings"),
             Intent(Settings.ACTION_SETTINGS),
             Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
-            Intent().setClassName("com.android.tv.settings", "com.android.tv.settings.device.apps.AppsActivity")
+            Intent().setClassName("com.android.tv.settings", "com.android.tv.settings.device.apps.AppsActivity"),
         )
 
         for (intent in intentsToTry) {

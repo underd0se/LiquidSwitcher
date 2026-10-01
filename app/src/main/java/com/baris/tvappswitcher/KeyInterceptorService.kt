@@ -6,54 +6,63 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.media.AudioManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.ContextCompat
 
 class KeyInterceptorService : AccessibilityService() {
-
     private lateinit var overlay: AppSwitcherOverlay
     private var currentForegroundPackage: String? = null
     private var previousForegroundPackage: String? = null
 
-    private val controlReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent?.action) {
-                "com.baris.tvappswitcher.TRIGGER_OVERLAY",
-                "com.baris.tvappswitcher.TRIGGER_NEXT" -> {
-                    if (overlay.isShowing()) {
-                        overlay.next()
-                        playNavSound()
-                    } else {
-                        triggerSwitcher(isNext = true)
+    private val controlReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context?,
+                intent: Intent?,
+            ) {
+                when (intent?.action) {
+                    "com.baris.tvappswitcher.TRIGGER_OVERLAY",
+                    "com.baris.tvappswitcher.TRIGGER_NEXT",
+                    -> {
+                        if (overlay.isShowing()) {
+                            overlay.next()
+                            playNavSound()
+                        } else {
+                            triggerSwitcher(isNext = true)
+                        }
                     }
-                }
-                "com.baris.tvappswitcher.TRIGGER_PREV" -> {
-                    if (overlay.isShowing()) {
-                        overlay.prev()
-                        playNavSound()
-                    } else {
-                        triggerSwitcher(isNext = false)
+                    "com.baris.tvappswitcher.TRIGGER_PREV" -> {
+                        if (overlay.isShowing()) {
+                            overlay.prev()
+                            playNavSound()
+                        } else {
+                            triggerSwitcher(isNext = false)
+                        }
                     }
-                }
-                "com.baris.tvappswitcher.TRIGGER_CONFIRM" -> {
-                    if (overlay.isShowing()) {
-                        overlay.confirmAndLaunch()
+                    "com.baris.tvappswitcher.TRIGGER_CONFIRM" -> {
+                        if (overlay.isShowing()) {
+                            overlay.confirmAndLaunch()
+                        }
                     }
-                }
-                "com.baris.tvappswitcher.TRIGGER_DISMISS",
-                @Suppress("DEPRECATION")
-                Intent.ACTION_CLOSE_SYSTEM_DIALOGS,
-                Intent.ACTION_SCREEN_OFF -> {
-                    if (overlay.isShowing()) {
-                        overlay.dismiss()
+                    "com.baris.tvappswitcher.TRIGGER_DISMISS",
+                    @Suppress("DEPRECATION")
+                    Intent
+                        
+                        
+                        
+                        .
+                        ACTION_CLOSE_SYSTEM_DIALOGS,
+                    Intent.ACTION_SCREEN_OFF,
+                    -> {
+                        if (overlay.isShowing()) {
+                            overlay.dismiss()
+                        }
                     }
                 }
             }
         }
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -61,21 +70,22 @@ class KeyInterceptorService : AccessibilityService() {
         overlay = AppSwitcherOverlay(this)
         AppRepository.init(this)
 
-        val filter = IntentFilter().apply {
-            addAction("com.baris.tvappswitcher.TRIGGER_OVERLAY")
-            addAction("com.baris.tvappswitcher.TRIGGER_NEXT")
-            addAction("com.baris.tvappswitcher.TRIGGER_PREV")
-            addAction("com.baris.tvappswitcher.TRIGGER_CONFIRM")
-            addAction("com.baris.tvappswitcher.TRIGGER_DISMISS")
-            @Suppress("DEPRECATION")
-            addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
-            addAction(Intent.ACTION_SCREEN_OFF)
-        }
+        val filter =
+            IntentFilter().apply {
+                addAction("com.baris.tvappswitcher.TRIGGER_OVERLAY")
+                addAction("com.baris.tvappswitcher.TRIGGER_NEXT")
+                addAction("com.baris.tvappswitcher.TRIGGER_PREV")
+                addAction("com.baris.tvappswitcher.TRIGGER_CONFIRM")
+                addAction("com.baris.tvappswitcher.TRIGGER_DISMISS")
+                @Suppress("DEPRECATION")
+                addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+                addAction(Intent.ACTION_SCREEN_OFF)
+            }
         ContextCompat.registerReceiver(
             this,
             controlReceiver,
             filter,
-            ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED,
         )
     }
 
@@ -163,7 +173,8 @@ class KeyInterceptorService : AccessibilityService() {
         KeyEvent.KEYCODE_DPAD_RIGHT,
         KeyEvent.KEYCODE_BACK,
         KeyEvent.KEYCODE_ESCAPE,
-        KeyEvent.KEYCODE_HOME -> true
+        KeyEvent.KEYCODE_HOME,
+        -> true
         else -> false
     }
 
@@ -212,14 +223,16 @@ class KeyInterceptorService : AccessibilityService() {
 
         // 2. If Overlay is Currently Visible on Screen (Showing or Dismissing)
         if (overlay.isVisible()) {
-            val isHandledNavKey = when (keyCode) {
-                nextKey, prevKey,
-                KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT,
-                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
-                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE -> true
-                else -> false
-            }
+            val isHandledNavKey =
+                when (keyCode) {
+                    nextKey, prevKey,
+                    KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_LEFT,
+                    KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
+                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,
+                    KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE,
+                    -> true
+                    else -> false
+                }
 
             if (overlay.isDismissing()) {
                 // While dock is in its exit animation, swallow key events so no orphan clicks or navigation leaks through
@@ -287,25 +300,29 @@ class KeyInterceptorService : AccessibilityService() {
             return true
         }
 
-
         return super.onKeyEvent(event)
     }
 
     private fun triggerSwitcher(isNext: Boolean) {
         val apps = AppRepository.getFilteredAndSortedApps(this)
         if (apps.isEmpty()) {
-            android.widget.Toast.makeText(this, "No apps available in switcher", android.widget.Toast.LENGTH_SHORT).show()
+            android.widget.Toast
+                .makeText(this, "No apps available in switcher", android.widget.Toast.LENGTH_SHORT)
+                .show()
             return
         }
 
-        val currentIndex = apps.indexOfFirst { it.packageName == currentForegroundPackage }
-            .takeIf { it >= 0 } ?: 0
+        val currentIndex =
+            apps
+                .indexOfFirst { it.packageName == currentForegroundPackage }
+                .takeIf { it >= 0 } ?: 0
 
-        val targetIndex = if (isNext) {
-            (currentIndex + 1) % apps.size
-        } else {
-            if (currentIndex - 1 < 0) apps.size - 1 else currentIndex - 1
-        }
+        val targetIndex =
+            if (isNext) {
+                (currentIndex + 1) % apps.size
+            } else {
+                if (currentIndex - 1 < 0) apps.size - 1 else currentIndex - 1
+            }
 
         playNavSound()
 
@@ -323,39 +340,48 @@ class KeyInterceptorService : AccessibilityService() {
             currentForegroundPackage = targetPackage
             ConfigManager.recordAppUsed(this, targetPackage)
             val pm = packageManager
-            val intent = pm.getLeanbackLaunchIntentForPackage(targetPackage)
-                ?: pm.getLaunchIntentForPackage(targetPackage)
+            val intent =
+                pm.getLeanbackLaunchIntentForPackage(targetPackage)
+                    ?: pm.getLaunchIntentForPackage(targetPackage)
 
             if (intent != null) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
                 startActivity(intent)
             } else {
                 // Fallback for non-standard or sideloaded TV apps without default launch intent
-                val leanbackIntent = Intent(Intent.ACTION_MAIN, null).apply {
-                    addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
-                    setPackage(targetPackage)
-                }
-                val list = pm.compatQueryIntentActivities(leanbackIntent, 0)
-                val targetInfo = list.firstOrNull() ?: pm.compatQueryIntentActivities(
+                val leanbackIntent =
                     Intent(Intent.ACTION_MAIN, null).apply {
-                        addCategory(Intent.CATEGORY_LAUNCHER)
+                        addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
                         setPackage(targetPackage)
-                    }, 0
-                ).firstOrNull()
+                    }
+                val list = pm.compatQueryIntentActivities(leanbackIntent, 0)
+                val targetInfo =
+                    list.firstOrNull() ?: pm
+                        .compatQueryIntentActivities(
+                            Intent(Intent.ACTION_MAIN, null).apply {
+                                addCategory(Intent.CATEGORY_LAUNCHER)
+                                setPackage(targetPackage)
+                            },
+                            0,
+                        ).firstOrNull()
 
                 if (targetInfo != null) {
-                    val explicitIntent = Intent().apply {
-                        setClassName(targetInfo.activityInfo.packageName, targetInfo.activityInfo.name)
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-                    }
+                    val explicitIntent =
+                        Intent().apply {
+                            setClassName(targetInfo.activityInfo.packageName, targetInfo.activityInfo.name)
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+                        }
                     startActivity(explicitIntent)
                 }
             }
         } catch (e: Exception) {
             Log.e("KeyInterceptorService", "Failed to launch $targetPackage", e)
             try {
-                android.widget.Toast.makeText(this, "App not available", android.widget.Toast.LENGTH_SHORT).show()
-            } catch (_: Exception) {}
+                android.widget.Toast
+                    .makeText(this, "App not available", android.widget.Toast.LENGTH_SHORT)
+                    .show()
+            } catch (_: Exception) {
+            }
         }
     }
 }
