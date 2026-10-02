@@ -8,6 +8,58 @@ SERVICE="${PACKAGE}/.KeyInterceptorService"
 APK="${SCRIPT_DIR}/app/build/outputs/apk/debug/app-debug.apk"
 CAPTURES_DIR="${SCRIPT_DIR}/captures"
 
+# Returns 0 if the accessibility service is bound to AccessibilityManagerService.
+# NOTE: never `am force-stop` this app -- AccessibilityManagerService caches crashed
+# services and will refuse to rebind until the package is uninstalled.
+cmd_service_bound() {
+    adb -s "$DEVICE" shell dumpsys accessibility 2>/dev/null |
+        grep -q "Bound services:{Service\[label=Liquid Switcher Service"
+}
+
+cmd_wait_for_service() {
+    local attempts="${1:-15}"
+    local i
+    for ((i = 0; i < attempts; i++)); do
+        if cmd_service_bound; then
+            return 0
+        fi
+        sleep 1
+    done
+    return 1
+}
+
+# Re-enable the accessibility service, clearing a stale "crashed" cache if needed.
+cmd_reload_accessibility() {
+    ensure_device
+    echo "🛡️  Re-enabling accessibility service..."
+
+    adb -s "$DEVICE" shell settings put secure accessibility_enabled 1
+    adb -s "$DEVICE" shell settings put secure enabled_accessibility_services "$SERVICE"
+
+    if cmd_wait_for_service; then
+        echo "✅ Accessibility service is bound."
+        return 0
+    fi
+
+    # AccessibilityManagerService caches crashed services; clearing the stored
+    # setting is not enough, the package must be reinstalled to reset it.
+    echo "⚠️  Service not bound -- reinstalling to clear crashed-service cache..."
+    # `settings put ... ""` errors with "Bad arguments"; `delete` is the correct clear.
+    adb -s "$DEVICE" shell settings delete secure enabled_accessibility_services >/dev/null 2>&1 || true
+    adb -s "$DEVICE" uninstall "$PACKAGE" >/dev/null || true
+    adb -s "$DEVICE" install -r "$APK" >/dev/null
+    adb -s "$DEVICE" shell settings put secure accessibility_enabled 1
+    adb -s "$DEVICE" shell settings put secure enabled_accessibility_services "$SERVICE"
+
+    if cmd_wait_for_service 20; then
+        echo "✅ Accessibility service is bound."
+        return 0
+    fi
+
+    echo "❌ Accessibility service still not bound. Check: ./dev.sh logs"
+    return 1
+}
+
 ensure_device() {
     if ! adb devices | grep -q "$DEVICE"; then
         echo "Connecting to TV at $DEVICE..."
@@ -24,10 +76,19 @@ cmd_deploy() {
     adb -s "$DEVICE" install -r "$APK"
 
     echo "🛡️ Ensuring accessibility service is enabled..."
-    adb -s "$DEVICE" shell settings put secure enabled_accessibility_services "$SERVICE"
+    # accessibility_enabled MUST be set before enabled_accessibility_services;
+    # the reverse order silently no-ops and leaves the service unbound.
     adb -s "$DEVICE" shell settings put secure accessibility_enabled 1
+    adb -s "$DEVICE" shell settings put secure enabled_accessibility_services "$SERVICE"
 
-    echo "✅ Successfully deployed to TV!"
+    if cmd_wait_for_service; then
+        echo "✅ Successfully deployed to TV!"
+    else
+        echo "⚠️  Deployed, but accessibility service is not bound yet."
+        echo "   The dock will not appear until it binds. Try:"
+        echo "     ./dev.sh reload-accessibility"
+        exit 1
+    fi
 }
 
 cmd_trigger() {
@@ -137,6 +198,8 @@ Usage: ./dev.sh <command> [arguments]
 
 Commands:
   deploy, install   Build and install APK on TV, auto-enable accessibility service
+  reload-accessibility
+                    Re-enable accessibility service, clearing a stale crashed cache
   trigger, dock     Open dock overlay on TV
   dismiss           Dismiss dock overlay on TV
   next              Cycle to next app in dock
@@ -168,6 +231,7 @@ case "${1:-}" in
     key) shift; cmd_key "${1:-}" ;;
     test) cmd_test ;;
     lint) cmd_lint ;;
+    reload-accessibility) cmd_reload_accessibility ;;
     format) cmd_format ;;
     clean) cmd_clean ;;
     help|--help|-h|"") usage ;;
