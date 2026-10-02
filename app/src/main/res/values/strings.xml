@@ -178,6 +178,7 @@
     <!-- Empty Switcher -->
     <string name="no_apps_in_switcher">No apps available in switcher</string>
     <string name="app_not_available">App not available</string>
+    <string name="empty_state_message">Enable apps in settings or install TV apps from Play Store</string>
 
     <!-- Last App Quick Switch -->
     <string name="btn_assign_key">Assign Key</string>

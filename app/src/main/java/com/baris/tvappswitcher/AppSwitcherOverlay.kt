@@ -2,10 +2,12 @@ package com.baris.tvappswitcher
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Display
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -92,7 +94,12 @@ class AppSwitcherOverlay(
         initialIndex: Int,
         onSelected: (AppInfo) -> Unit,
     ) {
-        if (apps.isEmpty()) return
+        // Handle empty state
+        if (apps.isEmpty()) {
+            showEmptyState()
+            return
+        }
+
         currentApps = apps
         selectedIndex = initialIndex.coerceIn(0, apps.size - 1)
         onAppChosen = onSelected
@@ -118,7 +125,32 @@ class AppSwitcherOverlay(
             populateApps()
             updateSelection()
             resetAutoDismissTimer()
+            hideEmptyState()
         }
+    }
+
+    private fun showEmptyState() {
+        mainHandler.post {
+            if (!isVisible || overlayView?.isAttachedToWindow != true) {
+                createAndAddView()
+            }
+            val emptyState = overlayView?.findViewById<LinearLayout>(R.id.llEmptyState)
+            val dockPill = overlayView?.findViewById<View>(R.id.flDockPill)
+            val tooltipContainer = overlayView?.findViewById<View>(R.id.llDockTooltipContainer)
+
+            emptyState?.visibility = View.VISIBLE
+            dockPill?.visibility = View.GONE
+            tooltipContainer?.visibility = View.GONE
+            isVisible = true
+            isDismissing = false
+        }
+    }
+
+    private fun hideEmptyState() {
+        val emptyState = overlayView?.findViewById<LinearLayout>(R.id.llEmptyState)
+        val dockPill = overlayView?.findViewById<View>(R.id.flDockPill)
+        emptyState?.visibility = View.GONE
+        dockPill?.visibility = View.VISIBLE
     }
 
     fun next() {
@@ -279,6 +311,9 @@ class AppSwitcherOverlay(
         @Suppress("InlinedApi")
         val overlayType = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
 
+        // Get primary display for correct window placement on multi-display devices
+        val primaryDisplay = getPrimaryDisplay()
+
         val params =
             WindowManager
                 .LayoutParams(
@@ -298,6 +333,11 @@ class AppSwitcherOverlay(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         blurBehindRadius = (22f * density).toInt()
                     }
+                    // Target primary display for multi-display support (e.g., external monitor, foldables)
+                    if (primaryDisplay != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        windowAnimations = 0
+                        // Note: setDisplayId is hidden API, use windowManager.addView with display context instead
+                    }
                 }
 
         view.visibility = View.VISIBLE
@@ -307,10 +347,15 @@ class AppSwitcherOverlay(
         view.scaleY = 0.96f
 
         try {
+            // Use display context for primary display awareness
+            val targetWindowManager = primaryDisplay?.let { display ->
+                context.createDisplayContext(display).getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            } ?: windowManager
+
             if (view.isAttachedToWindow) {
-                windowManager.updateViewLayout(view, params)
+                targetWindowManager.updateViewLayout(view, params)
             } else {
-                windowManager.addView(view, params)
+                targetWindowManager.addView(view, params)
             }
             isVisible = true
             isDismissing = false
@@ -332,6 +377,17 @@ class AppSwitcherOverlay(
             isVisible = false
             isDismissing = false
         }
+    }
+
+    private fun getPrimaryDisplay(): Display? {
+        val displayManager = context.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        // DISPLAY_CATEGORY_PRIMARY ("primary") available from API 33
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val displays = displayManager.getDisplays("primary")
+            return displays.firstOrNull()
+        }
+        // Fallback: return default display
+        return displayManager.getDisplay(Display.DEFAULT_DISPLAY)
     }
 
     private fun populateApps() {
