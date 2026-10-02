@@ -228,7 +228,7 @@ object AppRepository {
                         else -> pkg.substringAfterLast('.')
                     }
                 val actName = ri.activityInfo.name ?: ""
-                if (ConfigManager.isSystemExcludedApp(pkg, actName, label)) continue
+                if (ConfigManager.isSystemExcludedApp(context, pkg, actName, label)) continue
 
                 appsMap[pkg] = AppInfo(label, pkg, null)
             } catch (e: Exception) {
@@ -266,7 +266,7 @@ object AppRepository {
                         else -> pkg.substringAfterLast('.')
                     }
                 val actName = ri.activityInfo.name ?: ""
-                if (ConfigManager.isSystemExcludedApp(pkg, actName, label)) continue
+                if (ConfigManager.isSystemExcludedApp(context, pkg, actName, label)) continue
 
                 appsMap[pkg] = AppInfo(label, pkg, null)
             } catch (e: Exception) {

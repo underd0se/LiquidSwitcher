@@ -1,38 +1,38 @@
 package com.baris.tvappswitcher
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ConfigManagerLogicTest {
+    private val json = Json { ignoreUnknownKeys = true }
+
     @Test
-    fun testGsonSerializationRoundTrip() {
+    fun testSerializationRoundTrip() {
         // Custom Mappings
         val originalMappings =
             mapOf(
                 183 to "com.netflix.ninja",
                 184 to "com.google.android.youtube.tv",
             )
-        val mappingsJson = Gson().toJson(originalMappings)
-        val mappingsType = object : TypeToken<Map<Int, String>>() {}.type
-        val decodedMappings: Map<Int, String> = Gson().fromJson(mappingsJson, mappingsType)
+        val mappingsJson = json.encodeToString(originalMappings)
+        val decodedMappings: Map<Int, String> = json.decodeFromString(mappingsJson)
 
         assertEquals(originalMappings, decodedMappings)
 
         // Custom App Order
         val originalOrder = listOf("com.netflix.ninja", "com.amazon", "com.youtube")
-        val orderJson = Gson().toJson(originalOrder)
-        val orderType = object : TypeToken<List<String>>() {}.type
-        val decodedOrder: List<String> = Gson().fromJson(orderJson, orderType)
+        val orderJson = json.encodeToString(originalOrder)
+        val decodedOrder: List<String> = json.decodeFromString(orderJson)
 
         assertEquals(originalOrder, decodedOrder)
 
         // Recency map
         val originalRecency = mapOf("com.amazon" to 123456L, "com.youtube" to 98765L)
-        val recencyJson = Gson().toJson(originalRecency)
-        val recencyType = object : TypeToken<Map<String, Long>>() {}.type
-        val decodedRecency: Map<String, Long> = Gson().fromJson(recencyJson, recencyType)
+        val recencyJson = json.encodeToString(originalRecency)
+        val decodedRecency: Map<String, Long> = json.decodeFromString(recencyJson)
 
         assertEquals(originalRecency, decodedRecency)
     }

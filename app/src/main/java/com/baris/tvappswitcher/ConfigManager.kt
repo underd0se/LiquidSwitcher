@@ -3,8 +3,17 @@ package com.baris.tvappswitcher
 import android.content.Context
 import android.content.SharedPreferences
 import android.view.KeyEvent
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+@Serializable
+data class OemExclusions(
+    val excludedPackages: List<String> = emptyList(),
+    val excludedKeywords: List<String> = emptyList(),
+    val excludedLabels: List<String> = emptyList(),
+)
 
 object ConfigManager {
     private const val PREFS_NAME = "tv_switcher_prefs"
@@ -26,6 +35,10 @@ object ConfigManager {
     private const val KEY_SINGLE_KEY_MODE = "single_key_mode"
     private const val KEY_SHOW_COUNTDOWN_BAR = "show_countdown_bar"
     private const val KEY_SHOW_APP_NAME = "show_app_name"
+
+    private val json = Json { ignoreUnknownKeys = true }
+
+    private var cachedOemExclusions: OemExclusions? = null
 
     enum class SortMode(
         val key: String,
@@ -100,10 +113,9 @@ object ConfigManager {
     }
 
     fun getCustomAppOrder(context: Context): List<String> {
-        val json = getPrefs(context).getString(KEY_CUSTOM_APP_ORDER, null) ?: return emptyList()
-        val type = object : TypeToken<List<String>>() {}.type
+        val jsonString = getPrefs(context).getString(KEY_CUSTOM_APP_ORDER, null) ?: return emptyList()
         return try {
-            Gson().fromJson(json, type) ?: emptyList()
+            json.decodeFromString<List<String>>(jsonString)
         } catch (e: Exception) {
             emptyList()
         }
@@ -113,14 +125,13 @@ object ConfigManager {
         context: Context,
         order: List<String>,
     ) {
-        getPrefs(context).edit().putString(KEY_CUSTOM_APP_ORDER, Gson().toJson(order)).apply()
+        getPrefs(context).edit().putString(KEY_CUSTOM_APP_ORDER, json.encodeToString(order)).apply()
     }
 
     fun getAppRecency(context: Context): Map<String, Long> {
-        val json = getPrefs(context).getString(KEY_APP_RECENCY, null) ?: return emptyMap()
-        val type = object : TypeToken<Map<String, Long>>() {}.type
+        val jsonString = getPrefs(context).getString(KEY_APP_RECENCY, null) ?: return emptyMap()
         return try {
-            Gson().fromJson(json, type) ?: emptyMap()
+            json.decodeFromString<Map<String, Long>>(jsonString)
         } catch (e: Exception) {
             emptyMap()
         }
@@ -132,7 +143,7 @@ object ConfigManager {
     ) {
         val map = getAppRecency(context).toMutableMap()
         map[packageName] = System.currentTimeMillis()
-        getPrefs(context).edit().putString(KEY_APP_RECENCY, Gson().toJson(map)).apply()
+        getPrefs(context).edit().putString(KEY_APP_RECENCY, json.encodeToString(map)).apply()
     }
 
     fun sortApps(
@@ -161,10 +172,9 @@ object ConfigManager {
     }
 
     fun getCustomMappings(context: Context): Map<Int, String> {
-        val json = getPrefs(context).getString(KEY_CUSTOM_MAPPINGS, null) ?: return emptyMap()
-        val type = object : TypeToken<Map<Int, String>>() {}.type
+        val jsonString = getPrefs(context).getString(KEY_CUSTOM_MAPPINGS, null) ?: return emptyMap()
         return try {
-            Gson().fromJson(json, type) ?: emptyMap()
+            json.decodeFromString<Map<Int, String>>(jsonString)
         } catch (e: Exception) {
             emptyMap()
         }
@@ -177,7 +187,7 @@ object ConfigManager {
     ) {
         val mappings = getCustomMappings(context).toMutableMap()
         mappings[keyCode] = packageName
-        getPrefs(context).edit().putString(KEY_CUSTOM_MAPPINGS, Gson().toJson(mappings)).apply()
+        getPrefs(context).edit().putString(KEY_CUSTOM_MAPPINGS, json.encodeToString(mappings)).apply()
     }
 
     fun removeCustomMapping(
@@ -200,7 +210,7 @@ object ConfigManager {
             }
         }
         if (changed) {
-            getPrefs(context).edit().putString(KEY_CUSTOM_MAPPINGS, Gson().toJson(mappings)).apply()
+            getPrefs(context).edit().putString(KEY_CUSTOM_MAPPINGS, json.encodeToString(mappings)).apply()
         }
     }
 
@@ -349,68 +359,51 @@ object ConfigManager {
         getPrefs(context).edit().putBoolean(KEY_SHOW_APP_NAME, enabled).apply()
     }
 
+    private fun getOemExclusions(context: Context): OemExclusions {
+        if (cachedOemExclusions != null) {
+            return cachedOemExclusions!!
+        }
+        val jsonString = try {
+            context.resources.openRawResource(R.raw.oem_exclusions).bufferedReader().use { it.readText() }
+        } catch (e: Exception) {
+            "{\"excludedPackages\":[],\"excludedKeywords\":[],\"excludedLabels\":[]}"
+        }
+        cachedOemExclusions = try {
+            json.decodeFromString<OemExclusions>(jsonString)
+        } catch (e: Exception) {
+            OemExclusions()
+        }
+        return cachedOemExclusions!!
+    }
+
     /**
      * Determines whether an application or component is an internal OEM service/stub
      * (e.g. NetflixLauncher, WebView, DisclaimerCustomization, factorymenu) that should be
      * excluded from the dock switcher.
      */
     fun isSystemExcludedApp(
+        context: Context,
         pkg: String,
         activityName: String = "",
         label: String = "",
     ): Boolean {
+        val exclusions = getOemExclusions(context)
         val lowerPkg = pkg.lowercase()
         val lowerAct = activityName.lowercase()
         val lowerLabel = label.lowercase()
 
         // 1. Explicit packages to exclude
-        val blacklistedPackages =
-            setOf(
-                "com.mediatek.tv.service",
-                "com.mediatek.wwtv.webview",
-                "com.mstar.android.tv.disclaimercustomization",
-                "mediatek.factorymenu.ui",
-                "com.android.documentsui",
-                "com.google.android.backdrop",
-                "com.google.android.inputmethod.latin",
-                "com.android.tv.settings",
-                "com.android.settings",
-                "com.mediatek.wwtv.tvcenter",
-                "com.mediatek.wwtv.mediaplayer",
-            )
-        if (blacklistedPackages.contains(lowerPkg)) return true
+        if (exclusions.excludedPackages.contains(lowerPkg)) return true
 
         // 2. Keywords in package name, activity name, or label
-        val blacklistedKeywords =
-            listOf(
-                "netflixobserver",
-                "netflixlauncher",
-                "disclaimercustomization",
-                "factorymenu",
-                "designmenu",
-                "wwtv.webview",
-                "tv.service",
-                "documentsui",
-                "turnkeyui",
-            )
-        for (kw in blacklistedKeywords) {
+        for (kw in exclusions.excludedKeywords) {
             if (lowerPkg.contains(kw) || lowerAct.contains(kw) || lowerLabel.contains(kw)) {
                 return true
             }
         }
 
         // 3. Exclude if label specifically matches system utility stubs
-        val blacklistedLabels =
-            setOf(
-                "webview",
-                "netflixlauncher",
-                "disclaimercustomization",
-                "designmenu",
-                "factorymenu",
-                "tv center",
-                "mediaplayer",
-            )
-        if (blacklistedLabels.contains(lowerLabel)) {
+        if (exclusions.excludedLabels.contains(lowerLabel)) {
             return true
         }
 

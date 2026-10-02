@@ -1,0 +1,35 @@
+{
+  "excludedPackages": [
+    "com.mediatek.tv.service",
+    "com.mediatek.wwtv.webview",
+    "com.mstar.android.tv.disclaimercustomization",
+    "mediatek.factorymenu.ui",
+    "com.android.documentsui",
+    "com.google.android.backdrop",
+    "com.google.android.inputmethod.latin",
+    "com.android.tv.settings",
+    "com.android.settings",
+    "com.mediatek.wwtv.tvcenter",
+    "com.mediatek.wwtv.mediaplayer"
+  ],
+  "excludedKeywords": [
+    "netflixobserver",
+    "netflixlauncher",
+    "disclaimercustomization",
+    "factorymenu",
+    "designmenu",
+    "wwtv.webview",
+    "tv.service",
+    "documentsui",
+    "turnkeyui"
+  ],
+  "excludedLabels": [
+    "webview",
+    "netflixlauncher",
+    "disclaimercustomization",
+    "designmenu",
+    "factorymenu",
+    "tv center",
+    "mediaplayer"
+  ]
+}

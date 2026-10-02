@@ -1,12 +1,25 @@
 package com.baris.tvappswitcher
 
+import android.content.Context
 import android.view.KeyEvent
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class ConfigManagerTest {
+    private lateinit var context: Context
+
+    @Before
+    fun setUp() {
+        context = ApplicationProvider.getApplicationContext()
+    }
+
     @Test
     fun testSortModeFromKey() {
         assertEquals(ConfigManager.SortMode.NAME, ConfigManager.SortMode.fromKey("NAME"))
@@ -20,10 +33,6 @@ class ConfigManagerTest {
         assertEquals(ConfigManager.SortMode.NAME, ConfigManager.SortMode.fromKey(null))
         assertEquals(ConfigManager.SortMode.NAME, ConfigManager.SortMode.fromKey("UNKNOWN_KEY"))
     }
-
-    // Note: getSwitchDelayLabel() and getSwitchDelayShortLabel() now require
-    // a Context parameter for localized string resolution. These tests need
-    // an instrumented test or Robolectric to provide a mock Context.
 
     @Test
     fun testKeyLabels() {
@@ -41,22 +50,22 @@ class ConfigManagerTest {
     @Test
     fun testIsSystemExcludedApp() {
         // System and OEM blacklisted packages
-        assertTrue(ConfigManager.isSystemExcludedApp("com.mediatek.tv.service"))
-        assertTrue(ConfigManager.isSystemExcludedApp("com.mediatek.wwtv.webview"))
-        assertTrue(ConfigManager.isSystemExcludedApp("mediatek.factorymenu.ui"))
-        assertTrue(ConfigManager.isSystemExcludedApp("com.google.android.backdrop"))
-        assertTrue(ConfigManager.isSystemExcludedApp("com.android.tv.settings"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "com.mediatek.tv.service"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "com.mediatek.wwtv.webview"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "mediatek.factorymenu.ui"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "com.google.android.backdrop"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "com.android.tv.settings"))
 
         // Keyword based exclusions
-        assertTrue(ConfigManager.isSystemExcludedApp("com.oem.netflixlauncher"))
-        assertTrue(ConfigManager.isSystemExcludedApp("com.oem.disclaimercustomization"))
-        assertTrue(ConfigManager.isSystemExcludedApp("com.mediatek.turnkeyui"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "com.oem.netflixlauncher"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "com.oem.disclaimercustomization"))
+        assertTrue(ConfigManager.isSystemExcludedApp(context, "com.mediatek.turnkeyui"))
 
         // Standard user-facing TV apps should NOT be excluded
-        assertFalse(ConfigManager.isSystemExcludedApp("com.netflix.ninja", "NetflixActivity", "Netflix"))
-        assertFalse(ConfigManager.isSystemExcludedApp("com.google.android.youtube.tv", "MainActivity", "YouTube"))
-        assertFalse(ConfigManager.isSystemExcludedApp("com.spotify.tv.android", "SpotifyActivity", "Spotify"))
-        assertFalse(ConfigManager.isSystemExcludedApp("com.amazon.amazonvideo.livingroom", "MainActivity", "Prime Video"))
-        assertFalse(ConfigManager.isSystemExcludedApp("tv.twitch.android.app", "TwitchActivity", "Twitch"))
+        assertFalse(ConfigManager.isSystemExcludedApp(context, "com.netflix.ninja", "NetflixActivity", "Netflix"))
+        assertFalse(ConfigManager.isSystemExcludedApp(context, "com.google.android.youtube.tv", "MainActivity", "YouTube"))
+        assertFalse(ConfigManager.isSystemExcludedApp(context, "com.spotify.tv.android", "SpotifyActivity", "Spotify"))
+        assertFalse(ConfigManager.isSystemExcludedApp(context, "com.amazon.amazonvideo.livingroom", "MainActivity", "Prime Video"))
+        assertFalse(ConfigManager.isSystemExcludedApp(context, "tv.twitch.android.app", "TwitchActivity", "Twitch"))
     }
 }
