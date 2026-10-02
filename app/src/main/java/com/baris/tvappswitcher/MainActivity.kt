@@ -5,25 +5,28 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.accessibility.AccessibilityManager
-import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.baris.tvappswitcher.databinding.ActivityMainBinding
+import com.baris.tvappswitcher.dialogs.AdbSetupDialog
+import com.baris.tvappswitcher.dialogs.AppSelectionDialog
+import com.baris.tvappswitcher.dialogs.AppVisibilityDialog
+import com.baris.tvappswitcher.dialogs.DelaySelectionDialog
+import com.baris.tvappswitcher.dialogs.KeyCaptureDialog
+import com.baris.tvappswitcher.dialogs.KeyTesterDialog
+import com.baris.tvappswitcher.dialogs.ReorderAppsDialog
+import com.baris.tvappswitcher.dialogs.SortOrderDialog
 
 class MainActivity : AppCompatActivity() {
 
@@ -140,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                             launchTvSettings()
                         }
                         .setNeutralButton(R.string.btn_show_adb_command) { _, _ ->
-                            showAdbSetupDialog()
+                            AdbSetupDialog(this@MainActivity) {}.show()
                         }
                         .setNegativeButton(R.string.close, null)
                         .show()
@@ -152,27 +155,35 @@ class MainActivity : AppCompatActivity() {
             }
 
             btnChangeNext.setOnClickListener {
-                startListeningForKey("NEXT", getString(R.string.dialog_title_next_key))
+                KeyCaptureDialog(this@MainActivity, "NEXT", getString(R.string.dialog_title_next_key), { keyCode ->
+                    ConfigManager.setNextKey(this@MainActivity, keyCode)
+                    Toast.makeText(this@MainActivity, getString(R.string.key_next_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
+                    updateUi()
+                }) {}.show()
             }
 
             btnChangePrev.setOnClickListener {
-                startListeningForKey("PREV", getString(R.string.dialog_title_prev_key))
+                KeyCaptureDialog(this@MainActivity, "PREV", getString(R.string.dialog_title_prev_key), { keyCode ->
+                    ConfigManager.setPrevKey(this@MainActivity, keyCode)
+                    Toast.makeText(this@MainActivity, getString(R.string.key_prev_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
+                    updateUi()
+                }) {}.show()
             }
 
             btnChangeDelay.setOnClickListener {
-                showDelaySelectionDialog()
+                DelaySelectionDialog(this@MainActivity) { updateUi() }.show()
             }
 
             btnChangeSortOrder.setOnClickListener {
-                showSortOrderSelectionDialog()
+                SortOrderDialog(this@MainActivity, { updateUi() }, { ReorderAppsDialog(this@MainActivity) { updateUi() }.show() }).show()
             }
 
             btnCustomizeOrder.setOnClickListener {
-                showReorderAppsDialog()
+                ReorderAppsDialog(this@MainActivity) { updateUi() }.show()
             }
 
             btnManageVisibility.setOnClickListener {
-                showAppVisibilityDialog()
+                AppVisibilityDialog(this@MainActivity) { updateUi() }.show()
             }
 
             switchSingleKey.setOnCheckedChangeListener { _, isChecked ->
@@ -276,11 +287,17 @@ class MainActivity : AppCompatActivity() {
             }
 
             btnAddDirectShortcut.setOnClickListener {
-                startListeningForKey("CUSTOM", getString(R.string.dialog_title_custom_key))
+                KeyCaptureDialog(this@MainActivity, "CUSTOM", getString(R.string.dialog_title_custom_key), { keyCode ->
+                    AppSelectionDialog(this@MainActivity, { chosenApp ->
+                        ConfigManager.saveCustomMapping(this@MainActivity, keyCode, chosenApp.packageName)
+                        Toast.makeText(this@MainActivity, getString(R.string.key_mapped_toast, ConfigManager.getKeyLabel(keyCode), chosenApp.name), Toast.LENGTH_SHORT).show()
+                        updateUi()
+                    }) {}.show()
+                }) {}.show()
             }
 
             btnTestKey.setOnClickListener {
-                showKeyTesterDialog()
+                KeyTesterDialog(this@MainActivity) {}.show()
             }
         }
     }
@@ -344,7 +361,6 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
 
-        // Ensure first button gets focus immediately so user can see where cursor is
         binding.btnChangeNext.post {
             binding.btnChangeNext.requestFocus()
         }
@@ -355,7 +371,6 @@ class MainActivity : AppCompatActivity() {
         try {
             unregisterReceiver(keyReceiver)
         } catch (e: Exception) {
-            // Ignored
         }
         ConfigManager.setListening(this, false)
         waitingDialog?.dismiss()
@@ -506,298 +521,6 @@ class MainActivity : AppCompatActivity() {
     private val Int.dp: Int
         get() = (this * resources.displayMetrics.density).toInt()
 
-    private fun showAppVisibilityDialog() {
-        val allApps = AppRepository.getAllApps(this).sortedBy { it.name.lowercase() }
-        if (allApps.isEmpty()) {
-            Toast.makeText(this, getString(R.string.no_apps_found), Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val currentEnabled = ConfigManager.getEnabledPackages(this)?.toMutableSet()
-            ?: allApps.map { it.packageName }.toMutableSet()
-
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
-            setPadding(16.dp, 12.dp, 16.dp, 8.dp)
-        }
-
-        val headerLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(8.dp, 4.dp, 8.dp, 12.dp)
-        }
-
-        val tvSummary = TextView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f)
-            textSize = 14f
-            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.accent_primary))
-            text = getString(R.string.apps_saved_visible_toast, currentEnabled.size)
-        }
-
-        val btnSelectAll = AppCompatButton(this).apply {
-            text = getString(R.string.select_all)
-            textSize = 13f
-            setTextColor(Color.WHITE)
-            setBackgroundResource(R.drawable.selector_tv_btn_bg)
-            setPadding(20.dp, 8.dp, 20.dp, 8.dp)
-            isFocusable = true
-            isClickable = true
-        }
-
-        val btnDeselectAll = AppCompatButton(this).apply {
-            text = getString(R.string.deselect_all)
-            textSize = 13f
-            setTextColor(Color.WHITE)
-            setBackgroundResource(R.drawable.selector_tv_btn_bg)
-            setPadding(20.dp, 8.dp, 20.dp, 8.dp)
-            isFocusable = true
-            isClickable = true
-            val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            lp.marginStart = 12.dp
-            layoutParams = lp
-        }
-
-        headerLayout.addView(tvSummary)
-        headerLayout.addView(btnSelectAll)
-        headerLayout.addView(btnDeselectAll)
-        container.addView(headerLayout)
-
-        val rv = RecyclerView(this).apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            setPadding(4.dp, 4.dp, 4.dp, 4.dp)
-            val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                (resources.displayMetrics.heightPixels * 0.55).toInt(),
-            )
-            layoutParams = lp
-        }
-
-        lateinit var adapter: AppVisibilityAdapter
-        fun updateSummary() {
-            tvSummary.text = getString(R.string.apps_saved_visible_toast, currentEnabled.size)
-        }
-
-        adapter = AppVisibilityAdapter(
-            apps = allApps,
-            enabledPackages = currentEnabled,
-            onCountChanged = { updateSummary() },
-        )
-        rv.adapter = adapter
-        container.addView(rv)
-
-        btnSelectAll.setOnClickListener {
-            adapter.selectAll()
-        }
-        btnDeselectAll.setOnClickListener {
-            adapter.deselectAll()
-        }
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_manage_visibility_title)
-            .setView(container)
-            .setPositiveButton(R.string.save) { d, _ ->
-                ConfigManager.setEnabledPackages(this, currentEnabled)
-                AppRepository.refreshAppsAsync(this)
-                updateUi()
-                d.dismiss()
-                Toast.makeText(this, getString(R.string.apps_saved_visible_toast, currentEnabled.size), Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-        dialog.setupTvFocus()
-    }
-
-    private fun AlertDialog.setupTvFocus(): AlertDialog {
-        val previousFocus = this@MainActivity.currentFocus
-        setOnDismissListener {
-            updateUi()
-            previousFocus?.requestFocus()
-        }
-        listView?.let { lv ->
-            lv.setOnFocusChangeListener { _, hasFocus ->
-                for (i in 0 until lv.childCount) {
-                    val child = lv.getChildAt(i)
-                    if (!hasFocus) {
-                        child.isSelected = false
-                    } else if (i == lv.selectedItemPosition - lv.firstVisiblePosition) {
-                        child.isSelected = true
-                    }
-                }
-            }
-        }
-        return this
-    }
-
-    private fun showSortOrderSelectionDialog() {
-        val modes = ConfigManager.SortMode.values()
-        val labels = modes.map { getSortModeLabel(it) }.toTypedArray()
-        val currentMode = ConfigManager.getSortMode(this)
-        val currentIndex = modes.indexOf(currentMode).coerceAtLeast(0)
-
-        val adapter = android.widget.ArrayAdapter(this, R.layout.item_dialog_singlechoice, labels)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_select_sort_order)
-            .setSingleChoiceItems(adapter, currentIndex) { dialog, which ->
-                val selectedMode = modes[which]
-                ConfigManager.setSortMode(this, selectedMode)
-                updateUi()
-                dialog.dismiss()
-                Toast.makeText(
-                    this,
-                    getString(R.string.sort_order_set_toast, getSortModeLabel(selectedMode)),
-                    Toast.LENGTH_SHORT,
-                ).show()
-
-                if (selectedMode == ConfigManager.SortMode.CUSTOM) {
-                    showReorderAppsDialog()
-                }
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-            .setupTvFocus()
-    }
-
-    private fun showReorderAppsDialog() {
-        val appsList = getAllInstalledApps().toMutableList()
-        if (appsList.isEmpty()) {
-            Toast.makeText(this, getString(R.string.no_apps_to_reorder), Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val rv = RecyclerView(this).apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            setPadding(20.dp, 16.dp, 20.dp, 16.dp)
-            setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                (resources.displayMetrics.heightPixels * 0.55).toInt(),
-            )
-        }
-
-        var adapter: ReorderAppAdapter? = null
-
-        adapter = ReorderAppAdapter(
-            apps = appsList,
-            onOrderChanged = { updatedList ->
-                val packageOrder = updatedList.map { it.packageName }
-                ConfigManager.setCustomAppOrder(this@MainActivity, packageOrder)
-                ConfigManager.setSortMode(this@MainActivity, ConfigManager.SortMode.CUSTOM)
-            },
-            onItemClick = { app, position ->
-                showItemPositionMenu(app, position, appsList, adapter!!)
-            },
-        )
-
-        rv.adapter = adapter
-
-        val previousFocus = currentFocus
-        AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_customize_order_title)
-            .setView(rv)
-            .setPositiveButton(R.string.done) { d, _ ->
-                ConfigManager.setCustomAppOrder(this, appsList.map { it.packageName })
-                ConfigManager.setSortMode(this, ConfigManager.SortMode.CUSTOM)
-                updateUi()
-                d.dismiss()
-            }
-            .setNeutralButton(R.string.reset_to_az) { _, _ ->
-                val aToZ = appsList.sortedBy { it.name.lowercase() }
-                appsList.clear()
-                appsList.addAll(aToZ)
-                ConfigManager.setCustomAppOrder(this, aToZ.map { it.packageName })
-                adapter.notifyDataSetChanged()
-                ConfigManager.setSortMode(this, ConfigManager.SortMode.CUSTOM)
-                updateUi()
-                Toast.makeText(this, getString(R.string.order_reset_toast), Toast.LENGTH_SHORT).show()
-            }
-            .setOnDismissListener {
-                updateUi()
-                previousFocus?.requestFocus()
-            }
-            .show()
-    }
-
-    private fun showItemPositionMenu(
-        app: AppInfo,
-        position: Int,
-        appsList: MutableList<AppInfo>,
-        adapter: ReorderAppAdapter,
-    ) {
-        val options = mutableListOf<String>()
-        val actions = mutableListOf<() -> Unit>()
-
-        if (position > 0) {
-            options.add(getString(R.string.move_to_top))
-            actions.add { adapter.moveItem(position, 0) }
-
-            options.add(getString(R.string.move_up))
-            actions.add { adapter.moveItem(position, position - 1) }
-        }
-
-        if (position < appsList.size - 1) {
-            options.add(getString(R.string.move_down))
-            actions.add { adapter.moveItem(position, position + 1) }
-
-            options.add(getString(R.string.move_to_bottom))
-            actions.add { adapter.moveItem(position, appsList.size - 1) }
-        }
-
-        if (options.isEmpty()) return
-
-        val menuAdapter = android.widget.ArrayAdapter(this, R.layout.item_dialog_simple, options)
-        AlertDialog.Builder(this)
-            .setTitle("${app.name} (#${position + 1})")
-            .setAdapter(menuAdapter) { _, which ->
-                actions[which].invoke()
-            }
-            .show()
-            .setupTvFocus()
-    }
-
-    private fun getAllInstalledApps(): List<AppInfo> {
-        val all = AppRepository.getAllApps(this)
-        val customOrder = ConfigManager.getCustomAppOrder(this)
-        return all.sortedWith(
-            compareBy<AppInfo> {
-                val idx = customOrder.indexOf(it.packageName)
-                if (idx >= 0) idx else Int.MAX_VALUE
-            }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.name },
-        )
-    }
-
-    private fun showDelaySelectionDialog() {
-        val options = arrayOf(
-            getString(R.string.delay_1_fast),
-            getString(R.string.delay_2_recommended),
-            getString(R.string.delay_3),
-            getString(R.string.delay_4),
-            getString(R.string.delay_5_slow),
-            getString(R.string.delay_manual),
-        )
-        val values = intArrayOf(1, 2, 3, 4, 5, 0)
-        val currentDelay = ConfigManager.getSwitchDelaySeconds(this)
-        val checkedIndex = values.indexOf(currentDelay).coerceAtLeast(0)
-
-        val adapter = android.widget.ArrayAdapter(this, R.layout.item_dialog_singlechoice, options)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_select_countdown_title)
-            .setSingleChoiceItems(adapter, checkedIndex) { dialog, which ->
-                val selectedSeconds = values[which]
-                ConfigManager.setSwitchDelaySeconds(this, selectedSeconds)
-                updateUi()
-                dialog.dismiss()
-                Toast.makeText(
-                    this,
-                    getString(R.string.countdown_set_toast, ConfigManager.getSwitchDelayLabel(this@MainActivity, selectedSeconds)),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-            .setupTvFocus()
-    }
-
     private fun updateShortcutsList() {
         with(binding) {
             val mappings = ConfigManager.getCustomMappings(this@MainActivity)
@@ -823,7 +546,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isServiceCurrentlyEnabled(): Boolean {
-        // Check 1: Settings.Secure
         val enabledServices = Settings.Secure.getString(
             contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
@@ -832,7 +554,6 @@ class MainActivity : AppCompatActivity() {
             return true
         }
 
-        // Check 2: AccessibilityManager
         val am = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
         val runningList = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
         for (service in runningList) {
@@ -854,79 +575,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startListeningForKey(target: String, title: String) {
-        ConfigManager.setListening(this, true, target)
-
-        waitingDialog = AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMessage(R.string.dialog_press_remote_key)
-            .setCancelable(true)
-            .setNegativeButton(R.string.cancel) { _, _ ->
-                ConfigManager.setListening(this, false)
-            }
-            .setOnCancelListener {
-                ConfigManager.setListening(this, false)
-            }
-            .setOnKeyListener { _, keyCode, event ->
-                if (isStandardNavKey(keyCode)) {
-                    return@setOnKeyListener false
-                }
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    ConfigManager.setListening(this, false)
-                    waitingDialog?.dismiss()
-                    handleKeyCaptured(keyCode, target)
-                    return@setOnKeyListener true
-                }
-                false
-            }
-            .show()
-    }
-
-    private fun showKeyTesterDialog() {
-        ConfigManager.setListening(this, true, "TEST")
-
-        val tv = TextView(this).apply {
-            setPadding(48.dp, 36.dp, 48.dp, 28.dp)
-            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.text_primary))
-            textSize = 16f
-            text = getString(R.string.dialog_test_key_msg)
-            setLineSpacing(0f, 1.3f)
-        }
-        testDialogTextView = tv
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_test_key_title)
-            .setView(tv)
-            .setCancelable(true)
-            .setPositiveButton(R.string.done) { d, _ ->
-                ConfigManager.setListening(this, false)
-                d.dismiss()
-            }
-            .setOnDismissListener {
-                ConfigManager.setListening(this, false)
-                testKeyDialog = null
-                testDialogTextView = null
-            }
-            .setOnKeyListener { _, keyCode, event ->
-                if (isStandardNavKey(keyCode)) {
-                    return@setOnKeyListener false
-                }
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    testDialogTextView?.text = getString(
-                        R.string.dialog_test_key_detected,
-                        ConfigManager.getKeyLabel(keyCode),
-                        keyCode,
-                    )
-                    return@setOnKeyListener true
-                }
-                false
-            }
-            .create()
-
-        testKeyDialog = dialog
-        dialog.show()
-    }
-
     private fun handleKeyCaptured(keyCode: Int, target: String) {
         when (target) {
             "NEXT" -> {
@@ -939,52 +587,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.key_prev_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
                 updateUi()
             }
-            "CUSTOM" -> {
-                showAppSelectionDialog { chosenApp ->
-                    ConfigManager.saveCustomMapping(this, keyCode, chosenApp.packageName)
-                    Toast.makeText(this, getString(R.string.key_mapped_toast, ConfigManager.getKeyLabel(keyCode), chosenApp.name), Toast.LENGTH_SHORT).show()
-                    updateUi()
-                }
-            }
         }
-    }
-
-    private fun showAppSelectionDialog(onChosen: (AppInfo) -> Unit) {
-        val apps = getAllInstalledApps().sortedBy { it.name.lowercase() }
-
-        val rv = RecyclerView(this).apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            setPadding(16.dp, 16.dp, 16.dp, 16.dp)
-            setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.surface_card))
-        }
-
-        val previousFocus = currentFocus
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.dialog_select_app_title)
-            .setView(rv)
-            .setOnDismissListener {
-                previousFocus?.requestFocus()
-            }
-            .show()
-
-        rv.adapter = AppListAdapter(apps) { app ->
-            dialog.dismiss()
-            onChosen(app)
-        }
-    }
-
-    private fun showAdbSetupDialog() {
-        val cmd1 = "adb shell settings put secure enabled_accessibility_services com.baris.tvappswitcher/com.baris.tvappswitcher.KeyInterceptorService"
-        val cmd2 = "adb shell settings put secure accessibility_enabled 1"
-        val message = getString(R.string.adb_setup_msg, cmd1, cmd2)
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.adb_setup_title)
-            .setMessage(message)
-            .setPositiveButton(R.string.close, null)
-            .show()
-
-        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(ContextCompat.getColor(this, R.color.text_secondary))
     }
 
     private fun openAccessibilitySettings() {
@@ -1001,7 +604,7 @@ class MainActivity : AppCompatActivity() {
                 launchTvSettings()
             }
             .setNeutralButton(R.string.btn_show_adb_command) { _, _ ->
-                showAdbSetupDialog()
+                AdbSetupDialog(this) {}.show()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
@@ -1051,7 +654,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 return
             } catch (e: Exception) {
-                // Try next
             }
         }
         Toast.makeText(this, getString(R.string.open_accessibility_manual_toast), Toast.LENGTH_LONG).show()
