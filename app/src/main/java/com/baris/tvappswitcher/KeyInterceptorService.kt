@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -120,6 +121,12 @@ class KeyInterceptorService : AccessibilityService() {
         Log.d("KeyInterceptorService", "Liquid Switcher Service Connected & Filter Flags Set")
         // Pre-warm the app cache so the first overlay trigger doesn't block the main thread
         AppRepository.refreshAppsAsync(this)
+
+        // Android 14+ (API 34): Start foreground service to keep accessibility service alive
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val fgIntent = Intent(this, AccessibilityForegroundService::class.java)
+            ContextCompat.startForegroundService(this, fgIntent)
+        }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {

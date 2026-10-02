@@ -20,6 +20,7 @@
     <string name="dialog_enable_service_msg">To enable background remote switching on your TV:\n\n1. Click \'OPEN SETTINGS\' below.\n2. In the right panel, select \'Device Preferences\'.\n3. Scroll down and click \'Accessibility\'.\n4. Select \'Liquid Switcher Service\' and turn it ON.</string>
     <string name="accessibility_service_enabled_toast">Accessibility Service Enabled Successfully!</string>
     <string name="open_accessibility_manual_toast">Please open TV Settings -> Device Preferences -> Accessibility manually.</string>
+    <string name="accessibility_service_running">Monitoring remote keys for app switching</string>
 
     <!-- Section 1: Switching & Timing -->
     <string name="section_switching_timing">Remote Switching &amp; Timing Settings</string>
