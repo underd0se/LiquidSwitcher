@@ -470,20 +470,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFocusEffects() {
-        val clickable = mutableListOf<View>(binding.tvServiceStatus)
-        tabButtons.forEach { clickable.add(it) }
-        clickable.add(binding.paneSwitching.rowNextKey.root)
-        clickable.add(binding.paneSwitching.rowPrevKey.root)
-        clickable.add(binding.paneSwitching.rowDelay.root)
-        clickable.add(binding.paneSwitching.rowSingleKey.root)
-        clickable.add(binding.paneSwitching.rowAudioCues.root)
-        clickable.add(binding.paneApps.rowVisibleApps.root)
-        clickable.add(binding.paneApps.rowSortOrder.root)
-        clickable.add(binding.paneApps.rowCustomOrder.root)
-        clickable.add(binding.paneShortcuts.rowAddShortcut.root)
-        clickable.add(binding.paneShortcuts.rowTestKey.root)
+        // Only chrome keeps the lift animation. Content rows deliberately do not:
+        // their focus state is carried entirely by the card fill, so a focused row
+        // never shifts or overlaps its neighbours.
+        val chrome = mutableListOf<View>(binding.tvServiceStatus)
+        chrome.addAll(tabButtons)
 
-        for (view in clickable) {
+        for (view in chrome) {
             view.setOnFocusChangeListener { v, hasFocus ->
                 val scale = if (hasFocus) 1.03f else 1.0f
                 val transZ = if (hasFocus) 8f else 0f
@@ -504,7 +497,7 @@ class MainActivity : AppCompatActivity() {
             binding.paneDockSizing.rowDockDim.rowSeekBar,
         )
 
-        // The SeekBar owns focus on slider rows, so the card itself is driven manually
+        // The SeekBar owns focus on slider rows, so the card fill is swapped manually
         val sliderCards = listOf(
             binding.paneDockSizing.rowDockSize.root,
             binding.paneDockSizing.rowDockTransparency.root,
@@ -514,19 +507,10 @@ class MainActivity : AppCompatActivity() {
 
         seekBars.forEachIndexed { index, sb ->
             val card = sliderCards[index]
-            sb.setOnFocusChangeListener { v, hasFocus ->
+            sb.setOnFocusChangeListener { _, hasFocus ->
                 card.setBackgroundResource(
                     if (hasFocus) R.drawable.bg_settings_row_focused else R.drawable.bg_settings_row,
                 )
-                val scale = if (hasFocus) 1.02f else 1.0f
-                val transZ = if (hasFocus) 8f else 0f
-                card.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
-                    .translationZ(transZ)
-                    .setDuration(150)
-                    .withLayer()
-                    .start()
             }
         }
     }
