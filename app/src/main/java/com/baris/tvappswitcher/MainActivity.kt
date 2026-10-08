@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityManager
 import android.widget.SeekBar
 import android.widget.TextView
@@ -16,9 +17,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.baris.tvappswitcher.databinding.ActivityMainBinding
+import com.baris.tvappswitcher.databinding.ViewSettingsRowActionBinding
+import com.baris.tvappswitcher.databinding.ViewSettingsRowSliderBinding
+import com.baris.tvappswitcher.databinding.ViewSettingsRowToggleBinding
 import com.baris.tvappswitcher.dialogs.AdbSetupDialog
 import com.baris.tvappswitcher.dialogs.AppSelectionDialog
 import com.baris.tvappswitcher.dialogs.AppVisibilityDialog
@@ -35,6 +40,26 @@ class MainActivity : AppCompatActivity() {
     private var waitingDialog: AlertDialog? = null
     private var testKeyDialog: AlertDialog? = null
     private var testDialogTextView: TextView? = null
+
+    private var activeTab = 0
+
+    private val tabButtons: List<AppCompatButton>
+        get() = listOf(
+            binding.tabSwitching,
+            binding.tabApps,
+            binding.tabDockSizing,
+            binding.tabDockAppearance,
+            binding.tabShortcuts,
+        )
+
+    private val paneRoots: List<View>
+        get() = listOf(
+            binding.paneSwitching.root,
+            binding.paneApps.root,
+            binding.paneDockSizing.root,
+            binding.paneDockAppearance.root,
+            binding.paneShortcuts.root,
+        )
 
     private val keyReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -72,12 +97,19 @@ class MainActivity : AppCompatActivity() {
         AppRepository.init(this)
         SoundCueHelper.init(this)
 
-        initViews()
+        initRows()
         setupListeners()
+        setupTabRail()
         setupFocusEffects()
+        selectTab(savedInstanceState?.getInt(KEY_ACTIVE_TAB) ?: 0)
         updateUi()
 
         ConfigManager.setListening(this, false)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_ACTIVE_TAB, activeTab)
     }
 
     private fun isStandardNavKey(keyCode: Int): Boolean = when (keyCode) {
@@ -119,16 +151,70 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         }
+
+        if (event.action == KeyEvent.ACTION_DOWN && isInActivePane()) {
+            // Up is the spine: it walks the pane and leaves through the top
+            if (event.keyCode == KeyEvent.KEYCODE_DPAD_UP && isOnFirstPaneItem()) {
+                tabs(activeTab)?.requestFocus()
+                return true
+            }
+            // Left only means "go back" for rows that have no value to adjust
+            if (event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT && !isOnHorizontalControl()) {
+                tabs(activeTab)?.requestFocus()
+                return true
+            }
+        }
+
         return super.dispatchKeyEvent(event)
     }
 
-    private fun initViews() {
+    private fun initRows() {
         with(binding) {
-            sbDockSize.keyProgressIncrement = 5
-            sbDockTransparency.keyProgressIncrement = 5
-            sbDockMargin.keyProgressIncrement = 4
-            sbDockDim.keyProgressIncrement = 5
-            rvShortcuts.layoutManager = LinearLayoutManager(this@MainActivity)
+            paneSwitching.rowNextKey.configure(R.drawable.ic_arrow_forward, R.string.label_switch_next)
+            paneSwitching.rowPrevKey.configure(R.drawable.ic_arrow_back, R.string.label_switch_prev)
+            paneSwitching.rowDelay.configure(R.drawable.ic_timer, R.string.label_countdown_delay)
+            paneSwitching.rowSingleKey.configure(
+                R.drawable.ic_remote,
+                R.string.label_single_key_mode,
+                R.string.single_key_disabled,
+            )
+            paneSwitching.rowAudioCues.configure(
+                R.drawable.ic_volume,
+                R.string.label_audio_cues,
+                R.string.audio_cues_off,
+            )
+
+            paneApps.rowVisibleApps.configure(R.drawable.ic_apps_grid, R.string.label_visible_apps)
+            paneApps.rowSortOrder.configure(R.drawable.ic_sort, R.string.label_app_sort_order)
+            paneApps.rowCustomOrder.configure(
+                R.drawable.ic_reorder,
+                R.string.label_custom_order,
+                R.string.desc_custom_order,
+            )
+            paneApps.rowCustomOrder.hideValue()
+
+            paneDockSizing.rowDockSize.configure(R.drawable.ic_dock_size, R.string.label_dock_size)
+            paneDockSizing.rowDockTransparency.configure(R.drawable.ic_layers, R.string.label_dock_transparency)
+            paneDockSizing.rowDockMargin.configure(R.drawable.ic_ruler, R.string.label_dock_margin)
+            paneDockSizing.rowDockDim.configure(R.drawable.ic_contrast, R.string.label_dock_dim)
+
+            paneDockAppearance.rowAppName.configure(
+                R.drawable.ic_text_badge,
+                R.string.label_show_app_name,
+                R.string.desc_show_app_name,
+            )
+            paneDockAppearance.rowCountdown.configure(
+                R.drawable.ic_bar_chart,
+                R.string.label_show_countdown,
+                R.string.desc_show_countdown,
+            )
+
+            paneShortcuts.rowAddShortcut.configure(R.drawable.ic_bolt, R.string.btn_add_shortcut)
+            paneShortcuts.rowAddShortcut.hideValue()
+            paneShortcuts.rowTestKey.configure(R.drawable.ic_gamepad, R.string.btn_test_key)
+            paneShortcuts.rowTestKey.hideValue()
+
+            paneShortcuts.rvShortcuts.layoutManager = LinearLayoutManager(this@MainActivity)
         }
     }
 
@@ -154,7 +240,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            btnChangeNext.setOnClickListener {
+            paneSwitching.rowNextKey.root.setOnClickListener {
                 KeyCaptureDialog(this@MainActivity, "NEXT", getString(R.string.dialog_title_next_key), { keyCode ->
                     ConfigManager.setNextKey(this@MainActivity, keyCode)
                     Toast.makeText(this@MainActivity, getString(R.string.key_next_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
@@ -162,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                 }) {}.show()
             }
 
-            btnChangePrev.setOnClickListener {
+            paneSwitching.rowPrevKey.root.setOnClickListener {
                 KeyCaptureDialog(this@MainActivity, "PREV", getString(R.string.dialog_title_prev_key), { keyCode ->
                     ConfigManager.setPrevKey(this@MainActivity, keyCode)
                     Toast.makeText(this@MainActivity, getString(R.string.key_prev_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
@@ -170,123 +256,104 @@ class MainActivity : AppCompatActivity() {
                 }) {}.show()
             }
 
-            btnChangeDelay.setOnClickListener {
+            paneSwitching.rowDelay.root.setOnClickListener {
                 DelaySelectionDialog(this@MainActivity) { updateUi() }.show()
             }
 
-            btnChangeSortOrder.setOnClickListener {
-                SortOrderDialog(this@MainActivity, { updateUi() }, { ReorderAppsDialog(this@MainActivity) { updateUi() }.show() }).show()
-            }
-
-            btnCustomizeOrder.setOnClickListener {
-                ReorderAppsDialog(this@MainActivity) { updateUi() }.show()
-            }
-
-            btnManageVisibility.setOnClickListener {
-                AppVisibilityDialog(this@MainActivity) { updateUi() }.show()
-            }
-
-            switchSingleKey.setOnCheckedChangeListener { _, isChecked ->
+            paneSwitching.rowSingleKey.rowSwitch.setOnCheckedChangeListener { _, isChecked ->
                 ConfigManager.setSingleKeyMode(this@MainActivity, isChecked)
-                btnChangePrev.isEnabled = !isChecked
-                btnChangePrev.alpha = if (isChecked) 0.4f else 1.0f
+                updatePrevKeyAvailability(!isChecked)
+            }
+            paneSwitching.rowSingleKey.root.setOnClickListener {
+                paneSwitching.rowSingleKey.rowSwitch.toggle()
             }
 
-            switchSound.setOnCheckedChangeListener { _, isChecked ->
+            paneSwitching.rowAudioCues.rowSwitch.setOnCheckedChangeListener { _, isChecked ->
                 ConfigManager.setSoundEffectsEnabled(this@MainActivity, isChecked)
+                paneSwitching.rowAudioCues.rowSubtitle.setText(
+                    if (isChecked) R.string.audio_cues_on else R.string.audio_cues_off,
+                )
                 if (isChecked) {
                     SoundCueHelper.playTick(this@MainActivity)
                 }
             }
+            paneSwitching.rowAudioCues.root.setOnClickListener {
+                paneSwitching.rowAudioCues.rowSwitch.toggle()
+            }
 
-            switchShowAppName.setOnCheckedChangeListener { _, isChecked ->
+            paneApps.rowVisibleApps.root.setOnClickListener {
+                AppVisibilityDialog(this@MainActivity) { updateUi() }.show()
+            }
+
+            paneApps.rowSortOrder.root.setOnClickListener {
+                SortOrderDialog(this@MainActivity, { updateUi() }, { ReorderAppsDialog(this@MainActivity) { updateUi() }.show() }).show()
+            }
+
+            paneApps.rowCustomOrder.root.setOnClickListener {
+                ReorderAppsDialog(this@MainActivity) { updateUi() }.show()
+            }
+
+            paneDockSizing.rowDockSize.rowSeekBar.apply {
+                max = 80
+                keyProgressIncrement = 5
+                setOnSeekBarChangeListener(
+                    onProgress = { value ->
+                        val percent = 60 + value
+                        ConfigManager.setDockScalePercent(this@MainActivity, percent)
+                        binding.paneDockSizing.rowDockSize.rowValue.text = getDockSizeLabel(percent)
+                    },
+                )
+            }
+
+            paneDockSizing.rowDockTransparency.rowSeekBar.apply {
+                max = 90
+                keyProgressIncrement = 5
+                setOnSeekBarChangeListener(
+                    onProgress = { value ->
+                        ConfigManager.setDockTransparencyPercent(this@MainActivity, value)
+                        binding.paneDockSizing.rowDockTransparency.rowValue.text = getDockTransparencyLabel(value)
+                    },
+                )
+            }
+
+            paneDockSizing.rowDockMargin.rowSeekBar.apply {
+                max = 72
+                keyProgressIncrement = 4
+                setOnSeekBarChangeListener(
+                    onProgress = { value ->
+                        ConfigManager.setDockBottomMarginDp(this@MainActivity, value)
+                        binding.paneDockSizing.rowDockMargin.rowValue.text = getDockMarginLabel(value)
+                    },
+                )
+            }
+
+            paneDockSizing.rowDockDim.rowSeekBar.apply {
+                max = 50
+                keyProgressIncrement = 5
+                setOnSeekBarChangeListener(
+                    onProgress = { value ->
+                        ConfigManager.setDockBackgroundDimPercent(this@MainActivity, value)
+                        binding.paneDockSizing.rowDockDim.rowValue.text = getDockDimLabel(value)
+                    },
+                )
+            }
+
+            paneDockAppearance.rowAppName.rowSwitch.setOnCheckedChangeListener { _, isChecked ->
                 ConfigManager.setShowAppNameEnabled(this@MainActivity, isChecked)
                 updateCountdownRowState(isChecked)
             }
+            paneDockAppearance.rowAppName.root.setOnClickListener {
+                paneDockAppearance.rowAppName.rowSwitch.toggle()
+            }
 
-            switchCountdown.setOnCheckedChangeListener { _, isChecked ->
+            paneDockAppearance.rowCountdown.rowSwitch.setOnCheckedChangeListener { _, isChecked ->
                 ConfigManager.setCountdownBarEnabled(this@MainActivity, isChecked)
             }
-
-            sbDockSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    val percent = 60 + progress
-                    ConfigManager.setDockScalePercent(this@MainActivity, percent)
-                    tvDockSizeLabel.text = getDockSizeLabel(percent)
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-
-            btnDockSizeMinus.setOnClickListener {
-                val current = sbDockSize.progress
-                sbDockSize.progress = (current - 5).coerceAtLeast(0)
+            paneDockAppearance.rowCountdown.root.setOnClickListener {
+                paneDockAppearance.rowCountdown.rowSwitch.toggle()
             }
 
-            btnDockSizePlus.setOnClickListener {
-                val current = sbDockSize.progress
-                sbDockSize.progress = (current + 5).coerceAtMost(80)
-            }
-
-            sbDockTransparency.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    val percent = progress
-                    ConfigManager.setDockTransparencyPercent(this@MainActivity, percent)
-                    tvDockTransparencyLabel.text = getDockTransparencyLabel(percent)
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-
-            btnDockTransMinus.setOnClickListener {
-                val current = sbDockTransparency.progress
-                sbDockTransparency.progress = (current - 5).coerceAtLeast(0)
-            }
-
-            btnDockTransPlus.setOnClickListener {
-                val current = sbDockTransparency.progress
-                sbDockTransparency.progress = (current + 5).coerceAtMost(90)
-            }
-
-            sbDockMargin.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    ConfigManager.setDockBottomMarginDp(this@MainActivity, progress)
-                    tvDockMarginLabel.text = getDockMarginLabel(progress)
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-
-            btnDockMarginMinus.setOnClickListener {
-                val current = sbDockMargin.progress
-                sbDockMargin.progress = (current - 4).coerceAtLeast(0)
-            }
-
-            btnDockMarginPlus.setOnClickListener {
-                val current = sbDockMargin.progress
-                sbDockMargin.progress = (current + 4).coerceAtMost(72)
-            }
-
-            sbDockDim.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    ConfigManager.setDockBackgroundDimPercent(this@MainActivity, progress)
-                    tvDockDimLabel.text = getDockDimLabel(progress)
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-
-            btnDockDimMinus.setOnClickListener {
-                val current = sbDockDim.progress
-                sbDockDim.progress = (current - 5).coerceAtLeast(0)
-            }
-
-            btnDockDimPlus.setOnClickListener {
-                val current = sbDockDim.progress
-                sbDockDim.progress = (current + 5).coerceAtMost(50)
-            }
-
-            btnAddDirectShortcut.setOnClickListener {
+            paneShortcuts.rowAddShortcut.root.setOnClickListener {
                 KeyCaptureDialog(this@MainActivity, "CUSTOM", getString(R.string.dialog_title_custom_key), { keyCode ->
                     AppSelectionDialog(this@MainActivity, { chosenApp ->
                         ConfigManager.saveCustomMapping(this@MainActivity, keyCode, chosenApp.packageName)
@@ -296,54 +363,170 @@ class MainActivity : AppCompatActivity() {
                 }) {}.show()
             }
 
-            btnTestKey.setOnClickListener {
+            paneShortcuts.rowTestKey.root.setOnClickListener {
                 KeyTesterDialog(this@MainActivity) {}.show()
             }
         }
     }
 
-    private fun setupFocusEffects() {
-        with(binding) {
-            val buttons = listOf(
-                tvServiceStatus,
-                btnChangeNext,
-                btnChangePrev,
-                btnChangeDelay,
-                btnChangeSortOrder,
-                btnCustomizeOrder,
-                btnManageVisibility,
-                btnAddDirectShortcut,
-                btnTestKey,
-            )
+    private fun setupTabRail() {
+        val tabs = tabButtons
 
-            for (btn in buttons) {
-                btn.setOnFocusChangeListener { v, hasFocus ->
-                    val scale = if (hasFocus) 1.05f else 1.0f
-                    val transZ = if (hasFocus) 8f else 0f
-                    v.animate()
-                        .scaleX(scale)
-                        .scaleY(scale)
-                        .translationZ(transZ)
-                        .setDuration(140)
-                        .withLayer()
-                        .start()
+        tabs.forEachIndexed { index, button ->
+            button.setOnClickListener { selectTab(index) }
+            button.setOnKeyListener { _, keyCode, event ->
+                if (event.action != KeyEvent.ACTION_DOWN) return@setOnKeyListener false
+                when (keyCode) {
+                    // Vertical rail: up/down walks the tabs
+                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        moveSelectionTo(index + 1)
+                        true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_UP -> {
+                        if (index == 0) {
+                            binding.tvServiceStatus.requestFocus()
+                        } else {
+                            moveSelectionTo(index - 1)
+                        }
+                        true
+                    }
+
+                    // Right leaves the rail and enters the active pane
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        focusFirstInPane()
+                        true
+                    }
+
+                    else -> false
                 }
             }
+        }
+    }
 
-            val seekBars = listOf(sbDockSize, sbDockTransparency, sbDockMargin, sbDockDim)
-            for (sb in seekBars) {
-                sb.setOnFocusChangeListener { v, hasFocus ->
-                    val scaleX = if (hasFocus) 1.03f else 1.0f
-                    val scaleY = if (hasFocus) 1.15f else 1.0f
-                    val transZ = if (hasFocus) 8f else 0f
-                    v.animate()
-                        .scaleX(scaleX)
-                        .scaleY(scaleY)
-                        .translationZ(transZ)
-                        .setDuration(150)
-                        .withLayer()
-                        .start()
-                }
+    private fun selectTab(index: Int) {
+        activeTab = index.coerceIn(0, paneRoots.lastIndex)
+        tabButtons.forEachIndexed { i, button -> button.isSelected = i == activeTab }
+        paneRoots.forEachIndexed { i, pane ->
+            pane.visibility = if (i == activeTab) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun moveSelectionTo(index: Int) {
+        val target = ((index % tabButtons.size) + tabButtons.size) % tabButtons.size
+        selectTab(target)
+        tabs(target)?.requestFocus()
+    }
+
+    private fun tabs(index: Int): AppCompatButton? = tabButtons.getOrNull(index)
+
+    private fun focusFirstInPane() {
+        val first = paneRoots[activeTab].firstFocusableDescendant()
+        if (first != null) {
+            first.requestFocus()
+        }
+    }
+
+    private fun isInActivePane(): Boolean {
+        val focused = currentFocus ?: return false
+        val pane = paneRoots[activeTab]
+        return focused != pane && isDescendantOf(pane, focused)
+    }
+
+    /**
+     * A focused slider owns DPAD_LEFT/RIGHT for its own value stepping, at any value.
+     * Leaving the pane is done with DPAD_UP through the top of the pane instead.
+     */
+    private fun isOnHorizontalControl(): Boolean = currentFocus is SeekBar
+
+    private fun isDescendantOf(
+        ancestor: View,
+        view: View,
+    ): Boolean {
+        var current: View? = view
+        while (current != null) {
+            if (current === ancestor) return true
+            current = current.parent as? View
+        }
+        return false
+    }
+
+    private fun isOnFirstPaneItem(): Boolean {
+        val focused = currentFocus ?: return false
+        val first = paneRoots[activeTab].firstFocusableDescendant() ?: return false
+        return focused === first
+    }
+
+    private fun View.firstFocusableDescendant(): View? {
+        if (visibility != View.VISIBLE) return null
+        if (isFocusable && isEnabled && isShown) return this
+        if (this is ViewGroup) {
+            for (i in 0 until childCount) {
+                val found = getChildAt(i).firstFocusableDescendant()
+                if (found != null) return found
+            }
+        }
+        return null
+    }
+
+    private fun setupFocusEffects() {
+        val clickable = mutableListOf<View>(binding.tvServiceStatus)
+        tabButtons.forEach { clickable.add(it) }
+        clickable.add(binding.paneSwitching.rowNextKey.root)
+        clickable.add(binding.paneSwitching.rowPrevKey.root)
+        clickable.add(binding.paneSwitching.rowDelay.root)
+        clickable.add(binding.paneSwitching.rowSingleKey.root)
+        clickable.add(binding.paneSwitching.rowAudioCues.root)
+        clickable.add(binding.paneApps.rowVisibleApps.root)
+        clickable.add(binding.paneApps.rowSortOrder.root)
+        clickable.add(binding.paneApps.rowCustomOrder.root)
+        clickable.add(binding.paneShortcuts.rowAddShortcut.root)
+        clickable.add(binding.paneShortcuts.rowTestKey.root)
+
+        for (view in clickable) {
+            view.setOnFocusChangeListener { v, hasFocus ->
+                val scale = if (hasFocus) 1.03f else 1.0f
+                val transZ = if (hasFocus) 8f else 0f
+                v.animate()
+                    .scaleX(scale)
+                    .scaleY(scale)
+                    .translationZ(transZ)
+                    .setDuration(140)
+                    .withLayer()
+                    .start()
+            }
+        }
+
+        val seekBars = listOf(
+            binding.paneDockSizing.rowDockSize.rowSeekBar,
+            binding.paneDockSizing.rowDockTransparency.rowSeekBar,
+            binding.paneDockSizing.rowDockMargin.rowSeekBar,
+            binding.paneDockSizing.rowDockDim.rowSeekBar,
+        )
+
+        // The SeekBar owns focus on slider rows, so the card itself is driven manually
+        val sliderCards = listOf(
+            binding.paneDockSizing.rowDockSize.root,
+            binding.paneDockSizing.rowDockTransparency.root,
+            binding.paneDockSizing.rowDockMargin.root,
+            binding.paneDockSizing.rowDockDim.root,
+        )
+
+        seekBars.forEachIndexed { index, sb ->
+            val card = sliderCards[index]
+            sb.setOnFocusChangeListener { v, hasFocus ->
+                card.setBackgroundResource(
+                    if (hasFocus) R.drawable.bg_settings_row_focused else R.drawable.bg_settings_row,
+                )
+                val scale = if (hasFocus) 1.02f else 1.0f
+                val transZ = if (hasFocus) 8f else 0f
+                card.animate()
+                    .scaleX(scale)
+                    .scaleY(scale)
+                    .translationZ(transZ)
+                    .setDuration(150)
+                    .withLayer()
+                    .start()
             }
         }
     }
@@ -361,8 +544,8 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
 
-        binding.btnChangeNext.post {
-            binding.btnChangeNext.requestFocus()
+        if (currentFocus == null) {
+            tabs(activeTab)?.post { tabs(activeTab)?.requestFocus() }
         }
     }
 
@@ -429,29 +612,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUi() {
-        with(binding) {
-            val nextKey = ConfigManager.getNextKey(this@MainActivity)
-            val prevKey = ConfigManager.getPrevKey(this@MainActivity)
+        updateSwitchingPane()
+        updateAppsPane()
+        updateDockSizingPane()
+        updateDockAppearancePane()
+        updateShortcutsPane()
+        updateServiceStatus()
+    }
+
+    private fun updateSwitchingPane() {
+        with(binding.paneSwitching) {
+            rowNextKey.rowValue.text = ConfigManager.getKeyLabel(ConfigManager.getNextKey(this@MainActivity))
+            rowPrevKey.rowValue.text = ConfigManager.getKeyLabel(ConfigManager.getPrevKey(this@MainActivity))
+
             val delaySec = ConfigManager.getSwitchDelaySeconds(this@MainActivity)
-            val sortMode = ConfigManager.getSortMode(this@MainActivity)
+            rowDelay.rowValue.text = ConfigManager.getSwitchDelayLabel(this@MainActivity, delaySec)
 
-            tvNextKey.text = ConfigManager.getKeyLabel(nextKey)
-            tvPrevKey.text = ConfigManager.getKeyLabel(prevKey)
+            val singleKey = ConfigManager.isSingleKeyMode(this@MainActivity)
+            rowSingleKey.rowSwitch.setChecked(singleKey, false)
+            rowSingleKey.rowSubtitle.setText(
+                if (singleKey) R.string.single_key_enabled else R.string.single_key_disabled,
+            )
+            updatePrevKeyAvailability(!singleKey)
 
-            tvSwitchDelay.text = ConfigManager.getSwitchDelayLabel(this@MainActivity, delaySec)
-            btnChangeDelay.text = getString(R.string.btn_change_delay_fmt, ConfigManager.getSwitchDelayShortLabel(this@MainActivity, delaySec))
+            val soundEnabled = ConfigManager.isSoundEffectsEnabled(this@MainActivity)
+            rowAudioCues.rowSwitch.setChecked(soundEnabled, false)
+            rowAudioCues.rowSubtitle.setText(
+                if (soundEnabled) R.string.audio_cues_on else R.string.audio_cues_off,
+            )
+        }
+    }
 
-            tvSortOrder.text = getSortModeLabel(sortMode)
+    private fun updatePrevKeyAvailability(enabled: Boolean) {
+        with(binding.paneSwitching.rowPrevKey.root) {
+            isEnabled = enabled
+            isFocusable = enabled
+            alpha = if (enabled) 1.0f else 0.4f
+        }
+    }
 
-            if (sortMode == ConfigManager.SortMode.CUSTOM) {
-                rowCustomOrder.visibility = View.VISIBLE
-                btnChangeSortOrder.nextFocusDownId = R.id.btnCustomizeOrder
-                switchSingleKey.nextFocusUpId = R.id.btnCustomizeOrder
-            } else {
-                rowCustomOrder.visibility = View.GONE
-                btnChangeSortOrder.nextFocusDownId = R.id.switchSingleKey
-                switchSingleKey.nextFocusUpId = R.id.btnChangeSortOrder
-            }
+    private fun updateAppsPane() {
+        with(binding.paneApps) {
+            rowSortOrder.rowValue.text = getSortModeLabel(ConfigManager.getSortMode(this@MainActivity))
+
+            val showCustomOrder = ConfigManager.getSortMode(this@MainActivity) == ConfigManager.SortMode.CUSTOM
+            rowCustomOrder.root.visibility = if (showCustomOrder) View.VISIBLE else View.GONE
 
             val allApps = AppRepository.getAllApps(this@MainActivity)
             val enabledFilter = ConfigManager.getEnabledPackages(this@MainActivity)
@@ -460,69 +665,52 @@ class MainActivity : AppCompatActivity() {
             } else {
                 allApps.size
             }
-            tvVisibleAppsCount.text = getString(R.string.visible_apps_count_fmt, visibleCount, allApps.size)
-            btnManageVisibility.text = getString(R.string.btn_manage)
+            rowVisibleApps.rowValue.text = getString(R.string.visible_apps_count_fmt, visibleCount, allApps.size)
+        }
+    }
 
-            val singleKey = ConfigManager.isSingleKeyMode(this@MainActivity)
-            switchSingleKey.setChecked(singleKey, false)
-            btnChangePrev.isEnabled = !singleKey
-            btnChangePrev.alpha = if (singleKey) 0.4f else 1.0f
-
-            val soundEnabled = ConfigManager.isSoundEffectsEnabled(this@MainActivity)
-            switchSound.setChecked(soundEnabled, false)
-
-            val showAppName = ConfigManager.isShowAppNameEnabled(this@MainActivity)
-            switchShowAppName.setChecked(showAppName, false)
-            updateCountdownRowState(showAppName)
-
-            val countdownEnabled = ConfigManager.isCountdownBarEnabled(this@MainActivity)
-            switchCountdown.setChecked(countdownEnabled, false)
-
+    private fun updateDockSizingPane() {
+        with(binding.paneDockSizing) {
             val dockScale = ConfigManager.getDockScalePercent(this@MainActivity)
-            sbDockSize.progress = dockScale - 60
-            tvDockSizeLabel.text = getDockSizeLabel(dockScale)
+            rowDockSize.rowSeekBar.progress = dockScale - 60
+            rowDockSize.rowValue.text = getDockSizeLabel(dockScale)
 
             val dockTrans = ConfigManager.getDockTransparencyPercent(this@MainActivity)
-            sbDockTransparency.progress = dockTrans
-            tvDockTransparencyLabel.text = getDockTransparencyLabel(dockTrans)
+            rowDockTransparency.rowSeekBar.progress = dockTrans
+            rowDockTransparency.rowValue.text = getDockTransparencyLabel(dockTrans)
 
             val dockMargin = ConfigManager.getDockBottomMarginDp(this@MainActivity)
-            sbDockMargin.progress = dockMargin
-            tvDockMarginLabel.text = getDockMarginLabel(dockMargin)
+            rowDockMargin.rowSeekBar.progress = dockMargin
+            rowDockMargin.rowValue.text = getDockMarginLabel(dockMargin)
 
             val dockDim = ConfigManager.getDockBackgroundDimPercent(this@MainActivity)
-            sbDockDim.progress = dockDim
-            tvDockDimLabel.text = getDockDimLabel(dockDim)
+            rowDockDim.rowSeekBar.progress = dockDim
+            rowDockDim.rowValue.text = getDockDimLabel(dockDim)
+        }
+    }
 
-            updateShortcutsList()
-            updateServiceStatus()
+    private fun updateDockAppearancePane() {
+        with(binding.paneDockAppearance) {
+            val showAppName = ConfigManager.isShowAppNameEnabled(this@MainActivity)
+            rowAppName.rowSwitch.setChecked(showAppName, false)
+
+            val countdownEnabled = ConfigManager.isCountdownBarEnabled(this@MainActivity)
+            rowCountdown.rowSwitch.setChecked(countdownEnabled, false)
+
+            updateCountdownRowState(showAppName)
         }
     }
 
     private fun updateCountdownRowState(appNameEnabled: Boolean) {
-        with(binding) {
-            switchCountdown.isEnabled = appNameEnabled
-            switchCountdown.isFocusable = appNameEnabled
-            switchCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
-            rowCountdown.alpha = if (appNameEnabled) 1.0f else 0.4f
-
-            if (appNameEnabled) {
-                switchShowAppName.nextFocusDownId = R.id.switchCountdown
-                btnAddDirectShortcut.nextFocusUpId = R.id.switchCountdown
-                btnTestKey.nextFocusUpId = R.id.switchCountdown
-            } else {
-                switchShowAppName.nextFocusDownId = R.id.btnAddDirectShortcut
-                btnAddDirectShortcut.nextFocusUpId = R.id.switchShowAppName
-                btnTestKey.nextFocusUpId = R.id.switchShowAppName
-            }
+        with(binding.paneDockAppearance.rowCountdown.root) {
+            isEnabled = appNameEnabled
+            isFocusable = appNameEnabled
+            alpha = if (appNameEnabled) 1.0f else 0.4f
         }
     }
 
-    private val Int.dp: Int
-        get() = (this * resources.displayMetrics.density).toInt()
-
-    private fun updateShortcutsList() {
-        with(binding) {
+    private fun updateShortcutsPane() {
+        with(binding.paneShortcuts) {
             val mappings = ConfigManager.getCustomMappings(this@MainActivity)
             if (mappings.isEmpty()) {
                 tvNoShortcutsHint.visibility = View.VISIBLE
@@ -536,7 +724,7 @@ class MainActivity : AppCompatActivity() {
                         .setMessage(getString(R.string.dialog_remove_shortcut_msg, ConfigManager.getKeyLabel(keyCode)))
                         .setPositiveButton(R.string.delete) { _, _ ->
                             ConfigManager.removeCustomMapping(this@MainActivity, keyCode)
-                            updateShortcutsList()
+                            updateShortcutsPane()
                         }
                         .setNegativeButton(R.string.cancel, null)
                         .show()
@@ -565,13 +753,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateServiceStatus() {
+        val isEnabled = isServiceCurrentlyEnabled()
         with(binding) {
-            val isEnabled = isServiceCurrentlyEnabled()
-            if (isEnabled) {
-                tvServiceStatus.text = getString(R.string.service_status_active)
-            } else {
-                tvServiceStatus.text = getString(R.string.service_status_inactive)
-            }
+            tvServiceStatusLabel.setText(
+                if (isEnabled) R.string.service_status_active else R.string.service_status_inactive,
+            )
+            tvServiceStatusLabel.setTextColor(
+                ContextCompat.getColorStateList(this@MainActivity, if (isEnabled) R.color.text_primary else R.color.text_secondary),
+            )
+            serviceStatusDot.setBackgroundResource(
+                if (isEnabled) R.drawable.bg_status_dot_on else R.drawable.bg_status_dot_off,
+            )
         }
     }
 
@@ -658,4 +850,68 @@ class MainActivity : AppCompatActivity() {
         }
         Toast.makeText(this, getString(R.string.open_accessibility_manual_toast), Toast.LENGTH_LONG).show()
     }
+
+    private fun ViewSettingsRowActionBinding.configure(
+        icon: Int,
+        title: Int,
+    ) {
+        rowIcon.setImageResource(icon)
+        rowTitle.setText(title)
+    }
+
+    private fun ViewSettingsRowActionBinding.configure(
+        icon: Int,
+        title: Int,
+        subtitle: Int,
+    ) {
+        configure(icon, title)
+        rowSubtitle.setText(subtitle)
+        rowSubtitle.visibility = View.VISIBLE
+    }
+
+    private fun ViewSettingsRowActionBinding.hideValue() {
+        rowValue.visibility = View.GONE
+    }
+
+    private fun ViewSettingsRowToggleBinding.configure(
+        icon: Int,
+        title: Int,
+        subtitle: Int,
+    ) {
+        rowIcon.setImageResource(icon)
+        rowTitle.setText(title)
+        rowSubtitle.setText(subtitle)
+        rowSubtitle.visibility = View.VISIBLE
+        rowSwitch.isFocusable = false
+    }
+
+    private fun ViewSettingsRowSliderBinding.configure(
+        icon: Int,
+        title: Int,
+    ) {
+        rowIcon.setImageResource(icon)
+        rowTitle.setText(title)
+    }
+
+    private companion object {
+        const val KEY_ACTIVE_TAB = "active_tab"
+    }
+}
+
+private fun SeekBar.setOnSeekBarChangeListener(onProgress: (Int) -> Unit) {
+    setOnSeekBarChangeListener(
+        object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean,
+            ) {
+                onProgress(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) = Unit
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) = Unit
+        },
+    )
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+        Every settings row is its own borderless card. Separation between rows comes
+        from the pane background showing through the gap, so no stroke is needed.
+        Focus is expressed by a brighter fill plus the scale applied in MainActivity.
+    -->
+    <item android:state_focused="true" android:state_window_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="14dp" />
+            <solid android:color="@color/surface_row_focused" />
+        </shape>
+    </item>
+
+    <item android:state_pressed="true" android:state_window_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="14dp" />
+            <solid android:color="@color/surface_row_focused" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="14dp" />
+            <solid android:color="@color/surface_card" />
+        </shape>
+    </item>
+</selector>

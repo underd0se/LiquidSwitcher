@@ -120,10 +120,15 @@ cmd_confirm() {
 
 cmd_screenshot() {
     ensure_device
-    local name="${1:-screenshot_$(date +%Y%m%d_%H%M%S).png}"
+    local name="${1:-screenshot_$(date +%Y%m%d_%H%M%S)}"
     if [[ "$name" != /* ]]; then
         mkdir -p "$CAPTURES_DIR"
         name="${CAPTURES_DIR}/${name}"
+    fi
+
+    # `open` picks the app by extension, so always keep the .png suffix or it opens in TextEdit
+    if [[ "$name" != *.png ]]; then
+        name="${name}.png"
     fi
 
     echo "📸 Capturing TV screen..."
@@ -133,7 +138,7 @@ cmd_screenshot() {
     echo "✅ Screenshot saved to $name"
 
     if [[ "$(uname)" == "Darwin" ]] && [[ "${OPEN:-1}" == "1" ]]; then
-        open "$name" 2>/dev/null || true
+        open -a Preview "$name" 2>/dev/null || open "$name" 2>/dev/null || true
     fi
 }
 

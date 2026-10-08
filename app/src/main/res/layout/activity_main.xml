@@ -1,954 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/bg_root"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    android:paddingHorizontal="48dp"
-    android:paddingVertical="24dp">
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
+    <!-- App Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="20dp">
 
-        <!-- Title Header -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:text="@string/app_name"
+            android:textColor="@color/text_primary"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/tvServiceStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_marginBottom="16dp">
+            android:background="@drawable/bg_status_pill"
+            android:paddingStart="16dp"
+            android:paddingEnd="18dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <View
+                android:id="@+id/serviceStatusDot"
+                android:layout_width="9dp"
+                android:layout_height="9dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_status_dot_on" />
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/app_name"
-                android:textColor="@color/text_primary"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/tvServiceStatus"
+                android:id="@+id/tvServiceStatusLabel"
                 android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_height="wrap_content"
                 android:text="@string/service_status_active"
-                android:textColor="@color/selector_tv_btn_text"
-                android:background="@drawable/selector_tv_btn_bg"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:layout_marginEnd="6dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:focusable="true"
-                android:clickable="true"
-                android:nextFocusDown="@+id/btnChangeNext" />
-
-        </LinearLayout>
-
-        <!-- Key & Switcher Settings Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_settings_card"
-            android:padding="20dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/section_switching_timing"
-                android:textColor="@color/accent_primary"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Next Key Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="14dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/label_switch_next"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvNextKey"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="Program Up (166)"
-                    android:textColor="@color/accent_primary"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:fontFeatureSettings="tnum"
-                    android:layout_marginEnd="16dp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnChangeNext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_change_key"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:layout_marginEnd="6dp"
-                    android:focusable="true"
-                    android:nextFocusUp="@+id/tvServiceStatus"
-                    android:nextFocusDown="@+id/btnChangePrev" />
-
-            </LinearLayout>
-
-            <!-- Prev Key Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="14dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/label_switch_prev"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvPrevKey"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="Program Down (167)"
-                    android:textColor="@color/accent_primary"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:fontFeatureSettings="tnum"
-                    android:layout_marginEnd="16dp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnChangePrev"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_change_key"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:layout_marginEnd="6dp"
-                    android:focusable="true"
-                    android:nextFocusUp="@+id/btnChangeNext"
-                    android:nextFocusDown="@+id/btnChangeDelay" />
-
-            </LinearLayout>
-
-            <!-- Auto-Switch Countdown Delay Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="14dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/label_countdown_delay"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvSwitchDelay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="2 seconds"
-                    android:textColor="@color/accent_primary"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:fontFeatureSettings="tnum"
-                    android:layout_marginEnd="16dp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnChangeDelay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_change_delay"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:layout_marginEnd="6dp"
-                    android:focusable="true"
-                    android:nextFocusUp="@+id/btnChangePrev"
-                    android:nextFocusDown="@+id/btnManageVisibility" />
-
-            </LinearLayout>
-
-            <!-- Visible Apps Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="14dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/label_visible_apps"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvVisibleAppsCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="9 of 16 visible"
-                    android:textColor="@color/accent_primary"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:fontFeatureSettings="tnum"
-                    android:layout_marginEnd="16dp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnManageVisibility"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_manage"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:layout_marginEnd="6dp"
-                    android:focusable="true"
-                    android:nextFocusUp="@+id/btnChangeDelay"
-                    android:nextFocusDown="@+id/btnChangeSortOrder" />
-
-            </LinearLayout>
-
-            <!-- App Sort Order Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="14dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/label_app_sort_order"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvSortOrder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="Alphabetical (A - Z)"
-                    android:textColor="@color/accent_primary"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:layout_marginEnd="16dp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnChangeSortOrder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_change"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:layout_marginEnd="6dp"
-                    android:focusable="true"
-                    android:nextFocusUp="@+id/btnManageVisibility"
-                    android:nextFocusDown="@+id/switchSingleKey" />
-
-            </LinearLayout>
-
-            <!-- Custom App Order Row (Reorder - only visible when SortMode == CUSTOM) -->
-            <LinearLayout
-                android:id="@+id/rowCustomOrder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="14dp"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/label_custom_order"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/desc_custom_order"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp"
-                    android:layout_marginEnd="16dp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnCustomizeOrder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_reorder"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:layout_marginEnd="6dp"
-                    android:focusable="true"
-                    android:nextFocusUp="@+id/btnChangeSortOrder"
-                    android:nextFocusDown="@+id/switchSingleKey" />
-
-            </LinearLayout>
-
-            <!-- Single Key Switcher Mode Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="14dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_single_key_mode"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvSingleKeySubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/single_key_subtitle"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <com.baris.tvappswitcher.IosSwitchView
-                    android:id="@+id/switchSingleKey"
-                    android:layout_width="54dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="6dp"
-                    android:nextFocusUp="@+id/btnChangeSortOrder"
-                    android:nextFocusDown="@+id/switchSound"
-                    android:focusable="true" />
-
-            </LinearLayout>
-
-            <!-- Sound Effects Toggle Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="14dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_audio_cues"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvAudioCuesSubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/audio_cues_subtitle"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <com.baris.tvappswitcher.IosSwitchView
-                    android:id="@+id/switchSound"
-                    android:layout_width="54dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="6dp"
-                    android:nextFocusUp="@+id/switchSingleKey"
-                    android:nextFocusDown="@+id/sbDockSize"
-                    android:focusable="true" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- Dock Customization Settings Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_settings_card"
-            android:padding="20dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/section_dock_customization"
-                android:textColor="@color/accent_primary"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Dock & Icon Size Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="18dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="6dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/label_dock_size"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvDockSizeLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="100% (Medium)"
-                        android:textColor="@color/accent_primary"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:fontFeatureSettings="tnum" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockSizeMinus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="-"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                    <SeekBar
-                        android:id="@+id/sbDockSize"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:max="80"
-                        android:progress="40"
-                        android:nextFocusUp="@+id/switchSound"
-                        android:nextFocusDown="@+id/sbDockTransparency"
-                        android:focusable="true" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockSizePlus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="+"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Dock Transparency Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="6dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/label_dock_transparency"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvDockTransparencyLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="35% (Subtle Glass)"
-                        android:textColor="@color/accent_primary"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:fontFeatureSettings="tnum" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockTransMinus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="-"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                    <SeekBar
-                        android:id="@+id/sbDockTransparency"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:max="90"
-                        android:progress="35"
-                        android:nextFocusUp="@+id/sbDockSize"
-                        android:nextFocusDown="@+id/sbDockMargin"
-                        android:focusable="true" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockTransPlus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="+"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Dock Bottom Margin (Overscan) Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="18dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="6dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/label_dock_margin"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvDockMarginLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="24dp (Standard)"
-                        android:textColor="@color/accent_primary"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:fontFeatureSettings="tnum" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockMarginMinus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="-"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                    <SeekBar
-                        android:id="@+id/sbDockMargin"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:max="72"
-                        android:progress="24"
-                        android:nextFocusUp="@+id/sbDockTransparency"
-                        android:nextFocusDown="@+id/sbDockDim"
-                        android:focusable="true" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockMarginPlus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="+"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Dock Background Dimming Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="18dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="6dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/label_dock_dim"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:id="@+id/tvDockDimLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        tools:text="0% (No Dim)"
-                        android:textColor="@color/accent_primary"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:fontFeatureSettings="tnum" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockDimMinus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="-"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                    <SeekBar
-                        android:id="@+id/sbDockDim"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="10dp"
-                        android:paddingBottom="10dp"
-                        android:max="50"
-                        android:progress="0"
-                        android:nextFocusUp="@+id/sbDockMargin"
-                        android:nextFocusDown="@+id/switchShowAppName"
-                        android:focusable="true" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnDockDimPlus"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:text="+"
-                        android:textColor="@color/selector_tv_btn_text"
-                        android:background="@drawable/selector_tv_btn_bg"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:focusable="false" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- App Name Over Icon Toggle Row -->
-            <LinearLayout
-                android:id="@+id/rowShowAppName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="18dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_show_app_name"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/desc_show_app_name"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <com.baris.tvappswitcher.IosSwitchView
-                    android:id="@+id/switchShowAppName"
-                    android:layout_width="54dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="6dp"
-                    android:nextFocusUp="@+id/sbDockDim"
-                    android:nextFocusDown="@+id/switchCountdown"
-                    android:focusable="true" />
-
-            </LinearLayout>
-
-            <!-- Countdown Progress Bar Toggle Row -->
-            <LinearLayout
-                android:id="@+id/rowCountdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="18dp"
-                android:clipChildren="false"
-                android:clipToPadding="false">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_show_countdown"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/desc_show_countdown"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <com.baris.tvappswitcher.IosSwitchView
-                    android:id="@+id/switchCountdown"
-                    android:layout_width="54dp"
-                    android:layout_height="32dp"
-                    android:layout_marginEnd="6dp"
-                    android:nextFocusUp="@+id/switchShowAppName"
-                    android:nextFocusDown="@+id/btnAddDirectShortcut"
-                    android:focusable="true" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- Direct Shortcuts Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_settings_card"
-            android:padding="20dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/section_direct_shortcuts"
-                    android:textColor="@color/accent_primary"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnAddDirectShortcut"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_add_shortcut"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:nextFocusUp="@+id/switchCountdown"
-                    android:nextFocusRight="@+id/btnTestKey"
-                    android:focusable="true" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/btnTestKey"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:text="@string/btn_test_key"
-                    android:textColor="@color/selector_tv_btn_text"
-                    android:background="@drawable/selector_tv_btn_bg"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="6dp"
-                    android:nextFocusUp="@+id/switchCountdown"
-                    android:nextFocusLeft="@+id/btnAddDirectShortcut"
-                    android:focusable="true" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvNoShortcutsHint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/no_shortcuts_hint"
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvShortcuts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:visibility="gone" />
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-</ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- Navigation Rail -->
+        <LinearLayout
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_settings_card"
+            android:padding="10dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="10dp"
+                android:letterSpacing="0.12"
+                android:text="@string/settings_rail_label"
+                android:textAllCaps="true"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tabSwitching"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_settings_tab"
+                android:text="@string/tab_switching"
+                android:textAllCaps="false"
+                android:textColor="@color/selector_settings_tab_text"
+                android:textSize="16sp"
+                android:gravity="start|center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="12dp"
+                android:focusable="true"
+                android:stateListAnimator="@null" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tabApps"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_settings_tab"
+                android:text="@string/tab_apps"
+                android:textAllCaps="false"
+                android:textColor="@color/selector_settings_tab_text"
+                android:textSize="16sp"
+                android:gravity="start|center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="12dp"
+                android:focusable="true"
+                android:stateListAnimator="@null" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tabDockSizing"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_settings_tab"
+                android:text="@string/tab_dock_sizing"
+                android:textAllCaps="false"
+                android:textColor="@color/selector_settings_tab_text"
+                android:textSize="16sp"
+                android:gravity="start|center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="12dp"
+                android:focusable="true"
+                android:stateListAnimator="@null" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tabDockAppearance"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_settings_tab"
+                android:text="@string/tab_dock_appearance"
+                android:textAllCaps="false"
+                android:textColor="@color/selector_settings_tab_text"
+                android:textSize="16sp"
+                android:gravity="start|center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="12dp"
+                android:focusable="true"
+                android:stateListAnimator="@null" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tabShortcuts"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_settings_tab"
+                android:text="@string/tab_shortcuts"
+                android:textAllCaps="false"
+                android:textColor="@color/selector_settings_tab_text"
+                android:textSize="16sp"
+                android:gravity="start|center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="12dp"
+                android:focusable="true"
+                android:stateListAnimator="@null" />
+
+        </LinearLayout>
+
+        <!-- Content Pane -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="20dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <ScrollView
+                android:id="@+id/settingsScroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:scrollbars="none">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="24dp">
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/paneCenter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.5" />
+
+                    <FrameLayout
+                        android:id="@+id/paneHost"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintWidth_max="980dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5">
+
+                        <include
+                            android:id="@+id/paneSwitching"
+                            layout="@layout/pane_switching"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <include
+                            android:id="@+id/paneApps"
+                            layout="@layout/pane_apps"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone" />
+
+                        <include
+                            android:id="@+id/paneDockSizing"
+                            layout="@layout/pane_dock_sizing"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone" />
+
+                        <include
+                            android:id="@+id/paneDockAppearance"
+                            layout="@layout/pane_dock_appearance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone" />
+
+                        <include
+                            android:id="@+id/paneShortcuts"
+                            layout="@layout/pane_shortcuts"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                    </FrameLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </ScrollView>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -22,6 +22,11 @@
     <color name="status_active">#34C759</color>
     <color name="status_inactive">#FF5252</color>
 
+    <!-- Settings Surface Hierarchy -->
+    <color name="surface_hover">#0DFFFFFF</color>
+    <color name="surface_rail">#16161F</color>
+    <color name="surface_row_focused">#1FFFFFFF</color>
+
     <!-- Controls & States -->
     <color name="btn_bg_normal">#242436</color>
     <color name="btn_stroke_normal">#4A4A68</color>

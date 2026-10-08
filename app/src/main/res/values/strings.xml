@@ -12,8 +12,8 @@
     <string name="select_all">Select All</string>
 
     <!-- Service Status -->
-    <string name="service_status_active">● Service Active</string>
-    <string name="service_status_inactive">⚠️ Inactive - Click to enable</string>
+    <string name="service_status_active">Service Active</string>
+    <string name="service_status_inactive">Inactive - Click to enable</string>
     <string name="service_active_title">Service Active</string>
     <string name="service_active_message">Liquid Switcher Service is currently active and monitoring remote keys.\n\nDo you want to open TV Settings?</string>
     <string name="dialog_enable_service_title">Enable Accessibility Service</string>
@@ -22,26 +22,37 @@
     <string name="open_accessibility_manual_toast">Please open TV Settings -> Device Preferences -> Accessibility manually.</string>
     <string name="accessibility_service_running">Monitoring remote keys for app switching</string>
 
+    <!-- Settings Navigation Tabs & Pane Titles -->
+    <string name="settings_rail_label">Settings</string>
+    <string name="tab_switching">Switching</string>
+    <string name="tab_apps">Apps</string>
+    <string name="tab_dock_sizing">Dock Sizing</string>
+    <string name="tab_dock_appearance">Dock Look</string>
+    <string name="tab_shortcuts">Shortcuts</string>
+    <string name="pane_apps_title">App Management</string>
+    <string name="pane_dock_appearance_title">Dock Appearance</string>
+    <string name="shortcuts_mapped_label">Mapped Shortcuts</string>
+
     <!-- Section 1: Switching & Timing -->
     <string name="section_switching_timing">Remote Switching &amp; Timing Settings</string>
-    <string name="label_switch_next">Switch to Next App:</string>
-    <string name="label_switch_prev">Switch to Previous App:</string>
+    <string name="label_switch_next">Switch to Next App</string>
+    <string name="label_switch_prev">Switch to Previous App</string>
     <string name="btn_change_key">Change Key</string>
-    <string name="label_countdown_delay">Auto-Switch Countdown Delay:</string>
+    <string name="label_countdown_delay">Auto-Switch Countdown Delay</string>
     <string name="btn_change_delay">Change Delay</string>
-    <string name="label_app_sort_order">App Sort Order:</string>
+    <string name="label_app_sort_order">App Sort Order</string>
     <string name="btn_change">Change</string>
     <string name="btn_reorder">Reorder</string>
     <string name="btn_hide_apps">Hide Apps</string>
-    <string name="label_visible_apps">Visible Apps:</string>
+    <string name="label_visible_apps">Visible Apps</string>
     <string name="btn_manage">Manage</string>
     <string name="visible_apps_count_fmt">%1$d of %2$d visible</string>
-    <string name="label_custom_order">Custom App Order:</string>
+    <string name="label_custom_order">Custom App Order</string>
     <string name="desc_custom_order">Manual Sequence</string>
-    <string name="label_single_key_mode">One-Button Remote Mode:</string>
+    <string name="label_single_key_mode">One-Button Remote Mode</string>
     <string name="single_key_enabled">Enabled (Single-Button Cycle)</string>
     <string name="single_key_disabled">Disabled (2 Keys: CH+/CH-)</string>
-    <string name="label_audio_cues">Remote Audio Cues:</string>
+    <string name="label_audio_cues">Remote Audio Cues</string>
     <string name="audio_cues_on">Audio Cues: ON</string>
     <string name="audio_cues_off">Audio Cues: OFF</string>
 
@@ -50,13 +61,13 @@
 
     <!-- Section 2: Dock Customization -->
     <string name="section_dock_customization">Dock Customization</string>
-    <string name="label_dock_size">Dock &amp; Icon Size:</string>
-    <string name="label_dock_transparency">Dock Transparency:</string>
-    <string name="label_dock_margin">Dock Bottom Margin (Overscan):</string>
-    <string name="label_dock_dim">Background Dimming:</string>
-    <string name="label_show_app_name">Show App Name Over Icon:</string>
+    <string name="label_dock_size">Dock &amp; Icon Size</string>
+    <string name="label_dock_transparency">Dock Transparency</string>
+    <string name="label_dock_margin">Dock Bottom Margin (Overscan)</string>
+    <string name="label_dock_dim">Background Dimming</string>
+    <string name="label_show_app_name">Show App Name Over Icon</string>
     <string name="desc_show_app_name">Displays floating application title above the focused dock icon</string>
-    <string name="label_show_countdown">Show Countdown Bar:</string>
+    <string name="label_show_countdown">Show Countdown Bar</string>
     <string name="desc_show_countdown">Displays animated progress bar under tooltip</string>
     <string name="single_key_subtitle">Cycle apps using only one remote button</string>
     <string name="audio_cues_subtitle">Play subtle audio click on each step</string>

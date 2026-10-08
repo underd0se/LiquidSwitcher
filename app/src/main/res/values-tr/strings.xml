@@ -12,8 +12,8 @@
     <string name="select_all">Tümünü Seç</string>
 
     <!-- Service Status -->
-    <string name="service_status_active">● Servis Aktif</string>
-    <string name="service_status_inactive">⚠️ Pasif - Etkinleştirmek için tıklayın</string>
+    <string name="service_status_active">Servis Aktif</string>
+    <string name="service_status_inactive">Pasif - Etkinleştirmek için tıklayın</string>
     <string name="service_active_title">Servis Aktif</string>
     <string name="service_active_message">Liquid Switcher servisi şu anda aktif ve kumanda tuşlarını izliyor.\n\nTV Ayarlarını açmak istiyor musunuz?</string>
     <string name="dialog_enable_service_title">Erişilebilirlik Servisini Etkinleştir</string>
@@ -21,26 +21,37 @@
     <string name="accessibility_service_enabled_toast">Erişilebilirlik Servisi Başarıyla Etkinleştirildi!</string>
     <string name="open_accessibility_manual_toast">Lütfen TV Ayarları -> Cihaz Tercihleri -> Erişilebilirlik menüsünü manuel olarak açın.</string>
 
+    <!-- Settings Navigation Tabs & Pane Titles -->
+    <string name="settings_rail_label">Ayarlar</string>
+    <string name="tab_switching">Geçiş</string>
+    <string name="tab_apps">Uygulamalar</string>
+    <string name="tab_dock_sizing">Dock Boyutu</string>
+    <string name="tab_dock_appearance">Dock Görünümü</string>
+    <string name="tab_shortcuts">Kısayollar</string>
+    <string name="pane_apps_title">Uygulama Yönetimi</string>
+    <string name="pane_dock_appearance_title">Dock Görünümü</string>
+    <string name="shortcuts_mapped_label">Atanmış Kısayollar</string>
+
     <!-- Section 1: Switching & Timing -->
     <string name="section_switching_timing">Kumanda Geçiş ve Zamanlama Ayarları</string>
-    <string name="label_switch_next">Sonraki Uygulamaya Geç:</string>
-    <string name="label_switch_prev">Önceki Uygulamaya Geç:</string>
+    <string name="label_switch_next">Sonraki Uygulamaya Geç</string>
+    <string name="label_switch_prev">Önceki Uygulamaya Geç</string>
     <string name="btn_change_key">Tuşu Değiştir</string>
-    <string name="label_countdown_delay">Otomatik Geçiş Geri Sayımı:</string>
+    <string name="label_countdown_delay">Otomatik Geçiş Geri Sayımı</string>
     <string name="btn_change_delay">Gecikmeyi Değiştir</string>
-    <string name="label_app_sort_order">Uygulama Sıralaması:</string>
+    <string name="label_app_sort_order">Uygulama Sıralaması</string>
     <string name="btn_change">Değiştir</string>
     <string name="btn_reorder">Sırala</string>
     <string name="btn_hide_apps">Gizle</string>
-    <string name="label_visible_apps">Görünür Uygulamalar:</string>
+    <string name="label_visible_apps">Görünür Uygulamalar</string>
     <string name="btn_manage">Yönet</string>
     <string name="visible_apps_count_fmt">%1$d / %2$d görünür</string>
-    <string name="label_custom_order">Özel Uygulama Sırası:</string>
+    <string name="label_custom_order">Özel Uygulama Sırası</string>
     <string name="desc_custom_order">El ile Sıralama</string>
-    <string name="label_single_key_mode">Tek Tuşla Kumanda Modu:</string>
+    <string name="label_single_key_mode">Tek Tuşla Kumanda Modu</string>
     <string name="single_key_enabled">Etkin (Tek Tuşla Döngü)</string>
     <string name="single_key_disabled">Devre Dışı (2 Tuş: CH+/CH-)</string>
-    <string name="label_audio_cues">Kumanda Ses Efektleri:</string>
+    <string name="label_audio_cues">Kumanda Ses Efektleri</string>
     <string name="audio_cues_on">Ses Efektleri: AÇIK</string>
     <string name="audio_cues_off">Ses Efektleri: KAPALI</string>
 
@@ -49,13 +60,13 @@
 
     <!-- Section 2: Dock Customization -->
     <string name="section_dock_customization">Dock Özelleştirme</string>
-    <string name="label_dock_size">Dock ve Simge Boyutu:</string>
-    <string name="label_dock_transparency">Dock Saydamlığı:</string>
-    <string name="label_dock_margin">Dock Alt Boşluğu (Overscan):</string>
-    <string name="label_dock_dim">Arka Plan Karartma:</string>
-    <string name="label_show_app_name">Simge Üstünde Uygulama Adı:</string>
+    <string name="label_dock_size">Dock ve Simge Boyutu</string>
+    <string name="label_dock_transparency">Dock Saydamlığı</string>
+    <string name="label_dock_margin">Dock Alt Boşluğu (Overscan)</string>
+    <string name="label_dock_dim">Arka Plan Karartma</string>
+    <string name="label_show_app_name">Simge Üstünde Uygulama Adı</string>
     <string name="desc_show_app_name">Seçili dock simgesinin üzerinde uygulama başlığını gösterir</string>
-    <string name="label_show_countdown">Geri Sayım Çubuğunu Göster:</string>
+    <string name="label_show_countdown">Geri Sayım Çubuğunu Göster</string>
     <string name="desc_show_countdown">İpucu altında animasyonlu ilerleme çubuğu gösterir</string>
     <string name="single_key_subtitle">Uygulamaları tek bir kumanda tuşuyla sırayla geçin</string>
     <string name="audio_cues_subtitle">Her geçiş adımında hafif ses efekti çal</string>
