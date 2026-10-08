@@ -41,9 +41,32 @@ cmd_reload_accessibility() {
         return 0
     fi
 
-    # AccessibilityManagerService caches crashed services; clearing the stored
-    # setting is not enough, the package must be reinstalled to reset it.
-    echo "⚠️  Service not bound -- reinstalling to clear crashed-service cache..."
+    # AccessibilityManagerService keeps crashed services in a cache that clearing the
+    # stored setting does not reset. Toggling the master switch and restarting the app
+    # usually forces a rebind -- and unlike uninstalling, it preserves the user's
+    # SharedPreferences, so every settings value survives.
+    echo "⚠️  Service not bound -- toggling master switch to force a rebind..."
+    adb -s "$DEVICE" shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
+    adb -s "$DEVICE" shell settings put secure accessibility_enabled 0
+    sleep 1
+    adb -s "$DEVICE" shell settings put secure enabled_accessibility_services "$SERVICE"
+    adb -s "$DEVICE" shell settings put secure accessibility_enabled 1
+
+    if cmd_wait_for_service 20; then
+        echo "✅ Accessibility service is bound."
+        return 0
+    fi
+
+    # Last resort. This DESTROYS all app data (every settings value the user configured),
+    # so it never happens without explicit consent.
+    echo "❌ Still not bound. A reinstall is the only remaining fix, but it will"
+    echo "    wipe all Liquid Switcher settings (keys, dock sizing, app selection)."
+    read -r -p "    Reinstall anyway? [y/N] " reply
+    if [[ ! "$reply" =~ ^[Yy]$ ]]; then
+        echo "Aborted. Nothing was changed."
+        return 1
+    fi
+
     # `settings put ... ""` errors with "Bad arguments"; `delete` is the correct clear.
     adb -s "$DEVICE" shell settings delete secure enabled_accessibility_services >/dev/null 2>&1 || true
     adb -s "$DEVICE" uninstall "$PACKAGE" >/dev/null || true
@@ -52,7 +75,7 @@ cmd_reload_accessibility() {
     adb -s "$DEVICE" shell settings put secure enabled_accessibility_services "$SERVICE"
 
     if cmd_wait_for_service 20; then
-        echo "✅ Accessibility service is bound."
+        echo "✅ Accessibility service is bound (settings were reset)."
         return 0
     fi
 

@@ -1,7 +1,7 @@
 package com.baris.tvappswitcher
 
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -10,7 +10,6 @@ import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.accessibility.AccessibilityManager
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -727,19 +726,21 @@ class MainActivity : AppCompatActivity() {
         // The service being listed in enabled_accessibility_services is not enough: when the
         // master accessibility switch is off the entry survives but nothing is bound, so no key
         // events are intercepted. Both conditions must hold for switching to actually work.
-        val masterEnabled = Settings.Secure.getInt(contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1
-        if (!masterEnabled) return false
+        if (Settings.Secure.getInt(contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) != 1) {
+            return false
+        }
 
         val enabledServices = Settings.Secure.getString(
             contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
         ) ?: return false
 
-        if (!enabledServices.contains(KeyInterceptorService::class.java.name)) return false
-
-        val am = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        return am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
-            .any { it.resolveInfo?.serviceInfo?.packageName == packageName }
+        // Entries are stored in either flattened ("pkg/.Class") or fully qualified form,
+        // so compare normalised ComponentNames rather than matching substrings.
+        val expected = ComponentName(this, KeyInterceptorService::class.java)
+        return enabledServices.split(':').any { entry ->
+            ComponentName.unflattenFromString(entry.trim()) == expected
+        }
     }
 
     private fun updateServiceStatus() {
