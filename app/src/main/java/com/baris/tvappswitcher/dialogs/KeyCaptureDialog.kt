@@ -16,6 +16,12 @@ class KeyCaptureDialog(
 
     private var dialog: AlertDialog? = null
 
+    /** Stops listening and closes the dialog, e.g. once a key arrives via broadcast. */
+    fun dismiss() {
+        ConfigManager.setListening(context, false)
+        dialog?.dismiss()
+    }
+
     fun show() {
         ConfigManager.setListening(context, true, target)
 

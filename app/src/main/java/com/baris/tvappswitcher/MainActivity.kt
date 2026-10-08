@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private var waitingDialog: AlertDialog? = null
+    private var waitingDialog: KeyCaptureDialog? = null
     private var testKeyDialog: AlertDialog? = null
     private var testDialogTextView: TextView? = null
 
@@ -241,19 +241,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             paneSwitching.rowNextKey.root.setOnClickListener {
-                KeyCaptureDialog(this@MainActivity, "NEXT", getString(R.string.dialog_title_next_key), { keyCode ->
+                waitingDialog = KeyCaptureDialog(this@MainActivity, "NEXT", getString(R.string.dialog_title_next_key), { keyCode ->
                     ConfigManager.setNextKey(this@MainActivity, keyCode)
                     Toast.makeText(this@MainActivity, getString(R.string.key_next_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
                     updateUi()
-                }) {}.show()
+                }) {}.also { it.show() }
             }
 
             paneSwitching.rowPrevKey.root.setOnClickListener {
-                KeyCaptureDialog(this@MainActivity, "PREV", getString(R.string.dialog_title_prev_key), { keyCode ->
+                waitingDialog = KeyCaptureDialog(this@MainActivity, "PREV", getString(R.string.dialog_title_prev_key), { keyCode ->
                     ConfigManager.setPrevKey(this@MainActivity, keyCode)
                     Toast.makeText(this@MainActivity, getString(R.string.key_prev_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
                     updateUi()
-                }) {}.show()
+                }) {}.also { it.show() }
             }
 
             paneSwitching.rowDelay.root.setOnClickListener {
@@ -354,17 +354,15 @@ class MainActivity : AppCompatActivity() {
             }
 
             paneShortcuts.rowAddShortcut.root.setOnClickListener {
-                KeyCaptureDialog(this@MainActivity, "CUSTOM", getString(R.string.dialog_title_custom_key), { keyCode ->
-                    AppSelectionDialog(this@MainActivity, { chosenApp ->
-                        ConfigManager.saveCustomMapping(this@MainActivity, keyCode, chosenApp.packageName)
-                        Toast.makeText(this@MainActivity, getString(R.string.key_mapped_toast, ConfigManager.getKeyLabel(keyCode), chosenApp.name), Toast.LENGTH_SHORT).show()
-                        updateUi()
-                    }) {}.show()
-                }) {}.show()
+                waitingDialog = KeyCaptureDialog(this@MainActivity, "CUSTOM", getString(R.string.dialog_title_custom_key), { keyCode ->
+                    openAppPickerForShortcut(keyCode)
+                }) {}.also { it.show() }
             }
 
             paneShortcuts.rowTestKey.root.setOnClickListener {
-                KeyTesterDialog(this@MainActivity) {}.show()
+                testDialogTextView = KeyTesterDialog(this@MainActivity) {}
+                    .also { it.show() }
+                    .capturedKeyView
             }
         }
     }
@@ -703,18 +701,26 @@ class MainActivity : AppCompatActivity() {
                 tvNoShortcutsHint.visibility = View.GONE
                 rvShortcuts.visibility = View.VISIBLE
                 rvShortcuts.adapter = MappingAdapter(this@MainActivity, mappings) { keyCode ->
-                    AlertDialog.Builder(this@MainActivity)
-                        .setTitle(R.string.dialog_remove_shortcut_title)
-                        .setMessage(getString(R.string.dialog_remove_shortcut_msg, ConfigManager.getKeyLabel(keyCode)))
-                        .setPositiveButton(R.string.delete) { _, _ ->
-                            ConfigManager.removeCustomMapping(this@MainActivity, keyCode)
-                            updateShortcutsPane()
-                        }
-                        .setNegativeButton(R.string.cancel, null)
-                        .show()
+                    showRemoveShortcutDialog(keyCode)
                 }
             }
         }
+    }
+
+    private fun showRemoveShortcutDialog(keyCode: Int) {
+        val dialog = AlertDialog.Builder(this@MainActivity)
+            .setTitle(R.string.dialog_remove_shortcut_title)
+            .setMessage(getString(R.string.dialog_remove_shortcut_msg, ConfigManager.getKeyLabel(keyCode)))
+            .setPositiveButton(R.string.delete) { _, _ ->
+                ConfigManager.removeCustomMapping(this@MainActivity, keyCode)
+                updateShortcutsPane()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+
+        // AlertDialog leaves focus on the dialog window rather than a button here,
+        // which makes it unusable with a D-pad, so target CANCEL explicitly.
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.requestFocus()
     }
 
     private fun isServiceCurrentlyEnabled(): Boolean {
@@ -763,7 +769,20 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.key_prev_set_toast, ConfigManager.getKeyLabel(keyCode)), Toast.LENGTH_SHORT).show()
                 updateUi()
             }
+            "CUSTOM" -> openAppPickerForShortcut(keyCode)
         }
+    }
+
+    private fun openAppPickerForShortcut(keyCode: Int) {
+        AppSelectionDialog(
+            this,
+            { chosenApp ->
+                ConfigManager.saveCustomMapping(this, keyCode, chosenApp.packageName)
+                Toast.makeText(this, getString(R.string.key_mapped_toast, ConfigManager.getKeyLabel(keyCode), chosenApp.name), Toast.LENGTH_SHORT).show()
+                updateUi()
+            },
+            {},
+        ).show()
     }
 
     private fun openAccessibilitySettings() {

@@ -16,6 +16,14 @@ class KeyTesterDialog(
     private var dialog: AlertDialog? = null
     private var testDialogTextView: TextView? = null
 
+    /**
+     * The accessibility service swallows every non-navigation key while listening and
+     * re-delivers it as a KEY_CAPTURED broadcast, so the dialog's own key listener never
+     * sees it. The host activity needs this view to render that broadcast.
+     */
+    val capturedKeyView: TextView?
+        get() = testDialogTextView
+
     fun show() {
         ConfigManager.setListening(context, true, "TEST")
 
