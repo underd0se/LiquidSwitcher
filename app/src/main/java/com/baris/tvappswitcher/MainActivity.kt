@@ -724,22 +724,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isServiceCurrentlyEnabled(): Boolean {
+        // The service being listed in enabled_accessibility_services is not enough: when the
+        // master accessibility switch is off the entry survives but nothing is bound, so no key
+        // events are intercepted. Both conditions must hold for switching to actually work.
+        val masterEnabled = Settings.Secure.getInt(contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1
+        if (!masterEnabled) return false
+
         val enabledServices = Settings.Secure.getString(
             contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-        )
-        if (enabledServices != null && enabledServices.contains("KeyInterceptorService")) {
-            return true
-        }
+        ) ?: return false
+
+        if (!enabledServices.contains(KeyInterceptorService::class.java.name)) return false
 
         val am = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        val runningList = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
-        for (service in runningList) {
-            if (service.resolveInfo?.serviceInfo?.packageName == packageName) {
-                return true
-            }
-        }
-        return false
+        return am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+            .any { it.resolveInfo?.serviceInfo?.packageName == packageName }
     }
 
     private fun updateServiceStatus() {
