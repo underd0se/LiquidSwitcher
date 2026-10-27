@@ -6,8 +6,25 @@ This guide covers building, testing, deploying, and debugging Liquid Switcher on
 
 ## 🚀 Quick Start with Developer CLI (`./dev.sh`)
 
-Liquid Switcher includes a unified developer CLI script (`./dev.sh`) that automates everyday development workflows:
+Liquid Switcher includes a unified developer CLI script (`./dev.sh`) that automates everyday development workflows.
 
+### 1. Set Your TV IP Address
+Before running `./dev.sh`, configure your target Android TV / Google TV device:
+
+- **Option A (ADB Wi-Fi connection)**:
+  Connect directly to your TV over Wi-Fi. `./dev.sh` will auto-detect your connected device:
+  ```bash
+  adb connect <TV_IP>:5555
+  ```
+
+- **Option B (Environment Variable)**:
+  Export your TV's IP address in your current shell or add it to your `~/.zshrc` / `~/.bashrc`:
+  ```bash
+  export TV_DEVICE="<TV_IP>:5555"
+  ```
+  *(You can also pass it inline for a single command: `TV_DEVICE="<TV_IP>:5555" ./dev.sh deploy`)*
+
+### 2. Daily Development Workflow
 ```bash
 # 1. Connect to TV over ADB Wi-Fi
 adb connect <TV_IP>:5555

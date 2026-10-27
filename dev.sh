@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -z "${TV_DEVICE:-}" ]]; then
     _CONNECTED="$(adb devices 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' | head -n1 | awk '{print $1}')"
-    DEVICE="${_CONNECTED:-192.168.50.11:5555}"
+    DEVICE="${_CONNECTED:-}"
 else
     DEVICE="$TV_DEVICE"
 fi
@@ -89,6 +89,12 @@ cmd_reload_accessibility() {
 }
 
 ensure_device() {
+    if [[ -z "$DEVICE" ]]; then
+        echo "❌ Error: No TV device specified or connected."
+        echo "Please connect via ADB first: adb connect <TV_IP>:5555"
+        echo "Or set the TV_DEVICE environment variable: export TV_DEVICE=<TV_IP>:5555"
+        exit 1
+    fi
     if ! adb devices | grep -q "$DEVICE"; then
         echo "Connecting to TV at $DEVICE..."
         adb connect "$DEVICE" || true
@@ -247,7 +253,7 @@ Commands:
   clean             Clean build cache and screenshots
 
 Environment Variables:
-  TV_DEVICE         Target TV ADB address (default: 192.168.50.247:5555)
+  TV_DEVICE         Target TV ADB address (e.g. export TV_DEVICE=<TV_IP>:5555)
   OPEN              Open screenshot after capture (1=yes, 0=no; default: 1)
 EOF
 }

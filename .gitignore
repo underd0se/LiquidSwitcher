@@ -1,7 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea
+.idea/
 .DS_Store
 /build
 /app/build
@@ -14,3 +14,5 @@
 !app/src/main/**/*.png
 !docs/images/**/*.png
 .kotlin
+AGENTS.md
+.agent
