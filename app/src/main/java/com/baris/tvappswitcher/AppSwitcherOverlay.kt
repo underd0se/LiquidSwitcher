@@ -470,6 +470,7 @@ class AppSwitcherOverlay(
 
     private fun updateSelection() {
         val currentApp = currentApps.getOrNull(selectedIndex)
+        android.util.Log.i("AppSwitcherOverlay", "SELECTED: index=$selectedIndex name=${currentApp?.name} pkg=${currentApp?.packageName}")
         val tooltip = tvDockTooltip
         val tooltipContainer = llDockTooltipContainer
         val selectedView = itemViews.getOrNull(selectedIndex)

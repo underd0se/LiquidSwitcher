@@ -12,4 +12,5 @@
 *.aab
 *.png
 !app/src/main/**/*.png
+!docs/images/**/*.png
 .kotlin

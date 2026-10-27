@@ -2,7 +2,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEVICE="${TV_DEVICE:-192.168.50.247:5555}"
+if [[ -z "${TV_DEVICE:-}" ]]; then
+    _CONNECTED="$(adb devices 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+' | head -n1 | awk '{print $1}')"
+    DEVICE="${_CONNECTED:-192.168.50.11:5555}"
+else
+    DEVICE="$TV_DEVICE"
+fi
 PACKAGE="com.baris.tvappswitcher"
 SERVICE="${PACKAGE}/.KeyInterceptorService"
 APK="${SCRIPT_DIR}/app/build/outputs/apk/debug/app-debug.apk"
