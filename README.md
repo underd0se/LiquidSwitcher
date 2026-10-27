@@ -95,7 +95,7 @@ Liquid Switcher includes a comprehensive, D-Pad optimized TV settings interface:
 
 ## 🛠️ Developer Guide & CLI
 
-For developers building from source, running tests, or inspecting logcat, see the [**Developer Guide**](docs/DEVELOPER_GUIDE.md) or the [**GitHub Wiki**](https://github.com/underd0se/LiquidSwitcher/wiki):
+For developers building from source, running tests, or inspecting logcat, see the [**Developer Guide**](docs/DEVELOPER_GUIDE.md) or the [**GitHub Wiki**](https://github.com/underd0se/LiquidSwitcher/wiki/Developer-Guide):
 
 ```bash
 # Unified developer CLI
